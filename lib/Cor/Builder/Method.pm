@@ -3,6 +3,7 @@ package Cor::Builder::Method;
 use v5.24;
 use warnings;
 use experimental qw[ signatures postderef ];
+use decorators   qw[ :accessors ];
 
 use parent 'UNIVERSAL::Object';
 use roles  'Cor::Builder::Role::Dumpable';
@@ -15,25 +16,11 @@ use slots (
     is_abstract => sub {},
 );
 
-sub set_name ($self, $name) {
-    $self->{name} = $name;
-}
-
-sub set_attributes ($self, $attributes) {
-    $self->{attributes} = $attributes;
-}
-
-sub set_signature ($self, $signature) {
-    $self->{signature} = $signature;
-}
-
-sub set_body ($self, $body) {
-    $self->{body} = $body;
-}
-
-sub is_abstract ($self, $is_abstract) {
-    $self->{is_abstract} = $is_abstract;
-}
+sub set_name       : wo(name);
+sub set_attributes : wo(attributes);
+sub set_signature  : wo(signature);
+sub set_body       : wo(body);
+sub is_abstract    : wo;
 
 # alias
 *set_is_abstract = \&is_abstract;
