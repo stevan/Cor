@@ -6,7 +6,7 @@ use experimental qw[ signatures postderef ];
 
 use PPR;
 
-use Cor::Static;
+use Cor::Builder;
 
 our $COR_CURRENT_META;
 our $COR_RULES;
@@ -92,9 +92,9 @@ BEGIN {
         (
             # Is it a Role or a Class ....
             (?>
-                role  (?{ $COR_CURRENT_META = Cor::Static::Role->new; })
+                role  (?{ $COR_CURRENT_META = Cor::Builder::Role->new; })
                 |
-                class (?{ $COR_CURRENT_META = Cor::Static::Class->new; })
+                class (?{ $COR_CURRENT_META = Cor::Builder::Class->new; })
             )
             (?&PerlNWS)
             # capture the name of the Role/Class
