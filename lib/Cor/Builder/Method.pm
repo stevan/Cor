@@ -6,7 +6,8 @@ use experimental qw[ signatures postderef ];
 use decorators   qw[ :accessors ];
 
 use parent 'UNIVERSAL::Object';
-use roles  'Cor::Builder::Role::Dumpable';
+use roles  'Cor::Builder::Role::Dumpable',
+           'Cor::Builder::Role::HasLocation';
 
 use slots (
     name        => sub {},

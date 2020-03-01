@@ -11,11 +11,13 @@ use Cor::Builder::Reference;
 use Cor::Builder::Slot;
 use Cor::Builder::Method;
 
-sub new_role      { Cor::Builder::Role->new( @_ )      }
-sub new_class     { Cor::Builder::Class->new( @_ )     }
-sub new_reference { Cor::Builder::Reference->new( @_ ) }
-sub new_slot      { Cor::Builder::Slot->new( @_ )      }
-sub new_method    { Cor::Builder::Method->new( @_ )    }
+use Cor::Builder::Location;
+
+sub new_role      {      Cor::Builder::Role->new( location => Cor::Builder::Location->new( @_ ) ) }
+sub new_class     {     Cor::Builder::Class->new( location => Cor::Builder::Location->new( @_ ) ) }
+sub new_reference { Cor::Builder::Reference->new( location => Cor::Builder::Location->new( @_ ) ) }
+sub new_slot      {      Cor::Builder::Slot->new( location => Cor::Builder::Location->new( @_ ) ) }
+sub new_method    {    Cor::Builder::Method->new( location => Cor::Builder::Location->new( @_ ) ) }
 
 1;
 

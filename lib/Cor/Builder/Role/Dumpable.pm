@@ -19,6 +19,9 @@ sub dump ($self) {
             #    warn "WTF this ($k) should be deleted!!\n";
             #}
         }
+        elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Builder::Location') ) {
+            delete $copy{ $k };
+        }
         elsif ( ref $copy{ $k } eq 'ARRAY' ) {
             # dump recursively
             $copy{ $k } = [ map {
