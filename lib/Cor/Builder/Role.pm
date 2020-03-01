@@ -24,14 +24,17 @@ sub set_version ($self, $version) {
 }
 
 sub add_role ($self, $role) {
+    # TODO - test that $role is a Builder::Reference
     push $self->{roles}->@* => $role;
 }
 
 sub add_slot ($self, $slot) {
+    # TODO - test that $slot is a Builder::Slot
     push $self->{slots}->@* => $slot;
 }
 
 sub add_method ($self, $method) {
+    # TODO - test that $method is a Builder::Method
     push $self->{methods}->@* => $method;
 }
 

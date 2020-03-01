@@ -11,6 +11,7 @@ use slots (
 );
 
 sub add_superclass ($self, $superclass) {
+    # TODO - test that $superclass is a Builder::Reference
     push $self->{superclasses}->@* => $superclass;
 }
 
