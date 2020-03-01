@@ -5,6 +5,7 @@ use warnings;
 use experimental qw[ signatures postderef ];
 
 use parent 'UNIVERSAL::Object';
+use roles  'Cor::Builder::Role::Dumpable';
 
 use slots (
     name    => sub { undef },
@@ -34,9 +35,6 @@ sub add_method ($self, $method) {
     push $self->{methods}->@* => $method;
 }
 
-sub dump ($self) {
-    return +{ %$self }
-}
 
 1;
 

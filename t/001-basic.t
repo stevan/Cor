@@ -17,19 +17,19 @@ my ($dumpable, $point, $point_3d) = Cor::Syntax::parse( $src );
 
 
 is_deeply(
-    $dumpable,
+    $dumpable->dump,
     {
         name    => 'Dumpable',
         version => 'v0.01',
         roles   => [],
         slots   => [],
-        methods => [ { name => 'dump', is_required => 1 } ],
+        methods => [ { name => 'dump', is_abstract => 1 } ],
     },
     '... the Dumpable role looks correct'
 );
 
 is_deeply(
-    $point,
+    $point->dump,
     {
         'name'         => 'Point',
         'version'      => 'v0.01',
@@ -43,12 +43,12 @@ is_deeply(
             {
                 'name'        => 'x',
                 'attributes'  => ':ro(_x)',
-                'is_required' => 1,
+                'is_abstract' => 1,
             },
             {
                 'name'        => 'y',
                 'attributes'  => ':ro(_y)',
-                'is_required' => 1,
+                'is_abstract' => 1,
             },
             {
                 'name'      => 'dump',
@@ -61,7 +61,7 @@ is_deeply(
 );
 
 is_deeply(
-    $point_3d,
+    $point_3d->dump,
     {
         'name'         => 'Point3D',
         'version'      => 'v0.01',
@@ -72,7 +72,7 @@ is_deeply(
             {
                 'name'        => 'z',
                 'attributes'  => ':ro(_z)',
-                'is_required' => 1,
+                'is_abstract' => 1,
 
             },
             {
