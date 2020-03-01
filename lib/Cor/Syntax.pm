@@ -8,10 +8,10 @@ use PPR;
 
 use Cor::Builder;
 
-our $COR_CURRENT_META;
-our $COR_CURRENT_REFERENCE;
-our $COR_CURRENT_SLOT;   # TODO
-our $COR_CURRENT_METHOD; # TODO
+our $_COR_CURRENT_META;
+our $_COR_CURRENT_REFERENCE;
+our $_COR_CURRENT_SLOT;
+our $_COR_CURRENT_METHOD;
 
 our $COR_RULES;
 our $COR_GRAMMAR;
@@ -96,48 +96,48 @@ BEGIN {
         (
             # Is it a Role or a Class ....
             (?>
-                role  (?{ $COR_CURRENT_META = Cor::Builder::Role->new; })
+                role  (?{ $_COR_CURRENT_META = Cor::Builder::Role->new; })
                 |
-                class (?{ $COR_CURRENT_META = Cor::Builder::Class->new; })
+                class (?{ $_COR_CURRENT_META = Cor::Builder::Class->new; })
             )
             (?&PerlNWS)
             # capture the name of the Role/Class
-                ((?&PerlQualifiedIdentifier)) (?{ $COR_CURRENT_META->set_name( $^N ); })
+                ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_META->set_name( $^N ); })
                 (?:
-                    (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $COR_CURRENT_META->set_version( $^N ); })
+                    (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_META->set_version( $^N ); })
                 )?+
             (?&PerlOWS)
                 # if it is a class we can collect superclasses
                 (?: isa  (?&PerlNWS)
                     ((?&PerlQualifiedIdentifier)) (?{
-                        $COR_CURRENT_META->add_superclass( $COR_CURRENT_REFERENCE = Cor::Builder::Reference->new( name => $^N ) ); })
+                        $_COR_CURRENT_META->add_superclass( $_COR_CURRENT_REFERENCE = Cor::Builder::Reference->new( name => $^N ) ); })
                     (?:
-                        (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $COR_CURRENT_REFERENCE->set_version( $^N ); })
+                        (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
                     )?+
                     (?&PerlOWS)
                 )*+
                 # if it is a class/role we can collect consumed roles
                 (?: does (?&PerlNWS)
-                    ((?&PerlQualifiedIdentifier)) (?{ $COR_CURRENT_META->add_role( $COR_CURRENT_REFERENCE = Cor::Builder::Reference->new( name => $^N ) ); })
+                    ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_META->add_role( $_COR_CURRENT_REFERENCE = Cor::Builder::Reference->new( name => $^N ) ); })
                     (?:
-                        (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $COR_CURRENT_REFERENCE->set_version( $^N ); })
+                        (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
                     )?+
                     (?&PerlOWS)
                 )*+
         ( \{
             (?&PerlOWS)
                 ((?:
-                    (has) (?{ $COR_CURRENT_META->add_slot( $COR_CURRENT_SLOT = Cor::Builder::Slot->new ); })
+                    (has) (?{ $_COR_CURRENT_META->add_slot( $_COR_CURRENT_SLOT = Cor::Builder::Slot->new ); })
                     (?&PerlNWS)
                         (
-                            ((?&PerlQualifiedIdentifier)) (?{ $COR_CURRENT_SLOT->set_type( $^N ) })
+                            ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_SLOT->set_type( $^N ) })
                             (?&PerlNWS)
                         )?
-                        ((?&PerlSlotIdentifier)) (?{ $COR_CURRENT_SLOT->set_name( $^N ) })
+                        ((?&PerlSlotIdentifier)) (?{ $_COR_CURRENT_SLOT->set_name( $^N ) })
                     (?&PerlOWS)
                         (?:
                             (?>
-                                ((?&PerlAttributes)) (?{ $COR_CURRENT_SLOT->set_attributes( $^N ) })
+                                ((?&PerlAttributes)) (?{ $_COR_CURRENT_SLOT->set_attributes( $^N ) })
                             )
                             (?&PerlOWS)
                         )?+
@@ -147,7 +147,7 @@ BEGIN {
                         (
                             (?&PerlAssignmentOperator)
                             (?&PerlOWS)
-                            ((?&PerlSlotDefault)) (?{ $COR_CURRENT_SLOT->set_default( $^N ) })
+                            ((?&PerlSlotDefault)) (?{ $_COR_CURRENT_SLOT->set_default( $^N ) })
                             ;
                         )
                     )
@@ -155,26 +155,26 @@ BEGIN {
                 )*+)
             (?&PerlOWS)
             ((?:
-                (method) (?{ $COR_CURRENT_META->add_method( $COR_CURRENT_METHOD = Cor::Builder::Method->new ); })
+                (method) (?{ $_COR_CURRENT_META->add_method( $_COR_CURRENT_METHOD = Cor::Builder::Method->new ); })
                 (?&PerlOWS)
-                ((?&PerlQualifiedIdentifier)) (?{ $COR_CURRENT_METHOD->set_name( $^N ); })
+                ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_METHOD->set_name( $^N ); })
                 (?&PerlOWS)
                 (?:
                     (?>
-                        ((?&PerlAttributes)) (?{ $COR_CURRENT_METHOD->set_attributes( $^N ) })
+                        ((?&PerlAttributes)) (?{ $_COR_CURRENT_METHOD->set_attributes( $^N ) })
                     )
                     (?&PerlOWS)
                 )?+
                 (?:
                     (?>
-                        ((?&PerlParenthesesList)) (?{ $COR_CURRENT_METHOD->set_signature( $^N ) })
+                        ((?&PerlParenthesesList)) (?{ $_COR_CURRENT_METHOD->set_signature( $^N ) })
                     )
                     (?&PerlOWS)
                 )?+
                 (?>
-                    (\;) (?{ $COR_CURRENT_METHOD->is_abstract( 1 ) })
+                    (\;) (?{ $_COR_CURRENT_METHOD->is_abstract( 1 ) })
                     |
-                    ((?&PerlBlock)) (?{ $COR_CURRENT_METHOD->set_body( $^N ) })
+                    ((?&PerlBlock)) (?{ $_COR_CURRENT_METHOD->set_body( $^N ) })
                 )
                 (?&PerlOWS)
             )*+)
@@ -189,7 +189,7 @@ sub grammar { $COR_GRAMMAR }
 
 sub parse ($source) {
 
-    local $COR_CURRENT_META = undef;
+    local $_COR_CURRENT_META = undef;
 
     my @matches;
 
@@ -199,7 +199,7 @@ sub parse ($source) {
             warn $PPR::ERROR;
         }
 
-        push @matches => $COR_CURRENT_META;
+        push @matches => $_COR_CURRENT_META;
     }
 
     return @matches;
