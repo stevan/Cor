@@ -51,9 +51,8 @@ is_deeply(
                 'is_abstract' => 1,
             },
             {
-                'name'      => 'dump',
-                'signature' => '($self)',
-                'body'      => '{ +{ x => $_x, y => $_y } }',
+                'name' => 'dump',
+                'body' => '{ +{ x => $_x, y => $_y } }',
             }
         ],
     },
@@ -89,7 +88,12 @@ done_testing;
 
 __DATA__
 
+package Something {
+    # ignore stuff that is not relevant ...
+}
+
 role Dumpable v0.01 {
+    # can include comments ...
     method dump;
 }
 
@@ -101,7 +105,7 @@ class Point v0.01 isa UNIVERSAL::Object does Dumpable {
     method x :ro(_x);
     method y :ro(_y);
 
-    method dump ($self) { +{ x => $_x, y => $_y } }
+    method dump { +{ x => $_x, y => $_y } }
 }
 
 class Point3D v0.01 isa Point {
