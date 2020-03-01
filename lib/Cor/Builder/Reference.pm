@@ -13,8 +13,14 @@ use slots (
     version => sub {},
 );
 
-sub set_name    : wo(name);
-sub set_version : wo(version);
+sub name    : ro;
+sub version : ro;
+
+sub set_name    : wo;
+sub set_version : wo;
+
+sub has_name    : predicate;
+sub has_version : predicate;
 
 1;
 

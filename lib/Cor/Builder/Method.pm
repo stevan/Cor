@@ -16,14 +16,23 @@ use slots (
     is_abstract => sub {},
 );
 
-sub set_name       : wo(name);
-sub set_attributes : wo(attributes);
-sub set_signature  : wo(signature);
-sub set_body       : wo(body);
-sub is_abstract    : wo;
+sub name        : ro;
+sub attributes  : ro;
+sub signature   : ro;
+sub body        : ro;
+sub is_abstract : ro;
 
-# alias
-*set_is_abstract = \&is_abstract;
+sub set_name        : wo;
+sub set_attributes  : wo;
+sub set_signature   : wo;
+sub set_body        : wo;
+sub set_is_abstract : wo;
+
+sub has_name        : predicate;
+sub has_attributes  : predicate;
+sub has_signature   : predicate;
+sub has_body        : predicate;
+sub has_is_abstract : predicate;
 
 1;
 

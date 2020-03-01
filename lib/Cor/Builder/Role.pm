@@ -16,8 +16,14 @@ use slots (
     methods => sub { []    },
 );
 
-sub set_name    : wo(name);
-sub set_version : wo(version);
+sub name    : ro;
+sub version : ro;
+sub roles   : ro;
+sub slots   : ro;
+sub methods : ro;
+
+sub set_name    : wo;
+sub set_version : wo;
 
 sub add_role ($self, $role) {
     # TODO - test that $role is a Builder::Reference
@@ -34,6 +40,11 @@ sub add_method ($self, $method) {
     push $self->{methods}->@* => $method;
 }
 
+sub has_name    : predicate;
+sub has_version : predicate;
+sub has_roles   ($self) { !! $self->{roles}->@*   }
+sub has_slots   ($self) { !! $self->{slots}->@*   }
+sub has_methods ($self) { !! $self->{methods}->@* }
 
 1;
 

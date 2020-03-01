@@ -15,10 +15,20 @@ use slots (
     default    => sub {},
 );
 
-sub set_name       : wo(name);
-sub set_type       : wo(type);
-sub set_attributes : wo(attributes);
-sub set_default    : wo(default);
+sub name       : ro;
+sub type       : ro;
+sub attributes : ro;
+sub default    : ro;
+
+sub set_name       : wo;
+sub set_type       : wo;
+sub set_attributes : wo;
+sub set_default    : wo;
+
+sub has_name       : predicate;
+sub has_type       : predicate;
+sub has_attributes : predicate;
+sub has_default    : predicate;
 
 1;
 

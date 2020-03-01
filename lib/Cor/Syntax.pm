@@ -172,7 +172,7 @@ BEGIN {
                     (?&PerlOWS)
                 )?+
                 (?>
-                    (\;) (?{ $_COR_CURRENT_METHOD->is_abstract( 1 ) })
+                    (\;) (?{ $_COR_CURRENT_METHOD->set_is_abstract( 1 ) })
                     |
                     ((?&PerlBlock)) (?{ $_COR_CURRENT_METHOD->set_body( $^N ) })
                 )
