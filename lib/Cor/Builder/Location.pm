@@ -16,8 +16,6 @@ sub pos    : ro;
 sub length : ro;
 
 sub start ($self) { $self->{pos} - $self->{length} }
-sub end   ($self) { $self->{pos} }
-
 
 1;
 
