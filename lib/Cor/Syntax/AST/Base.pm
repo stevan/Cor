@@ -10,12 +10,18 @@ use Scalar::Util 'blessed';
 use parent 'UNIVERSAL::Object';
 
 use slots (
-    location => sub {}
+    start_location => sub {},
+    end_location   => sub {},
 );
 
-sub location     : ro;
-sub set_location : wo;
-sub has_location : predicate;
+sub start_location     : ro;
+sub end_location       : ro;
+
+sub set_start_location : wo;
+sub set_end_location   : wo;
+
+sub has_start_location : predicate;
+sub has_end_location   : predicate;
 
 sub dump ($self) {
     my %copy = %$self;

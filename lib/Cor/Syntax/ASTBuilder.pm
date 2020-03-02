@@ -13,11 +13,11 @@ use Cor::Syntax::AST::Method;
 
 use Cor::Syntax::AST::Location;
 
-sub new_role_at      {      Cor::Syntax::AST::Role->new( location => Cor::Syntax::AST::Location->new( start => $_[0] ) ) }
-sub new_class_at     {     Cor::Syntax::AST::Class->new( location => Cor::Syntax::AST::Location->new( start => $_[0] ) ) }
-sub new_reference_at { Cor::Syntax::AST::Reference->new( location => Cor::Syntax::AST::Location->new( start => $_[0] ) ) }
-sub new_slot_at      {      Cor::Syntax::AST::Slot->new( location => Cor::Syntax::AST::Location->new( start => $_[0] ) ) }
-sub new_method_at    {    Cor::Syntax::AST::Method->new( location => Cor::Syntax::AST::Location->new( start => $_[0] ) ) }
+sub new_role_at      {      Cor::Syntax::AST::Role->new( start_location => Cor::Syntax::AST::Location->new( char_number => $_[0], line_number => $_[1] ) ) }
+sub new_class_at     {     Cor::Syntax::AST::Class->new( start_location => Cor::Syntax::AST::Location->new( char_number => $_[0], line_number => $_[1] ) ) }
+sub new_reference_at { Cor::Syntax::AST::Reference->new( start_location => Cor::Syntax::AST::Location->new( char_number => $_[0], line_number => $_[1] ) ) }
+sub new_slot_at      {      Cor::Syntax::AST::Slot->new( start_location => Cor::Syntax::AST::Location->new( char_number => $_[0], line_number => $_[1] ) ) }
+sub new_method_at    {    Cor::Syntax::AST::Method->new( start_location => Cor::Syntax::AST::Location->new( char_number => $_[0], line_number => $_[1] ) ) }
 
 1;
 

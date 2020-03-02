@@ -8,10 +8,12 @@ use decorators   qw[ :accessors ];
 use parent 'UNIVERSAL::Object::Immutable';
 
 use slots (
-    start => sub { die 'The `start` postion is required' },
+    line_number => sub { die 'A `line_number` is required' },
+    char_number => sub { die 'A `char_number` is required' },
 );
 
-sub start : ro;
+sub line_number : ro;
+sub char_number : ro;
 
 1;
 
