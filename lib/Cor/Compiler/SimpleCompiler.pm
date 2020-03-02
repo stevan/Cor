@@ -17,7 +17,7 @@ sub compile ($meta) {
     push @src => 'use v5.24;';
     push @src => 'use warnings;';
     push @src => 'use experimental qw[ signatures postderef ];';
-    push @src => 'use decorators qw[ :accessors ];';
+    push @src => 'use decorators qw[ :accessors :constructor ];';
 
     if ( $meta->isa('Cor::Syntax::AST::Class') && $meta->has_superclasses ) {
         push @src => '# superclasses';

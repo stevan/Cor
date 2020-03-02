@@ -27,7 +27,7 @@ my $EXPECTED = 'package Point 0.01 {
 use v5.24;
 use warnings;
 use experimental qw[ signatures postderef ];
-use decorators qw[ :accessors ];
+use decorators qw[ :accessors :constructor ];
 # superclasses
 our @ISA; BEGIN { @ISA = qw(UNIVERSAL::Object) }
 # slots
@@ -36,6 +36,7 @@ our %HAS; BEGIN { %HAS = (
     _y => sub { 0 },
 ) }
 # methods
+sub BUILDARGS :strict(x => _x, y => _y);
 sub x :ro(_x);
 sub y :ro(_y);
 sub dump ($self){
@@ -52,7 +53,7 @@ subtest '... eval and test the compiled output', sub {
         warn $@;
     }
 
-    my $p = Point->new( _x => 10, _y => 20 );
+    my $p = Point->new( x => 10, y => 20 );
     isa_ok($p, 'Point');
 
     is($p->x, 10, '... got the right value for x');
@@ -69,6 +70,8 @@ class Point v0.01 isa UNIVERSAL::Object {
 
     has _x = 0;
     has _y = 0;
+
+    method BUILDARGS :strict(x => _x, y => _y);
 
     method x :ro(_x);
     method y :ro(_y);
