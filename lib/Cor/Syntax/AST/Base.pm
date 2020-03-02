@@ -1,11 +1,21 @@
-package Cor::Builder::Role::Dumpable;
+package Cor::Syntax::AST::Base;
 
 use v5.24;
 use warnings;
 use experimental qw[ signatures postderef ];
+use decorators   qw[ :accessors ];
 
 use Scalar::Util 'blessed';
-use roles (); # make sure roles::DOES is available
+
+use parent 'UNIVERSAL::Object';
+
+use slots (
+    location => sub {}
+);
+
+sub location     : ro;
+sub set_location : wo;
+sub has_location : predicate;
 
 sub dump ($self) {
     my %copy = %$self;
@@ -19,7 +29,7 @@ sub dump ($self) {
             #    warn "WTF this ($k) should be deleted!!\n";
             #}
         }
-        elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Builder::Location') ) {
+        elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Syntax::AST::Location') ) {
             delete $copy{ $k };
         }
         elsif ( ref $copy{ $k } eq 'ARRAY' ) {
@@ -35,7 +45,7 @@ sub dump ($self) {
                 }
             } $copy{ $k }->@* ];
         }
-        elsif ( blessed $copy{ $k } ) {
+        elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Syntax::AST::Base') ) {
             # dump recursively
             $copy{ $k } = $copy{ $k }->dump;
         }

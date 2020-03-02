@@ -1,4 +1,4 @@
-package Cor::Builder::Location;
+package Cor::Syntax::AST::Location;
 
 use v5.24;
 use warnings;

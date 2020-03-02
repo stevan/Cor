@@ -1,11 +1,11 @@
-package Cor::Builder::Class;
+package Cor::Syntax::AST::Class;
 
 use v5.24;
 use warnings;
 use experimental qw[ signatures postderef ];
 use decorators   qw[ :accessors ];
 
-use parent 'Cor::Builder::Role';
+use parent 'Cor::Syntax::AST::Role';
 
 use slots (
     superclasses => sub { [] },

@@ -1,13 +1,11 @@
-package Cor::Builder::Reference;
+package Cor::Syntax::AST::Reference;
 
 use v5.24;
 use warnings;
 use experimental qw[ signatures postderef ];
 use decorators   qw[ :accessors ];
 
-use parent 'UNIVERSAL::Object';
-use roles  'Cor::Builder::Role::Dumpable',
-           'Cor::Builder::Role::HasLocation';
+use parent 'Cor::Syntax::AST::Base';
 
 use slots (
     name    => sub {},

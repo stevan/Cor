@@ -6,7 +6,7 @@ use experimental qw[ signatures postderef ];
 
 use PPR;
 
-use Cor::Builder;
+use Cor::Syntax::ASTBuilder;
 
 our $_COR_CURRENT_META;
 our $_COR_CURRENT_REFERENCE;
@@ -96,9 +96,9 @@ BEGIN {
         (
             # Is it a Role or a Class ....
             (?>
-                (role)  (?{ $_COR_CURRENT_META = Cor::Builder::new_role_at( pos() - length($^N) ) })
+                (role)  (?{ $_COR_CURRENT_META = Cor::Syntax::ASTBuilder::new_role_at( pos() - length($^N) ) })
                 |
-                (class) (?{ $_COR_CURRENT_META = Cor::Builder::new_class_at( pos() - length($^N) ) })
+                (class) (?{ $_COR_CURRENT_META = Cor::Syntax::ASTBuilder::new_class_at( pos() - length($^N) ) })
             )
             (?&PerlNWS)
             # capture the name of the Role/Class
@@ -110,7 +110,7 @@ BEGIN {
                 # if it is a class we can collect superclasses
                 (?: isa  (?&PerlNWS)
                     ((?&PerlQualifiedIdentifier)) (?{
-                        $_COR_CURRENT_META->add_superclass( $_COR_CURRENT_REFERENCE = Cor::Builder::new_reference_at( pos() - length($^N) ) ); $_COR_CURRENT_REFERENCE->set_name( $^N ); })
+                        $_COR_CURRENT_META->add_superclass( $_COR_CURRENT_REFERENCE = Cor::Syntax::ASTBuilder::new_reference_at( pos() - length($^N) ) ); $_COR_CURRENT_REFERENCE->set_name( $^N ); })
                     (?:
                         (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
                     )?+
@@ -118,7 +118,7 @@ BEGIN {
                 )*+
                 # if it is a class/role we can collect consumed roles
                 (?: does (?&PerlNWS)
-                    ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_META->add_role( $_COR_CURRENT_REFERENCE = Cor::Builder::new_reference_at( pos() - length($^N) ) ); $_COR_CURRENT_REFERENCE->set_name( $^N ); })
+                    ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_META->add_role( $_COR_CURRENT_REFERENCE = Cor::Syntax::ASTBuilder::new_reference_at( pos() - length($^N) ) ); $_COR_CURRENT_REFERENCE->set_name( $^N ); })
                     (?:
                         (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
                     )?+
@@ -127,7 +127,7 @@ BEGIN {
         ( \{
             (?&PerlOWS)
                 ((?:
-                    (has) (?{ $_COR_CURRENT_META->add_slot( $_COR_CURRENT_SLOT = Cor::Builder::new_slot_at( pos() - length($^N) ) ); })
+                    (has) (?{ $_COR_CURRENT_META->add_slot( $_COR_CURRENT_SLOT = Cor::Syntax::ASTBuilder::new_slot_at( pos() - length($^N) ) ); })
                     (?&PerlNWS)
                         (
                             ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_SLOT->set_type( $^N ) })
@@ -155,7 +155,7 @@ BEGIN {
                 )*+)
             (?&PerlOWS)
             ((?:
-                (method) (?{ $_COR_CURRENT_META->add_method( $_COR_CURRENT_METHOD = Cor::Builder::new_method_at( pos() - length($^N) ) ); })
+                (method) (?{ $_COR_CURRENT_META->add_method( $_COR_CURRENT_METHOD = Cor::Syntax::ASTBuilder::new_method_at( pos() - length($^N) ) ); })
                 (?&PerlOWS)
                 ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_METHOD->set_name( $^N ); })
                 (?&PerlOWS)
