@@ -14,10 +14,14 @@ BEGIN {
 
 my $src = join '' => <DATA>;
 
+my $AST;
+subtest '... verify the AST object' => sub {
+    ($AST) = Cor::Syntax::parse( $src );
+    isa_ok($AST, 'Cor::Syntax::AST::Class');
+    is($AST->name, 'Point', '... the AST is for the Point class');
+};
 
-my $GOT = Cor::Compiler::SimpleCompiler::compile(
-    Cor::Syntax::parse( $src )
-);
+my $GOT = Cor::Compiler::SimpleCompiler::compile( $AST );
 
 my $EXPECTED = 'package Point 0.01 {
 use v5.24;
