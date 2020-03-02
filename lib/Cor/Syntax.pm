@@ -256,6 +256,32 @@ sub parse ($source) {
 
 }
 
+# NOTE:
+# We need to do this kind of thing at some point
+# so we can check the slot usage, but this is just
+# a primative example. A real implementation will
+# need to take a list of valid slot names so that
+# it can ignore normal lexicals. Or perhaps not,
+# and that filtering can be done else where, either
+# way this will need to construct a more complex
+# AST object with location information, etc.
+# - SL
+# sub _extract_all_variable_access_from_method_body ($source) {
+#
+#     my @matches;
+#
+#     while ( $source =~ /((?&PerlVariableScalar)) $COR_RULES/gx ) {
+#
+#         if ( $PPR::ERROR ) {
+#             warn $PPR::ERROR;
+#         }
+#
+#         push @matches => $1;
+#     }
+#
+#     return @matches;
+# }
+
 1;
 
 __END__
