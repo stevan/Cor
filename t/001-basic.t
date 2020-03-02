@@ -137,8 +137,8 @@ is_deeply(
 is($point_3d->start_location->char_number, 325, '... got the right start char number');
 is($point_3d->start_location->line_number, 22, '... got the right start line number');
 
-is($point_3d->end_location->char_number, 467, '... got the right end char number');
-is($point_3d->end_location->line_number, 30, '... got the right end line number');
+is($point_3d->end_location->char_number, 479, '... got the right end char number');
+is($point_3d->end_location->line_number, 32, '... got the right end line number');
 
 # superclass declaration
 
@@ -167,8 +167,8 @@ is($point_3d->methods->[0]->end_location->line_number, 26, '... got the right en
 is($point_3d->methods->[1]->start_location->char_number, 403, '... got the right start char number');
 is($point_3d->methods->[1]->start_location->line_number, 28, '... got the right start line number');
 
-is($point_3d->methods->[1]->end_location->char_number, 465, '... got the right end char number');
-is($point_3d->methods->[1]->end_location->line_number, 28, '... got the right end line number');
+is($point_3d->methods->[1]->end_location->char_number, 477, '... got the right end char number');
+is($point_3d->methods->[1]->end_location->line_number, 30, '... got the right end line number');
 
 is_deeply(
     $point_3d->dump,
@@ -188,7 +188,9 @@ is_deeply(
             {
                 'name'      => 'dump',
                 'signature' => '($self)',
-                'body'      => '{ +{ $self->next::method->%*, z => $_z } }',
+                'body'      => '{
+        +{ $self->next::method->%*, z => $_z }
+    }',
             }
         ],
     },
@@ -225,6 +227,8 @@ class Point3D v0.01 isa Point {
 
     method z :ro(_z);
 
-    method dump ($self) { +{ $self->next::method->%*, z => $_z } }
+    method dump ($self) {
+        +{ $self->next::method->%*, z => $_z }
+    }
 
 }
