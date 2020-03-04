@@ -32,13 +32,13 @@ use decorators qw[ :accessors :constructor ];
 our @ISA; BEGIN { @ISA = qw(UNIVERSAL::Object) }
 # slots
 our %HAS; BEGIN { %HAS = (
-    _x => sub { 0 },
-    _y => sub { 0 },
+    q[$_x] => sub { 0 },
+    q[$_y] => sub { 0 },
 ) }
 # methods
-sub BUILDARGS :strict(x => _x, y => _y);
-sub x :ro(_x);
-sub y :ro(_y);
+sub BUILDARGS :strict(x => $_x, y => $_y);
+sub x :ro($_x);
+sub y :ro($_y);
 sub dump ($self){
         return +{ x => $self->x, y => $self->y };
     }
@@ -68,13 +68,13 @@ __DATA__
 
 class Point v0.01 isa UNIVERSAL::Object {
 
-    has _x = 0;
-    has _y = 0;
+    has $_x = 0;
+    has $_y = 0;
 
-    method BUILDARGS :strict(x => _x, y => _y);
+    method BUILDARGS :strict(x => $_x, y => $_y);
 
-    method x :ro(_x);
-    method y :ro(_y);
+    method x :ro($_x);
+    method y :ro($_y);
 
     method dump ($self) {
         return +{ x => $self->x, y => $self->y };

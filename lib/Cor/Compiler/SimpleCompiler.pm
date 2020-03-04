@@ -38,7 +38,7 @@ sub compile ($meta) {
         push @src => 'our %HAS; BEGIN { %HAS = (';
         push @src => map {
                 $INDENT
-                . $_->name . ' => sub { '
+                . 'q[' . $_->name . '] => sub { '
                 . ($_->has_default ? $_->default : '')
                 . ' },'
         } $meta->slots->@*;
