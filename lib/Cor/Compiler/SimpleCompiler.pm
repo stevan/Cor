@@ -21,16 +21,16 @@ sub compile ($meta) {
 
     if ( $meta->isa('Cor::Syntax::AST::Class') && $meta->has_superclasses ) {
         push @src => '# superclasses';
-        push @src => 'our @ISA; BEGIN { @ISA = qw('
+        push @src => 'our @ISA; BEGIN { @ISA = qw['
             . (join ' ' => map $_->name, $meta->superclasses->@*)
-        . ') }';
+        . '] }';
     }
 
     if ( $meta->has_roles ) {
         push @src => '# roles';
-        push @src => 'our @DOES; BEGIN { @DOES = qw('
+        push @src => 'our @DOES; BEGIN { @DOES = qw['
             . (join ' ' => map $_->name, $meta->roles->@*)
-        . ') }';
+        . '] }';
     }
 
     if ( $meta->has_slots ) {

@@ -29,7 +29,7 @@ use warnings;
 use experimental qw[ signatures postderef ];
 use decorators qw[ :accessors :constructor ];
 # superclasses
-our @ISA; BEGIN { @ISA = qw(UNIVERSAL::Object) }
+our @ISA; BEGIN { @ISA = qw[UNIVERSAL::Object] }
 # slots
 our %HAS; BEGIN { %HAS = (
     q[$_x] => sub { 0 },
