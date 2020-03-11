@@ -4,6 +4,7 @@ use v5.24;
 use warnings;
 
 use Test::More;
+use Test::Differences;
 use Data::Dumper;
 
 BEGIN {
@@ -39,12 +40,12 @@ our %HAS; BEGIN { %HAS = (
 sub BUILDARGS :strict(x => $_x, y => $_y);
 sub x :ro($_x);
 sub y :ro($_y);
-sub dump ($self){
+sub dump ($self) {
         return +{ x => $self->x, y => $self->y };
     }
 }';
 
-is($GOT, $EXPECTED, '... simple compiler working');
+eq_or_diff($GOT, $EXPECTED, '... simple compiler working');
 
 subtest '... eval and test the compiled output', sub {
 

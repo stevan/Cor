@@ -54,7 +54,7 @@ sub compile ($meta) {
                 . ($_->has_signature  ? ' ' . $_->signature  : '')
                 . ($_->is_abstract
                     ? ';'
-                    : $_->body)
+                    : ' ' . $_->body)
         } $meta->methods->@*;
     }
 
