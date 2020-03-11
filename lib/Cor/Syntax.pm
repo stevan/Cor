@@ -6,7 +6,12 @@ use experimental qw[ signatures postderef ];
 
 use PPR;
 
+use List::Util;
+
 use Cor::Syntax::ASTBuilder;
+
+# HACK FOR NOW
+our $_ENABLE_VARIABLE_SUBSTITUTION_IN_METHOD_BODY = 0;
 
 our $_COR_CURRENT_META;
 our $_COR_CURRENT_REFERENCE;
@@ -47,6 +52,17 @@ BEGIN {
                 )
             )
 
+            # NOTE:
+            # define this here, not sure if we will use it
+            # but good to have it defined differently i think
+            # because I think we should restrict the contents
+            # of methods to be "strict" by default, and even
+            # maybe to not allow certain constructs.
+            # - SL
+            (?<PerlMethodBlock>
+                \{  (?>(?&PerlStatementSequence))  \}
+            )
+
             # REDEFINE
 
             (?<PerlVariableScalar>
@@ -68,7 +84,7 @@ BEGIN {
                     |
                         \{ \^ [A-Z_] \w*+ \}
                     |
-                        \! (?&PerlIdentifier) ## << add in the slot handling
+                        \! (?&PerlIdentifier) ## << add in the twigil handling, currently just C<$!foo>
                     |
                         (?>(?&PerlOldQualifiedIdentifier)) (?: :: )?+
                     |
@@ -212,8 +228,12 @@ BEGIN {
                         );
                     })
                     |
-                    ((?&PerlBlock)) (?{
-                        $_COR_CURRENT_METHOD->set_body( $^N );
+                    ((?&PerlMethodBlock)) (?{
+                        $_COR_CURRENT_METHOD->set_body(
+                            $_ENABLE_VARIABLE_SUBSTITUTION_IN_METHOD_BODY
+                            ? (_extract_all_variable_access_from_method_body( $^N, $_COR_CURRENT_META ))
+                            : $^N
+                        );
                         $_COR_CURRENT_METHOD->set_end_location(
                             Cor::Syntax::AST::Location->new(
                                 char_number => pos(), # XXX - need to use use just pos here, not sure why
@@ -256,31 +276,55 @@ sub parse ($source) {
 
 }
 
-# NOTE:
-# We need to do this kind of thing at some point
-# so we can check the slot usage, but this is just
-# a primative example. A real implementation will
-# need to take a list of valid slot names so that
-# it can ignore normal lexicals. Or perhaps not,
-# and that filtering can be done else where, either
-# way this will need to construct a more complex
-# AST object with location information, etc.
-# - SL
-# sub _extract_all_variable_access_from_method_body ($source) {
-#
-#     my @matches;
-#
-#     while ( $source =~ /((?&PerlVariableScalar)) $COR_RULES/gx ) {
-#
-#         if ( $PPR::ERROR ) {
-#             warn $PPR::ERROR;
-#         }
-#
-#         push @matches => $1;
-#     }
-#
-#     return @matches;
-# }
+sub _extract_all_variable_access_from_method_body ($source, $meta) {
+
+    my %valid_slots = map { $_->name => undef } $meta->slots->@*;
+
+    #warn Data::Dumper::Dumper( \%valid_slots );
+
+    my @matches;
+
+    my ($match, $pos);
+    while ( $source =~ /((?&PerlVariableScalar)) (?{ $match = $^N; $pos = pos(); }) $COR_RULES/gx ) {
+
+        next unless exists $valid_slots{ $match };
+
+        if ( $PPR::ERROR ) {
+            warn $PPR::ERROR;
+        }
+
+        push @matches => {
+            match => "$match",
+            start => ($pos - length( $match ))
+        };
+
+        ($match, $pos) = (undef, undef);
+    }
+
+    my $source_length = length( $source );
+
+    my $offset = 0;
+    foreach my $m ( @matches ) {
+        my $patch = '$_[0]->{q[' . $m->{match} . ']}';
+
+        #use Data::Dumper;
+        #warn Dumper [ $m, [
+        #    $source,
+        #    $source_length,
+        #    $m->{start} + $offset,
+        #    length( $m->{match} )
+        #    ] ];
+
+        substr(
+            $source,
+            $m->{start} + $offset,
+            length( $m->{match} ),
+        ) = $patch;
+        $offset = length( $patch ) - length( $m->{match} );
+    }
+
+    return $source;
+}
 
 1;
 
