@@ -10,9 +10,6 @@ use List::Util;
 
 use Cor::Syntax::ASTBuilder;
 
-# HACK FOR NOW
-our $_ENABLE_VARIABLE_SUBSTITUTION_IN_METHOD_BODY = 0;
-
 our $_COR_CURRENT_META;
 our $_COR_CURRENT_REFERENCE;
 our $_COR_CURRENT_SLOT;
@@ -131,11 +128,10 @@ BEGIN {
                         (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
                     )?+
                     (?{
-                        $_COR_CURRENT_REFERENCE->set_end_location(
-                            Cor::Syntax::AST::Location->new(
-                                char_number => pos(), # XXX - need to use use just pos here, not sure why
-                                line_number => (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
-                            )
+                        Cor::Syntax::ASTBuilder::set_end_location(
+                            $_COR_CURRENT_REFERENCE,
+                            pos(), # XXX - need to use use just pos here, not sure why
+                            (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
                         );
                     })
                     (?&PerlOWS)
@@ -147,11 +143,10 @@ BEGIN {
                         (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
                     )?+
                     (?{
-                        $_COR_CURRENT_REFERENCE->set_end_location(
-                            Cor::Syntax::AST::Location->new(
-                                char_number => pos(), # XXX - need to use use just pos here, not sure why
-                                line_number => (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
-                            )
+                        Cor::Syntax::ASTBuilder::set_end_location(
+                            $_COR_CURRENT_REFERENCE,
+                            pos(), # XXX - need to use use just pos here, not sure why
+                            (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
                         );
                     })
                     (?&PerlOWS)
@@ -175,11 +170,10 @@ BEGIN {
                         )?+
                     (?>
                         (;) (?{
-                            $_COR_CURRENT_SLOT->set_end_location(
-                                Cor::Syntax::AST::Location->new(
-                                    char_number => pos() - length($^N),
-                                    line_number => (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
-                                )
+                            Cor::Syntax::ASTBuilder::set_end_location(
+                                $_COR_CURRENT_SLOT,
+                                pos() - length($^N),
+                                (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
                             );
                         })
                         |
@@ -188,11 +182,10 @@ BEGIN {
                             (?&PerlOWS)
                             ((?&PerlSlotDefault)) (?{ $_COR_CURRENT_SLOT->set_default( $^N ) })
                             (;) (?{
-                                $_COR_CURRENT_SLOT->set_end_location(
-                                    Cor::Syntax::AST::Location->new(
-                                        char_number => pos() - length($^N),
-                                        line_number => (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
-                                    )
+                                Cor::Syntax::ASTBuilder::set_end_location(
+                                    $_COR_CURRENT_SLOT,
+                                    pos() - length($^N),
+                                    (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
                                 );
                             })
                         )
@@ -220,36 +213,42 @@ BEGIN {
                 (?>
                     (\;) (?{
                         $_COR_CURRENT_METHOD->set_is_abstract( 1 );
-                        $_COR_CURRENT_METHOD->set_end_location(
-                            Cor::Syntax::AST::Location->new(
-                                char_number => pos() - length($^N),
-                                line_number => (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
-                            )
+                        Cor::Syntax::ASTBuilder::set_end_location(
+                            $_COR_CURRENT_METHOD,
+                            pos() - length($^N),
+                            (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
                         );
                     })
                     |
                     ((?&PerlMethodBlock)) (?{
+
+                        # XXX - need to use use just pos here, not sure why
+                        my $pos         = pos();
+                        my $line_number = (1+(substr( $_, 0, $+[0] ) =~ tr/\n//));
+
                         $_COR_CURRENT_METHOD->set_body(
-                            $_ENABLE_VARIABLE_SUBSTITUTION_IN_METHOD_BODY
-                            ? (_extract_all_variable_access_from_method_body( $^N, $_COR_CURRENT_META ))
-                            : $^N
-                        );
-                        $_COR_CURRENT_METHOD->set_end_location(
-                            Cor::Syntax::AST::Location->new(
-                                char_number => pos(), # XXX - need to use use just pos here, not sure why
-                                line_number => (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
+                            Cor::Syntax::ASTBuilder::new_method_body_at(
+                                parse_method_body(
+                                    $^N,
+                                    $_COR_CURRENT_META
+                                )
                             )
+                        );
+
+                        Cor::Syntax::ASTBuilder::set_end_location(
+                            $_COR_CURRENT_METHOD,
+                            $pos,
+                            $line_number
                         );
                     })
                 )
                 (?&PerlOWS)
             )*+)
         (\}) (?{
-            $_COR_CURRENT_META->set_end_location(
-                Cor::Syntax::AST::Location->new(
-                    char_number => pos() - length($^N),
-                    line_number => (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
-                )
+            Cor::Syntax::ASTBuilder::set_end_location(
+                $_COR_CURRENT_META,
+                pos() - length($^N),
+                (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
             );
         })))
 
@@ -272,22 +271,17 @@ sub parse ($source) {
         push @matches => $_COR_CURRENT_META;
     }
 
-    return @matches;
-
+    return ($source, \@matches);
 }
 
-sub _extract_all_variable_access_from_method_body ($source, $meta) {
-
-    my %valid_slots = map { $_->name => undef } $meta->slots->@*;
-
-    #warn Data::Dumper::Dumper( \%valid_slots );
+sub parse_method_body ($source, $meta) {
 
     my @matches;
 
     my ($match, $pos);
     while ( $source =~ /((?&PerlVariableScalar)) (?{ $match = $^N; $pos = pos(); }) $COR_RULES/gx ) {
 
-        next unless exists $valid_slots{ $match };
+        next unless $meta->has_slot( $match );
 
         if ( $PPR::ERROR ) {
             warn $PPR::ERROR;
@@ -301,29 +295,7 @@ sub _extract_all_variable_access_from_method_body ($source, $meta) {
         ($match, $pos) = (undef, undef);
     }
 
-    my $source_length = length( $source );
-
-    my $offset = 0;
-    foreach my $m ( @matches ) {
-        my $patch = '$_[0]->{q[' . $m->{match} . ']}';
-
-        #use Data::Dumper;
-        #warn Dumper [ $m, [
-        #    $source,
-        #    $source_length,
-        #    $m->{start} + $offset,
-        #    length( $m->{match} )
-        #    ] ];
-
-        substr(
-            $source,
-            $m->{start} + $offset,
-            length( $m->{match} ),
-        ) = $patch;
-        $offset = length( $patch ) - length( $m->{match} );
-    }
-
-    return $source;
+    return ($source, \@matches);
 }
 
 1;

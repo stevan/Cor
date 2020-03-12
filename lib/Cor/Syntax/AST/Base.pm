@@ -38,6 +38,9 @@ sub dump ($self) {
         elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Syntax::AST::Location') ) {
             delete $copy{ $k };
         }
+        elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Syntax::AST::Method::Body') ) {
+            $copy{ $k } = $copy{ $k }->dump;
+        }
         elsif ( ref $copy{ $k } eq 'ARRAY' ) {
             # dump recursively
             $copy{ $k } = [ map {

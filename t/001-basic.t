@@ -2,6 +2,7 @@
 
 use v5.24;
 use warnings;
+use experimental qw[ postderef ];
 
 use Test::More;
 use Data::Dumper;
@@ -13,7 +14,8 @@ BEGIN {
 
 my $src = join '' => <DATA>;
 
-my ($dumpable, $point, $point_3d) = Cor::Syntax::parse( $src );
+my (undef, $matches) = Cor::Syntax::parse( $src );
+my ($dumpable, $point, $point_3d) = $matches->@*;
 
 # role definition
 
@@ -125,7 +127,13 @@ is_deeply(
             },
             {
                 'name' => 'dump',
-                'body' => '{ +{ x => $_x, y => $_y } }',
+                'body' => {
+                    source         => '{ +{ x => $_x, y => $_y } }',
+                    slot_locations => [
+                        { match => '$_x', start => 10 },
+                        { match => '$_y', start => 20 },
+                    ]
+                },
             }
         ],
     },
@@ -188,9 +196,14 @@ is_deeply(
             {
                 'name'      => 'dump',
                 'signature' => '($self)',
-                'body'      => '{
+                'body'      => {
+                    source => '{
         +{ $self->next::method->%*, z => $_z }
     }',
+                    slot_locations => [
+                        { match => '$_z', start => 43 }
+                    ]
+                }
             }
         ],
     },

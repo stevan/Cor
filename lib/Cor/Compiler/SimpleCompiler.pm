@@ -58,13 +58,44 @@ sub compile ($meta) {
                 . ($_->has_signature  ? ' ' . $_->signature  : '')
                 . ($_->is_abstract
                     ? ';'
-                    : ' ' . $_->body)
+                    : ' ' . compile_method_body( $_->body ))
         } $meta->methods->@*;
     }
 
     push @src => '}';
 
     return join "\n" => @src;
+}
+
+sub compile_method_body ($body) {
+
+    my $source  = $body->source;
+    my @matches = $body->slot_locations->@*;
+
+    my $source_length = length( $source );
+
+    my $offset = 0;
+    foreach my $m ( @matches ) {
+        my $patch = '$_[0]->{q[' . $m->{match} . ']}';
+
+        #use Data::Dumper;
+        #warn Dumper [ $m, [
+        #    $source,
+        #    $source_length,
+        #    $m->{start} + $offset,
+        #    length( $m->{match} )
+        #    ] ];
+
+        substr(
+            $source,
+            $m->{start} + $offset,
+            length( $m->{match} ),
+        ) = $patch;
+        $offset = length( $patch ) - length( $m->{match} );
+    }
+
+    return $source;
+
 }
 
 1;

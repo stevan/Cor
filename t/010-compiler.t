@@ -2,6 +2,7 @@
 
 use v5.24;
 use warnings;
+use experimental qw[ postderef ];
 
 use Test::More;
 use Test::Differences;
@@ -17,7 +18,8 @@ my $src = join '' => <DATA>;
 
 my $AST;
 subtest '... verify the AST object' => sub {
-    ($AST) = Cor::Syntax::parse( $src );
+    my (undef, $matches) = Cor::Syntax::parse( $src );
+    ($AST) = $matches->@*;
     isa_ok($AST, 'Cor::Syntax::AST::Class');
     is($AST->name, 'Point', '... the AST is for the Point class');
 };
@@ -40,8 +42,8 @@ our %HAS; BEGIN { %HAS = (
 sub BUILDARGS :strict(x => $_x, y => $_y);
 sub x :ro($_x);
 sub y :ro($_y);
-sub dump ($self) {
-        return +{ x => $self->x, y => $self->y };
+sub dump {
+        return +{ x => $_[0]->{q[$_x]}, y => $_[0]->{q[$_y]} };
     }
 }';
 
@@ -77,8 +79,8 @@ class Point v0.01 isa UNIVERSAL::Object {
     method x :ro($_x);
     method y :ro($_y);
 
-    method dump ($self) {
-        return +{ x => $self->x, y => $self->y };
+    method dump {
+        return +{ x => $_x, y => $_y };
     }
 }
 
