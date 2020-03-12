@@ -1,4 +1,4 @@
-package Cor::Syntax::AST::Method::Body;
+package Cor::Parser::AST::Method::Body;
 
 use v5.24;
 use warnings;

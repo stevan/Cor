@@ -1,4 +1,4 @@
-package Cor::Syntax;
+package Cor::Parser;
 
 use v5.24;
 use warnings;
@@ -8,7 +8,7 @@ use PPR;
 
 use List::Util;
 
-use Cor::Syntax::ASTBuilder;
+use Cor::Parser::ASTBuilder;
 
 our $_COR_CURRENT_META;
 our $_COR_CURRENT_REFERENCE;
@@ -54,7 +54,10 @@ BEGIN {
             # but good to have it defined differently i think
             # because I think we should restrict the contents
             # of methods to be "strict" by default, and even
-            # maybe to not allow certain constructs.
+            # maybe to not allow certain constructs. This will
+            # require recursing down the rulesets, so defining
+            # our own PerlMethodStatementSequence to replace
+            # the below "PerlStatementSequence" for instance.
             # - SL
             (?<PerlMethodBlock>
                 \{  (?>(?&PerlStatementSequence))  \}
@@ -80,8 +83,12 @@ BEGIN {
                         \^ [][A-Z^_?\\]
                     |
                         \{ \^ [A-Z_] \w*+ \}
-                    |
-                        \! (?&PerlIdentifier) ## << add in the twigil handling, currently just C<$!foo>
+                    ## << start twigil handling
+                        |
+                            \! (?&PerlIdentifier) ## twigil with a !
+                        |
+                            \. (?&PerlIdentifier) ## twigil with a .
+                    ## >> end twigil handling
                     |
                         (?>(?&PerlOldQualifiedIdentifier)) (?: :: )?+
                     |
@@ -109,9 +116,13 @@ BEGIN {
         (
             # Is it a Role or a Class ....
             (?>
-                (role)  (?{ $_COR_CURRENT_META = Cor::Syntax::ASTBuilder::new_role_at( pos() - length($^N), (1+(substr( $_, 0, $+[0] ) =~ tr/\n//)) ) })
+                (role)  (?{
+                    $_COR_CURRENT_META = Cor::Parser::ASTBuilder::new_role_at( pos() - length($^N) )
+                })
                 |
-                (class) (?{ $_COR_CURRENT_META = Cor::Syntax::ASTBuilder::new_class_at( pos() - length($^N), (1+(substr( $_, 0, $+[0] ) =~ tr/\n//)) ) })
+                (class) (?{
+                    $_COR_CURRENT_META = Cor::Parser::ASTBuilder::new_class_at( pos() - length($^N) )
+                })
             )
             (?&PerlNWS)
             # capture the name of the Role/Class
@@ -123,30 +134,36 @@ BEGIN {
                 # if it is a class we can collect superclasses
                 (?: isa  (?&PerlNWS)
                     ((?&PerlQualifiedIdentifier)) (?{
-                        $_COR_CURRENT_META->add_superclass( $_COR_CURRENT_REFERENCE = Cor::Syntax::ASTBuilder::new_reference_at( pos() - length($^N), (1+(substr( $_, 0, $+[0] ) =~ tr/\n//)) ) ); $_COR_CURRENT_REFERENCE->set_name( $^N ); })
+                        $_COR_CURRENT_META->add_superclass(
+                            $_COR_CURRENT_REFERENCE = Cor::Parser::ASTBuilder::new_reference_at( pos() - length($^N) )
+                        );
+                        $_COR_CURRENT_REFERENCE->set_name( $^N ); })
                     (?:
                         (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
                     )?+
                     (?{
-                        Cor::Syntax::ASTBuilder::set_end_location(
+                        Cor::Parser::ASTBuilder::set_end_location(
                             $_COR_CURRENT_REFERENCE,
                             pos(), # XXX - need to use use just pos here, not sure why
-                            (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
                         );
                     })
                     (?&PerlOWS)
                 )*+
                 # if it is a class/role we can collect consumed roles
                 (?: does (?&PerlNWS)
-                    ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_META->add_role( $_COR_CURRENT_REFERENCE = Cor::Syntax::ASTBuilder::new_reference_at( pos() - length($^N), (1+(substr( $_, 0, $+[0] ) =~ tr/\n//)) ) ); $_COR_CURRENT_REFERENCE->set_name( $^N ); })
+                    ((?&PerlQualifiedIdentifier)) (?{
+                        $_COR_CURRENT_META->add_role(
+                            $_COR_CURRENT_REFERENCE = Cor::Parser::ASTBuilder::new_reference_at( pos() - length($^N) )
+                        );
+                        $_COR_CURRENT_REFERENCE->set_name( $^N );
+                    })
                     (?:
                         (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
                     )?+
                     (?{
-                        Cor::Syntax::ASTBuilder::set_end_location(
+                        Cor::Parser::ASTBuilder::set_end_location(
                             $_COR_CURRENT_REFERENCE,
                             pos(), # XXX - need to use use just pos here, not sure why
-                            (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
                         );
                     })
                     (?&PerlOWS)
@@ -154,7 +171,11 @@ BEGIN {
         ( \{
             (?&PerlOWS)
                 ((?:
-                    (has) (?{ $_COR_CURRENT_META->add_slot( $_COR_CURRENT_SLOT = Cor::Syntax::ASTBuilder::new_slot_at( pos() - length($^N), (1+(substr( $_, 0, $+[0] ) =~ tr/\n//)) ) ); })
+                    (has) (?{
+                        $_COR_CURRENT_META->add_slot(
+                            $_COR_CURRENT_SLOT = Cor::Parser::ASTBuilder::new_slot_at( pos() - length($^N) )
+                        );
+                    })
                     (?&PerlNWS)
                         (
                             ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_SLOT->set_type( $^N ) })
@@ -170,10 +191,9 @@ BEGIN {
                         )?+
                     (?>
                         (;) (?{
-                            Cor::Syntax::ASTBuilder::set_end_location(
+                            Cor::Parser::ASTBuilder::set_end_location(
                                 $_COR_CURRENT_SLOT,
                                 pos() - length($^N),
-                                (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
                             );
                         })
                         |
@@ -182,10 +202,9 @@ BEGIN {
                             (?&PerlOWS)
                             ((?&PerlSlotDefault)) (?{ $_COR_CURRENT_SLOT->set_default( $^N ) })
                             (;) (?{
-                                Cor::Syntax::ASTBuilder::set_end_location(
+                                Cor::Parser::ASTBuilder::set_end_location(
                                     $_COR_CURRENT_SLOT,
                                     pos() - length($^N),
-                                    (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
                                 );
                             })
                         )
@@ -194,7 +213,11 @@ BEGIN {
                 )*+)
             (?&PerlOWS)
             ((?:
-                (method) (?{ $_COR_CURRENT_META->add_method( $_COR_CURRENT_METHOD = Cor::Syntax::ASTBuilder::new_method_at( pos() - length($^N), (1+(substr( $_, 0, $+[0] ) =~ tr/\n//)) ) ); })
+                (method) (?{
+                    $_COR_CURRENT_META->add_method(
+                        $_COR_CURRENT_METHOD = Cor::Parser::ASTBuilder::new_method_at( pos() - length($^N) )
+                    );
+                })
                 (?&PerlOWS)
                 ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_METHOD->set_name( $^N ); })
                 (?&PerlOWS)
@@ -213,42 +236,36 @@ BEGIN {
                 (?>
                     (\;) (?{
                         $_COR_CURRENT_METHOD->set_is_abstract( 1 );
-                        Cor::Syntax::ASTBuilder::set_end_location(
+
+                        Cor::Parser::ASTBuilder::set_end_location(
                             $_COR_CURRENT_METHOD,
                             pos() - length($^N),
-                            (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
                         );
                     })
                     |
                     ((?&PerlMethodBlock)) (?{
 
-                        # XXX - need to use use just pos here, not sure why
-                        my $pos         = pos();
-                        my $line_number = (1+(substr( $_, 0, $+[0] ) =~ tr/\n//));
-
                         $_COR_CURRENT_METHOD->set_body(
-                            Cor::Syntax::ASTBuilder::new_method_body_at(
-                                parse_method_body(
+                            Cor::Parser::ASTBuilder::new_method_body_at(
+                                _parse_method_body(
                                     $^N,
                                     $_COR_CURRENT_META
                                 )
                             )
                         );
 
-                        Cor::Syntax::ASTBuilder::set_end_location(
+                        Cor::Parser::ASTBuilder::set_end_location(
                             $_COR_CURRENT_METHOD,
-                            $pos,
-                            $line_number
+                            pos(), # XXX - need to use use just pos here, not sure why
                         );
                     })
                 )
                 (?&PerlOWS)
             )*+)
         (\}) (?{
-            Cor::Syntax::ASTBuilder::set_end_location(
+            Cor::Parser::ASTBuilder::set_end_location(
                 $_COR_CURRENT_META,
                 pos() - length($^N),
-                (1+(substr( $_, 0, $+[0] ) =~ tr/\n//))
             );
         })))
 
@@ -274,7 +291,9 @@ sub parse ($source) {
     return ($source, \@matches);
 }
 
-sub parse_method_body ($source, $meta) {
+# ...
+
+sub _parse_method_body ($source, $meta) {
 
     my @matches;
 

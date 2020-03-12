@@ -1,11 +1,11 @@
-package Cor::Syntax::AST::Reference;
+package Cor::Parser::AST::Reference;
 
 use v5.24;
 use warnings;
 use experimental qw[ signatures postderef ];
 use decorators   qw[ :accessors ];
 
-use parent 'Cor::Syntax::AST::Base';
+use parent 'Cor::Parser::AST::Base';
 
 use slots (
     name    => sub {},

@@ -1,4 +1,4 @@
-package Cor::Syntax::AST::Base;
+package Cor::Parser::AST::Base;
 
 use v5.24;
 use warnings;
@@ -35,10 +35,10 @@ sub dump ($self) {
             #    warn "WTF this ($k) should be deleted!!\n";
             #}
         }
-        elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Syntax::AST::Location') ) {
+        elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Parser::AST::Location') ) {
             delete $copy{ $k };
         }
-        elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Syntax::AST::Method::Body') ) {
+        elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Parser::AST::Method::Body') ) {
             $copy{ $k } = $copy{ $k }->dump;
         }
         elsif ( ref $copy{ $k } eq 'ARRAY' ) {
@@ -54,7 +54,7 @@ sub dump ($self) {
                 }
             } $copy{ $k }->@* ];
         }
-        elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Syntax::AST::Base') ) {
+        elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Parser::AST::Base') ) {
             # dump recursively
             $copy{ $k } = $copy{ $k }->dump;
         }

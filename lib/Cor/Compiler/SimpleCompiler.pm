@@ -4,6 +4,8 @@ use v5.24;
 use warnings;
 use experimental qw[ signatures postderef ];
 
+use roles 'Cor::Compiler';
+
 our $INDENT = '    ';
 
 our @MODULE_PREAMBLE = (
@@ -23,7 +25,7 @@ sub compile ($meta) {
 
     push @src => @MODULE_PREAMBLE;
 
-    if ( $meta->isa('Cor::Syntax::AST::Class') && $meta->has_superclasses ) {
+    if ( $meta->isa('Cor::Parser::AST::Class') && $meta->has_superclasses ) {
         push @src => '# superclasses';
         push @src => 'our @ISA; BEGIN { @ISA = qw['
             . (join ' ' => map $_->name, $meta->superclasses->@*)

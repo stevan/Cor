@@ -10,7 +10,7 @@ use Data::Dumper;
 
 BEGIN {
     use_ok('Cor');
-    use_ok('Cor::Syntax');
+    use_ok('Cor::Parser');
     use_ok('Cor::Compiler::SimpleCompiler');
 }
 
@@ -18,9 +18,9 @@ my $src = join '' => <DATA>;
 
 my $AST;
 subtest '... verify the AST object' => sub {
-    my (undef, $matches) = Cor::Syntax::parse( $src );
+    my (undef, $matches) = Cor::Parser::parse( $src );
     ($AST) = $matches->@*;
-    isa_ok($AST, 'Cor::Syntax::AST::Class');
+    isa_ok($AST, 'Cor::Parser::AST::Class');
     is($AST->name, 'Point', '... the AST is for the Point class');
 };
 
