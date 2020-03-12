@@ -4,8 +4,6 @@ use v5.24;
 use warnings;
 use experimental qw[ signatures postderef ];
 
-use roles 'Cor::Compiler';
-
 our $INDENT = '    ';
 
 our @MODULE_PREAMBLE = (
