@@ -45,6 +45,12 @@ sub has_roles   ($self) { !! $self->{roles}->@*   }
 sub has_slots   ($self) { !! $self->{slots}->@*   }
 sub has_methods ($self) { !! $self->{methods}->@* }
 
+# ...
+
+sub has_role   ($self, $name) { !! scalar grep $_->name eq $name, $self->{roles}->@*   }
+sub has_slot   ($self, $name) { !! scalar grep $_->name eq $name, $self->{slots}->@*   }
+sub has_method ($self, $name) { !! scalar grep $_->name eq $name, $self->{methods}->@* }
+
 1;
 
 __END__

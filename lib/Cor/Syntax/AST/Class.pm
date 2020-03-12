@@ -20,6 +20,8 @@ sub add_superclass ($self, $superclass) {
 
 sub has_superclasses ($self) { !! $self->{superclasses}->@* }
 
+sub has_superclass ($self, $name) { !! scalar grep $_->name eq $name, $self->{methods}->@* }
+
 1;
 
 __END__
