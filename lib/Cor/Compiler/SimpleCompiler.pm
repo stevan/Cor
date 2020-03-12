@@ -6,6 +6,13 @@ use experimental qw[ signatures postderef ];
 
 our $INDENT = '    ';
 
+our @MODULE_PREAMBLE = (
+    'use v5.24;',
+    'use warnings;',
+    'use experimental qw[ signatures postderef ];',
+    'use decorators qw[ :accessors :constructor ];',
+);
+
 sub compile ($meta) {
     my @src;
 
@@ -14,10 +21,7 @@ sub compile ($meta) {
                 . ($meta->has_version ? ' ' . ($meta->version =~ s/^v//r) : '')
                 . ' {';
 
-    push @src => 'use v5.24;';
-    push @src => 'use warnings;';
-    push @src => 'use experimental qw[ signatures postderef ];';
-    push @src => 'use decorators qw[ :accessors :constructor ];';
+    push @src => @MODULE_PREAMBLE;
 
     if ( $meta->isa('Cor::Syntax::AST::Class') && $meta->has_superclasses ) {
         push @src => '# superclasses';
