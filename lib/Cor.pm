@@ -5,7 +5,7 @@ use warnings;
 use experimental qw[ signatures postderef ];
 
 use Cor::Parser;
-use Cor::Compiler::SimpleCompiler;
+use Cor::Compiler;
 
 sub load_file ($filename) {
     open( my $fh, "<", $filename )
@@ -16,28 +16,12 @@ sub load_file ($filename) {
 sub load_filehandle ($fh) {
 
     my $original = join '' => <$fh>;
-    my $matches  = Cor::Parser::parse( $original );
-
-    my @compiled;
-    foreach my $ast ( $matches->@* ) {
-        push @compiled => Cor::Compiler::SimpleCompiler::compile( $ast );
-    }
-
-    my $compiled_source = join "\n" => @compiled;
-
-    # TODO
-    # Improve this error handling.
-    # A lot.
-    # - SL
-    local $@ = undef;
-    eval $compiled_source;
-    if ( $@ ) {
-        die $@;
-    }
+    my $asts     = Cor::Parser::parse( $original );
+    my $compiled = Cor::Compiler::compile( $asts );
 
     return (
-        $compiled_source,
-        $matches
+        $compiled,
+        $asts
     );
 }
 
