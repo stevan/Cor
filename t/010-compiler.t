@@ -10,27 +10,24 @@ use Data::Dumper;
 
 BEGIN {
     use_ok('Cor');
-    use_ok('Cor::Parser');
-    use_ok('Cor::Compiler::SimpleCompiler');
 }
 
-my $src = join '' => <DATA>;
 
-my $AST;
+my $GOT;
 subtest '... verify the AST object' => sub {
-    my (undef, $matches) = Cor::Parser::parse( $src );
-    ($AST) = $matches->@*;
-    isa_ok($AST, 'Cor::Parser::AST::Class');
-    is($AST->name, 'Point', '... the AST is for the Point class');
+    my $matches;
+    ($GOT, $matches) = Cor::load_filehandle(\*DATA);
+    my ($ast) = $matches->@*;
+    isa_ok($ast, 'Cor::Parser::AST::Class');
+    is($ast->name, 'Point', '... the AST is for the Point class');
 };
-
-my $GOT = Cor::Compiler::SimpleCompiler::compile( $AST );
 
 my $EXPECTED = 'package Point 0.01 {
 use v5.24;
 use warnings;
 use experimental qw[ signatures postderef ];
 use decorators qw[ :accessors :constructor ];
+use MOP::Util ();
 # superclasses
 our @ISA; BEGIN { @ISA = qw[UNIVERSAL::Object] }
 # slots
@@ -38,6 +35,7 @@ our %HAS; BEGIN { %HAS = (
     q[$_x] => sub { 0 },
     q[$_y] => sub { 0 },
 ) }
+UNITCHECK { MOP::Util::inherit_slots(MOP::Util::get_meta(q[Point])) }
 # methods
 sub BUILDARGS :strict(x => $_x, y => $_y);
 sub x :ro($_x);
@@ -50,11 +48,6 @@ sub dump {
 eq_or_diff($GOT, $EXPECTED, '... simple compiler working');
 
 subtest '... eval and test the compiled output', sub {
-
-    eval $GOT;
-    if ( $@ ) {
-        warn $@;
-    }
 
     my $p = Point->new( x => 10, y => 20 );
     isa_ok($p, 'Point');

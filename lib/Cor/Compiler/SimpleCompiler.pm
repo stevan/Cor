@@ -11,6 +11,7 @@ our @MODULE_PREAMBLE = (
     'use warnings;',
     'use experimental qw[ signatures postderef ];',
     'use decorators qw[ :accessors :constructor ];',
+    'use MOP::Util ();',
 );
 
 sub compile ($meta) {
@@ -35,6 +36,13 @@ sub compile ($meta) {
         push @src => 'our @DOES; BEGIN { @DOES = qw['
             . (join ' ' => map $_->name, $meta->roles->@*)
         . '] }';
+        # TODO
+        # Improve UNITCHECK handling so
+        # that we can do them in a single
+        # block and not multiple blocks
+        # each doing very similar things
+        # - SL
+        push @src => 'UNITCHECK { MOP::Util::compose_roles(MOP::Util::get_meta(q[' . $meta->name . '])) }';
     }
 
     if ( $meta->has_slots ) {
@@ -47,6 +55,11 @@ sub compile ($meta) {
                 . ' },'
         } $meta->slots->@*;
         push @src => ') }';
+        # TODO
+        # see TODO above about other
+        # UNITCHECK block
+        # - SL
+        push @src => 'UNITCHECK { MOP::Util::inherit_slots(MOP::Util::get_meta(q[' . $meta->name . '])) }';
     }
 
     if ( $meta->has_methods ) {
