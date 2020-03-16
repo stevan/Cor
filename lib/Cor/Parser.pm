@@ -26,6 +26,8 @@ BEGIN {
                 (?>
                     (\$\!(?&PerlIdentifier))
                     |
+                    (\$\.(?&PerlIdentifier))
+                    |
                     (\$(?&PerlIdentifier))
                     |
                     (?&PerlIdentifier)
