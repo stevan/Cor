@@ -104,7 +104,7 @@ sub compile_method_body ($body) {
             $m->{start} + $offset,
             length( $m->{match} ),
         ) = $patch;
-        $offset = length( $patch ) - length( $m->{match} );
+        $offset += length( $patch ) - length( $m->{match} );
     }
 
     return $source;
