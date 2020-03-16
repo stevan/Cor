@@ -14,7 +14,8 @@ BEGIN {
 
 my $src = join '' => <DATA>;
 
-my (undef, $matches) = Cor::Parser::parse( $src );
+my $matches = Cor::Parser::parse( $src );
+
 my ($dumpable, $point, $point_3d) = $matches->@*;
 
 # role definition

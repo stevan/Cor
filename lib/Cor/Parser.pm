@@ -283,6 +283,7 @@ sub parse ($source) {
 
     while ( $source =~ /$COR_GRAMMAR/gx ) {
 
+        # TODO: improve error handling here - SL
         if ( $PPR::ERROR ) {
             warn $PPR::ERROR;
         }
@@ -290,7 +291,7 @@ sub parse ($source) {
         push @matches => $_COR_CURRENT_META;
     }
 
-    return ($source, \@matches);
+    return \@matches;
 }
 
 # ...
@@ -304,6 +305,7 @@ sub _parse_method_body ($source, $meta) {
 
         next unless $meta->has_slot( $match );
 
+        # TODO: improve error handling here - SL
         if ( $PPR::ERROR ) {
             warn $PPR::ERROR;
         }
