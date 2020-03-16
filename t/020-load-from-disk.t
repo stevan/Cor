@@ -19,26 +19,26 @@ my $ROOT = './t/lib/';
 my %RESULTS;
 
 subtest '... compiles all the classes together properly' => sub {
-    @{ $RESULTS{EQ}          }{qw[ src matches ]} = Cor::load_file( $ROOT . "Eq.pm" );
-    @{ $RESULTS{PRINTABLE}   }{qw[ src matches ]} = Cor::load_file( $ROOT . "Printable.pm" );
-    @{ $RESULTS{COMPARABLE}  }{qw[ src matches ]} = Cor::load_file( $ROOT . "Comparable.pm" );
-    @{ $RESULTS{CURRENCY_US} }{qw[ src matches ]} = Cor::load_file( $ROOT . "Currency/US.pm" );
 
-    ok($RESULTS{EQ}->{src}, '... got source for EQ');
-    #warn $RESULTS{EQ}->_src;
-    isa_ok($RESULTS{EQ}->{matches}->[0], 'Cor::Parser::AST::Role');
+    foreach my $pkg ( qw[ Eq Printable Comparable Currency::US ] ) {
+        @{ $RESULTS{ $pkg } }{qw[ src matches ]} = Cor::load( $pkg, $ROOT );
+    }
 
-    ok($RESULTS{PRINTABLE}->{src}, '... got source for PRINTABLE');
-    #warn $RESULTS{PRINTABLE}->{src};
-    isa_ok($RESULTS{PRINTABLE}->{matches}->[0], 'Cor::Parser::AST::Role');
+    ok($RESULTS{'Eq'}->{src}, '... got source for Eq');
+    #warn $RESULTS{'Eq'}->_src;
+    isa_ok($RESULTS{'Eq'}->{matches}->[0], 'Cor::Parser::AST::Role');
 
-    ok($RESULTS{COMPARABLE}->{src}, '... got source for COMPARABLE');
-    #warn $RESULTS{COMPARABLE}->{src};
-    isa_ok($RESULTS{COMPARABLE}->{matches}->[0], 'Cor::Parser::AST::Role');
+    ok($RESULTS{'Printable'}->{src}, '... got source for Printable');
+    #warn $RESULTS{'Printable'}->{src};
+    isa_ok($RESULTS{'Printable'}->{matches}->[0], 'Cor::Parser::AST::Role');
 
-    ok($RESULTS{CURRENCY_US}->{src}, '... got source for CURRENCY_US');
-    #warn $RESULTS{CURRENCY_US}->{src};
-    isa_ok($RESULTS{CURRENCY_US}->{matches}->[0], 'Cor::Parser::AST::Class');
+    ok($RESULTS{'Comparable'}->{src}, '... got source for Comparable');
+    #warn $RESULTS{'Comparable'}->{src};
+    isa_ok($RESULTS{'Comparable'}->{matches}->[0], 'Cor::Parser::AST::Role');
+
+    ok($RESULTS{'Currency::US'}->{src}, '... got source for Currency::US');
+    #warn $RESULTS{Currency::US}->{src};
+    isa_ok($RESULTS{'Currency::US'}->{matches}->[0], 'Cor::Parser::AST::Class');
 };
 
 subtest '... does the compiled classes work together properly' => sub {

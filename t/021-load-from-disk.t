@@ -19,16 +19,18 @@ my $ROOT = './t/lib/';
 my %RESULTS;
 
 subtest '... compiles all the classes together properly' => sub {
-    @{ $RESULTS{LINKED_LIST}      }{qw[ src matches ]} = Cor::load_file( $ROOT . "Collections/LinkedList.pm" );
-    @{ $RESULTS{LINKED_LIST_NODE} }{qw[ src matches ]} = Cor::load_file( $ROOT . "Collections/LinkedList/Node.pm" );
 
-    ok($RESULTS{LINKED_LIST}->{src}, '... got source for LINKED_LIST');
-    #warn $RESULTS{LINKED_LIST}->{src};
-    isa_ok($RESULTS{LINKED_LIST}->{matches}->[0], 'Cor::Parser::AST::Class');
+    foreach my $pkg ( qw[ Collections::LinkedList Collections::LinkedList::Node ] ) {
+        @{ $RESULTS{ $pkg } }{qw[ src matches ]} = Cor::load( $pkg, $ROOT );
+    }
 
-    ok($RESULTS{LINKED_LIST_NODE}->{src}, '... got source for LINKED_LIST_NODE');
-    #warn $RESULTS{LINKED_LIST_NODE}->{src};
-    isa_ok($RESULTS{LINKED_LIST_NODE}->{matches}->[0], 'Cor::Parser::AST::Class');
+    ok($RESULTS{'Collections::LinkedList'}->{src}, '... got source for Collections::LinkedList');
+    #warn $RESULTS{'Collections::LinkedList'}->{src};
+    isa_ok($RESULTS{'Collections::LinkedList'}->{matches}->[0], 'Cor::Parser::AST::Class');
+
+    ok($RESULTS{'Collections::LinkedList::Node'}->{src}, '... got source for Collections::LinkedList::Node');
+    #warn $RESULTS{'Collections::LinkedList::Node'}->{src};
+    isa_ok($RESULTS{'Collections::LinkedList::Node'}->{matches}->[0], 'Cor::Parser::AST::Class');
 };
 
 subtest '... does the compiled classes work together properly' => sub {

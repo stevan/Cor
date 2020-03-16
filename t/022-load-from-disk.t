@@ -19,16 +19,18 @@ my $ROOT = './t/lib/';
 my %RESULTS;
 
 subtest '... compiles all the classes together properly' => sub {
-    @{ $RESULTS{BANK_ACCOUNT}    }{qw[ src matches ]} = Cor::load_file( $ROOT . "Finance/BankAccount.pm" );
-    @{ $RESULTS{CHECKING_ACCOUNT}}{qw[ src matches ]} = Cor::load_file( $ROOT . "Finance/CheckingAccount.pm" );
 
-    ok($RESULTS{BANK_ACCOUNT}->{src}, '... got source for BANK_ACCOUNT');
-    #warn $RESULTS{BANK_ACCOUNT}->{src};
-    isa_ok($RESULTS{BANK_ACCOUNT}->{matches}->[0], 'Cor::Parser::AST::Class');
+    foreach my $pkg ( qw[ Finance::BankAccount Finance::CheckingAccount ] ) {
+        @{ $RESULTS{ $pkg } }{qw[ src matches ]} = Cor::load( $pkg, $ROOT );
+    }
 
-    ok($RESULTS{CHECKING_ACCOUNT}->{src}, '... got source for CHECKING_ACCOUNT');
-    #warn $RESULTS{CHECKING_ACCOUNT}->{src};
-    isa_ok($RESULTS{CHECKING_ACCOUNT}->{matches}->[0], 'Cor::Parser::AST::Class');
+    ok($RESULTS{'Finance::BankAccount'}->{src}, '... got source for BANK_ACCOUNT');
+    #warn $RESULTS{'Finance::BankAccount'}->{src};
+    isa_ok($RESULTS{'Finance::BankAccount'}->{matches}->[0], 'Cor::Parser::AST::Class');
+
+    ok($RESULTS{'Finance::CheckingAccount'}->{src}, '... got source for CHECKING_ACCOUNT');
+    #warn $RESULTS{'Finance::CheckingAccount'}->{src};
+    isa_ok($RESULTS{'Finance::CheckingAccount'}->{matches}->[0], 'Cor::Parser::AST::Class');
 
 };
 

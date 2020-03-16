@@ -7,6 +7,13 @@ use experimental qw[ signatures postderef ];
 use Cor::Parser;
 use Cor::Compiler;
 
+sub load ($package_name, $lib) {
+
+    my $package_path = join '/' => split /\:\:/ => $package_name;
+
+    return load_file( $lib . $package_path . '.pm' );
+}
+
 sub load_file ($filename) {
     open( my $fh, "<", $filename )
         or die "Could not open file:[$filename] because:[$!]";
