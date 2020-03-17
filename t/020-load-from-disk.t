@@ -37,7 +37,7 @@ subtest '... compiles all the classes together properly' => sub {
     isa_ok($RESULTS{'Comparable'}->{matches}->[0], 'Cor::Parser::AST::Role');
 
     ok($RESULTS{'Currency::US'}->{src}, '... got source for Currency::US');
-    #warn $RESULTS{Currency::US}->{src};
+    #warn $RESULTS{'Currency::US'}->{src};
     isa_ok($RESULTS{'Currency::US'}->{matches}->[0], 'Cor::Parser::AST::Class');
 };
 

@@ -18,11 +18,20 @@ sub dependencies ($self) {
 sub preamble ($self) {
     return (
         $self->next::method,
-        '# superclasses',
-        'our @ISA; BEGIN { @ISA = qw[',
-            (map $_->name, $self->{ast}->superclasses->@*),
-        '] }',
+        $self->generate_superclasses,
     )
+}
+
+sub generate_superclasses ($self) {
+    my $meta = $self->{ast};
+
+    my @superclasses = map $_->name, $self->{ast}->superclasses->@*;
+
+
+    my @src;
+    push @src => '# superclasses';
+    push @src => 'our @ISA; BEGIN { @ISA = qw['.(join ' ' => @superclasses).'] }';
+    return @src;
 }
 
 1;

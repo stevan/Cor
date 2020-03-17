@@ -9,6 +9,8 @@ use parent 'UNIVERSAL::Object';
 
 use slots (
     ast => sub {},
+    # ...
+    _UNITCHECK => sub { [] }
 );
 
 sub dependencies ($self) {
@@ -21,7 +23,7 @@ sub preamble ($self) {
         'use warnings;',
         'use experimental qw[ signatures postderef ];',
         'use decorators qw[ :accessors :constructor ];',
-        'use MOP::Util ();',
+        'use MOP;',
     )
 }
 
@@ -49,6 +51,14 @@ sub generate_source ($self) {
         push @src => $self->generate_methods;
     }
 
+    if ( scalar $self->{_UNITCHECK}->@* ) {
+        push @src => '# finalize';
+        push @src => 'UNITCHECK {';
+        push @src => 'my $META = MOP::Util::get_meta(q[' . $meta->name . ']);';
+        push @src => $self->{_UNITCHECK}->@*;
+        push @src => '}';
+    }
+
     push @src => '}';
 
     return join "\n" => @src;
@@ -57,23 +67,20 @@ sub generate_source ($self) {
 sub generate_roles ($self) {
     my $meta = $self->{ast};
 
+    push $self->{_UNITCHECK}->@* => 'MOP::Util::compose_roles($META);';
+
     my @src;
     push @src => '# roles';
     push @src => 'our @DOES; BEGIN { @DOES = qw['
-        . (join ' ' => map $_->name, $meta->roles->@*)
-    . '] }';
-    # TODO
-    # Improve UNITCHECK handling so
-    # that we can do them in a single
-    # block and not multiple blocks
-    # each doing very similar things
-    # - SL
-    push @src => 'UNITCHECK { MOP::Util::compose_roles(MOP::Util::get_meta(q[' . $meta->name . '])) }';
+        .(join ' ' => map $_->name, $meta->roles->@*)
+    .'] }';
     return @src;
 }
 
 sub generate_slots ($self) {
     my $meta = $self->{ast};
+
+    push $self->{_UNITCHECK}->@* => 'MOP::Util::inherit_slots($META);';
 
     my @src;
     push @src => '# slots';
@@ -82,11 +89,6 @@ sub generate_slots ($self) {
     '    q[' . $_->name . '] => sub { ' . ($_->has_default ? $_->default : '') . ' },'
     } $meta->slots->@*;
     push @src => ') }';
-    # TODO
-    # see TODO above about other
-    # UNITCHECK block
-    # - SL
-    push @src => 'UNITCHECK { MOP::Util::inherit_slots(MOP::Util::get_meta(q[' . $meta->name . '])) }';
     return @src;
 }
 

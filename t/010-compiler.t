@@ -27,17 +27,14 @@ use v5.24;
 use warnings;
 use experimental qw[ signatures postderef ];
 use decorators qw[ :accessors :constructor ];
-use MOP::Util ();
+use MOP;
 # superclasses
-our @ISA; BEGIN { @ISA = qw[
-UNIVERSAL::Object
-] }
+our @ISA; BEGIN { @ISA = qw[UNIVERSAL::Object] }
 # slots
 our %HAS; BEGIN { %HAS = (
     q[$_x] => sub { 0 },
     q[$_y] => sub { 0 },
 ) }
-UNITCHECK { MOP::Util::inherit_slots(MOP::Util::get_meta(q[Point])) }
 # methods
 sub BUILDARGS :strict(x => $_x, y => $_y);
 sub x :ro($_x);
@@ -45,6 +42,11 @@ sub y :ro($_y);
 sub dump {
         return +{ x => $_[0]->{q[$_x]}, y => $_[0]->{q[$_y]} };
     }
+# finalize
+UNITCHECK {
+my $META = MOP::Util::get_meta(q[Point]);
+MOP::Util::inherit_slots($META);
+}
 }';
 
 eq_or_diff($GOT, $EXPECTED, '... simple compiler working');
