@@ -1,5 +1,5 @@
 
-class Currency::US isa UNIVERSAL::Object::Immutable does Comparable does Printable {
+class Currency::US does Comparable does Printable {
 
     has $!amount = 0;
 

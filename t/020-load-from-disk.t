@@ -45,7 +45,6 @@ subtest '... does the compiled classes work together properly' => sub {
 
     my $dollar = Currency::US->new( amount => 10 );
     ok($dollar->isa( 'Currency::US' ), '... the dollar is a Currency::US instance');
-    ok($dollar->isa( 'UNIVERSAL::Object::Immutable' ), '... the dollar is a Currency::US instance');
     ok($dollar->roles::DOES( 'Eq' ), '... the dollar does the Eq role');
     ok($dollar->roles::DOES( 'Comparable' ), '... the dollar does the Comparable role');
     ok($dollar->roles::DOES( 'Printable' ), '... the dollar does the Printable role');

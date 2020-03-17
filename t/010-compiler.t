@@ -66,7 +66,7 @@ done_testing;
 
 __DATA__
 
-class Point v0.01 isa UNIVERSAL::Object {
+class Point v0.01 {
 
     has $_x = 0;
     has $_y = 0;

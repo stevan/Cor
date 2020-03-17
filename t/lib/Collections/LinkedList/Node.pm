@@ -1,5 +1,6 @@
 
-class Collections::LinkedList::Node isa UNIVERSAL::Object {
+class Collections::LinkedList::Node {
+
     has $!previous;
     has $!next;
     has $!value;

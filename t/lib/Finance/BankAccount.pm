@@ -1,4 +1,4 @@
-class Finance::BankAccount isa UNIVERSAL::Object {
+class Finance::BankAccount {
 
     has $!balance = 0;
 

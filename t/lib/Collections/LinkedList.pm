@@ -1,4 +1,4 @@
-class Collections::LinkedList isa UNIVERSAL::Object {
+class Collections::LinkedList {
 
     has $!head;
     has $!tail;

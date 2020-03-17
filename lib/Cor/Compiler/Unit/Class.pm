@@ -27,6 +27,8 @@ sub generate_superclasses ($self) {
 
     my @superclasses = map $_->name, $self->{ast}->superclasses->@*;
 
+    push @superclasses => 'UNIVERSAL::Object'
+        if scalar @superclasses == 0;
 
     my @src;
     push @src => '# superclasses';
