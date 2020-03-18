@@ -65,7 +65,7 @@ sub generate_source ($self) {
     if ( scalar $self->{_UNITCHECK}->@* ) {
         push @src => '# finalize';
         push @src => 'UNITCHECK {';
-        push @src => 'my $META = MOP::Util::get_meta(q[' . $meta->name . ']);';
+        push @src => 'my $META = MOP::Util::get_meta(__PACKAGE__);';
         push @src => $self->{_UNITCHECK}->@*;
         push @src => '}';
     }

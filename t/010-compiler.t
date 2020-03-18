@@ -44,7 +44,7 @@ sub dump {
     }
 # finalize
 UNITCHECK {
-my $META = MOP::Util::get_meta(q[Point]);
+my $META = MOP::Util::get_meta(__PACKAGE__);
 MOP::Util::inherit_slots($META);
 }
 }';
