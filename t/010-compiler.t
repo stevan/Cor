@@ -10,8 +10,6 @@ use Data::Dumper;
 
 BEGIN {
     use_ok('Cor');
-    use_ok('Cor::Parser');
-    use_ok('Cor::Compiler');
 }
 
 
