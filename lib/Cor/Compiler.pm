@@ -20,14 +20,6 @@ sub compile ($asts) {
         $_->generate_source
     } @units;
 
-    # TODO:
-    # add a compilation unit
-    # seperator here, think
-    # multi-part mime messages
-    # or something, add some
-    # metadata to the compiled
-    # product
-    # - SL
     return join "\n" => @compiled;
 }
 
