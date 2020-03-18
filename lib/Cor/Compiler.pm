@@ -15,7 +15,26 @@ sub compile ($asts) {
             : Cor::Compiler::Unit::Role->new( ast => $_ )
     } $asts->@*;
 
-    my @compiled = map {
+    my @dependencies = map {
+        $_->dependencies
+    } @units;
+
+    #use Data::Dumper;
+    #warn Dumper \@dependencies;
+
+    my @compiled;
+
+    if ( @dependencies ) {
+        push @compiled => 'BEGIN {';
+        push @compiled => 'use Cor;';
+        push @compiled => map {
+            'Cor::load(q['.$_->name.']);'
+        } @dependencies;
+        push @compiled => '}';
+        #warn join "\n" => @compiled;
+    }
+
+    push @compiled => map {
         $_->generate_source
     } @units;
 

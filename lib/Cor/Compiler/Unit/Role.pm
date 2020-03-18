@@ -32,16 +32,6 @@ sub generate_source ($self) {
 
     my @src;
 
-    if ( my @dependencies = $self->dependencies ) {
-        push @src => 'BEGIN {';
-        push @src => 'use Cor;';
-        push @src => map {
-            'Cor::load(q['.$_->name.']);'
-        } @dependencies;
-        push @src => '}';
-        #warn join "\n" => @src;
-    }
-
     push @src => 'package '
                 . $meta->name
                 . ($meta->has_version ? ' ' . ($meta->version =~ s/^v//r) : '')
