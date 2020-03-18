@@ -10,31 +10,17 @@ use Data::Dumper;
 
 use roles ();
 
+use lib './t/lib';
+
 BEGIN {
     use_ok('Cor');
 }
-
-my $ROOT = './t/lib/';
 
 my %RESULTS;
 
 subtest '... compiles all the classes together properly' => sub {
 
-    foreach my $pkg ( qw[ Eq Printable Comparable Currency::US ] ) {
-        @{ $RESULTS{ $pkg } }{qw[ src matches ]} = Cor::load( $pkg, $ROOT );
-    }
-
-    ok($RESULTS{'Eq'}->{src}, '... got source for Eq');
-    #warn $RESULTS{'Eq'}->_src;
-    isa_ok($RESULTS{'Eq'}->{matches}->[0], 'Cor::Parser::AST::Role');
-
-    ok($RESULTS{'Printable'}->{src}, '... got source for Printable');
-    #warn $RESULTS{'Printable'}->{src};
-    isa_ok($RESULTS{'Printable'}->{matches}->[0], 'Cor::Parser::AST::Role');
-
-    ok($RESULTS{'Comparable'}->{src}, '... got source for Comparable');
-    #warn $RESULTS{'Comparable'}->{src};
-    isa_ok($RESULTS{'Comparable'}->{matches}->[0], 'Cor::Parser::AST::Role');
+    @{ $RESULTS{'Currency::US'} }{qw[ src matches ]} = Cor::load( 'Currency::US' );
 
     ok($RESULTS{'Currency::US'}->{src}, '... got source for Currency::US');
     #warn $RESULTS{'Currency::US'}->{src};

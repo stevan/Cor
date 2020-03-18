@@ -10,18 +10,18 @@ use Data::Dumper;
 
 use roles ();
 
+use lib './t/lib';
+
 BEGIN {
     use_ok('Cor');
 }
-
-my $ROOT = './t/lib/';
 
 my %RESULTS;
 
 subtest '... compiles all the classes together properly' => sub {
 
     foreach my $pkg ( qw[ Finance::BankAccount Finance::CheckingAccount ] ) {
-        @{ $RESULTS{ $pkg } }{qw[ src matches ]} = Cor::load( $pkg, $ROOT );
+        @{ $RESULTS{ $pkg } }{qw[ src matches ]} = Cor::load( $pkg );
     }
 
     ok($RESULTS{'Finance::BankAccount'}->{src}, '... got source for BANK_ACCOUNT');

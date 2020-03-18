@@ -10,18 +10,18 @@ use Data::Dumper;
 
 use roles ();
 
+use lib './t/lib';
+
 BEGIN {
     use_ok('Cor');
 }
-
-my $ROOT = './t/lib/';
 
 my %RESULTS;
 
 subtest '... compiles all the classes together properly' => sub {
 
     foreach my $pkg ( qw[ Collections::LinkedList Collections::LinkedList::Node ] ) {
-        @{ $RESULTS{ $pkg } }{qw[ src matches ]} = Cor::load( $pkg, $ROOT );
+        @{ $RESULTS{ $pkg } }{qw[ src matches ]} = Cor::load( $pkg );
     }
 
     ok($RESULTS{'Collections::LinkedList'}->{src}, '... got source for Collections::LinkedList');
