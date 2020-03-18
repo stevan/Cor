@@ -35,16 +35,8 @@ sub load ($package_name) {
 
     $INC{$package_path} = $full_package_path;
 
-    return load_file( $full_package_path );
-}
-
-sub load_file ($filename) {
-    open( my $fh, "<", $filename )
-        or die "Could not open file:[$filename] because:[$!]";
-    return load_filehandle( $fh );
-}
-
-sub load_filehandle ($fh) {
+    open( my $fh, "<", $full_package_path )
+        or die "Could not open [$package_name] at [$full_package_path] because [$!]";
 
     my $original = join '' => <$fh>;
     my $asts     = Cor::Parser::parse( $original );
