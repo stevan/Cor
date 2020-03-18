@@ -91,8 +91,6 @@ sub generate_roles ($self) {
 sub generate_slots ($self) {
     my $meta = $self->{ast};
 
-    push $self->{_UNITCHECK}->@* => 'MOP::Util::inherit_slots($META);';
-
     my @src;
     push @src => '# slots';
     push @src => 'our %HAS; BEGIN { %HAS = (';

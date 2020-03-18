@@ -25,10 +25,17 @@ sub preamble ($self) {
 sub generate_superclasses ($self) {
     my $meta = $self->{ast};
 
+    # we always want to make sure we inherit
+    # slots when they are available
+    push $self->{_UNITCHECK}->@* => 'MOP::Util::inherit_slots($META);';
+
     my @superclasses = map $_->name, $self->{ast}->superclasses->@*;
 
-    push @superclasses => 'UNIVERSAL::Object'
-        if scalar @superclasses == 0;
+    # if there is no superclass ...
+    if ( scalar @superclasses == 0 ) {
+        # make it a UNIVERSAL::Object subclass
+        push @superclasses => 'UNIVERSAL::Object';
+    }
 
     my @src;
     push @src => '# superclasses';
