@@ -17,7 +17,10 @@ sub compile ($asts) {
 
     my @compiled = map {
         _compile_dependencies( $_->dependencies ),
-        $_->generate_source
+        $_->generate_source,
+        'BEGIN {',
+            '$INC{q['.(join '/' => split /\:\:/ => $_->name).'.pm]} = 1;',
+        '}',
     } @units;
 
     return join "\n" => @compiled;
