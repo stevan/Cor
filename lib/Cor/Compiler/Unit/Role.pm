@@ -3,12 +3,11 @@ package Cor::Compiler::Unit::Role;
 use v5.24;
 use warnings;
 use experimental qw[ signatures postderef ];
-use decorators   qw[ :accessors ];
 
 use parent 'UNIVERSAL::Object';
+use roles  'Cor::Compiler::Unit';
 
 use slots (
-    ast => sub {},
     # ...
     _UNITCHECK => sub { [] }
 );
