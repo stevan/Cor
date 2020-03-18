@@ -15,26 +15,8 @@ sub compile ($asts) {
             : Cor::Compiler::Unit::Role->new( ast => $_ )
     } $asts->@*;
 
-    my @dependencies = map {
-        $_->dependencies
-    } @units;
-
-    #use Data::Dumper;
-    #warn Dumper \@dependencies;
-
-    my @compiled;
-
-    if ( @dependencies ) {
-        push @compiled => 'BEGIN {';
-        push @compiled => 'use Cor;';
-        push @compiled => map {
-            'Cor::load(q['.$_->name.']);'
-        } @dependencies;
-        push @compiled => '}';
-        #warn join "\n" => @compiled;
-    }
-
-    push @compiled => map {
+    my @compiled = map {
+        _compile_dependencies( $_->dependencies ),
         $_->generate_source
     } @units;
 
@@ -47,6 +29,19 @@ sub compile ($asts) {
     # product
     # - SL
     return join "\n" => @compiled;
+}
+
+sub _compile_dependencies ( @dependencies ) {
+    return unless @dependencies;
+
+    my @src;
+    push @src => 'BEGIN {';
+    push @src => 'use Cor;';
+    push @src => map {
+        'Cor::load(q['.$_->name.']);'
+    } @dependencies;
+    push @src => '}';
+    return @src;
 }
 
 1;
