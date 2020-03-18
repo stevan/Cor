@@ -57,6 +57,8 @@ eq_or_diff($GOT, $EXPECTED, '... simple compiler working');
 
 subtest '... eval and test the compiled output', sub {
 
+    Cor::Evaluator::evaluate( $GOT );
+
     my $p = Point->new( x => 10, y => 20 );
     isa_ok($p, 'Point');
 

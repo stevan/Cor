@@ -6,6 +6,7 @@ use experimental qw[ signatures postderef ];
 
 use Cor::Parser;
 use Cor::Compiler;
+use Cor::Evaluator;
 
 sub load ($package_name) {
 
@@ -41,6 +42,8 @@ sub load ($package_name) {
     my $original = join '' => <$fh>;
     my $asts     = Cor::Parser::parse( $original );
     my $compiled = Cor::Compiler::compile( $asts );
+
+    Cor::Evaluator::evaluate( $compiled );
 
     return (
         $compiled,
