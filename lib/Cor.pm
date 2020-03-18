@@ -31,7 +31,7 @@ sub load ($package_name) {
         undef $full_package_path;
     }
 
-    die "Could not find [$package_name] in \@INC paths"
+    die "Could not find [$package_path] in \@INC paths"
         if not defined $full_package_path;
 
     $INC{$package_path} = $full_package_path;
