@@ -15,6 +15,11 @@ sub dependencies ($self) {
 sub preamble ($self) {
     return (
         $self->next::method,
+        # make sure UNIVERSAL::Object is loaded
+        # if we are going to make use of it
+        (scalar $self->{ast}->superclasses->@* == 0
+            ? 'use UNIVERSAL::Object;'
+            : ()),
         $self->generate_superclasses,
     )
 }

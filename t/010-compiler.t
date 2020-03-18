@@ -32,6 +32,7 @@ use warnings;
 use experimental qw[ signatures postderef ];
 use decorators qw[ :accessors :constructor ];
 use MOP;
+use UNIVERSAL::Object;
 # superclasses
 our @ISA; BEGIN { @ISA = qw[UNIVERSAL::Object] }
 # slots
