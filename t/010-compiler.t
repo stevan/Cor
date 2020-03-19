@@ -10,6 +10,7 @@ use Data::Dumper;
 
 BEGIN {
     use_ok('Cor');
+    use_ok('Cor::Evaluator');
 }
 
 
