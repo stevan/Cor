@@ -52,9 +52,7 @@ UNITCHECK {
 my $META = MOP::Util::get_meta(__PACKAGE__);
 MOP::Util::inherit_slots($META);
 }
-}
-BEGIN {
-$INC{q[Point.pm]} = 1;
+1;
 }';
 
 eq_or_diff($GOT, $EXPECTED, '... simple compiler working');
@@ -62,8 +60,6 @@ eq_or_diff($GOT, $EXPECTED, '... simple compiler working');
 subtest '... eval and test the compiled output', sub {
 
     Cor::Evaluator::evaluate( $GOT );
-
-    require_ok('Point');
 
     my $p = Point->new( x => 10, y => 20 );
     isa_ok($p, 'Point');

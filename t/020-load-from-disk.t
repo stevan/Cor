@@ -16,18 +16,18 @@ BEGIN {
     use_ok('Cor');
 }
 
-my %RESULTS;
+my @pmc_files_to_delete;
 
 subtest '... compiles all the classes together properly' => sub {
-
-    @{ $RESULTS{'Currency::US'} }{qw[ src matches ]} = Cor::load( 'Currency::US' );
-
-    ok($RESULTS{'Currency::US'}->{src}, '... got source for Currency::US');
-    #warn $RESULTS{'Currency::US'}->{src};
-    isa_ok($RESULTS{'Currency::US'}->{matches}->[0], 'Cor::Parser::AST::Class');
+    ok((push @pmc_files_to_delete => Cor::build( 'Eq' )),           '... loaded the Eq class with Cor');
+    ok((push @pmc_files_to_delete => Cor::build( 'Printable' )),    '... loaded the Printable class with Cor');
+    ok((push @pmc_files_to_delete => Cor::build( 'Comparable' )),   '... loaded the Comparable class with Cor');
+    ok((push @pmc_files_to_delete => Cor::build( 'Currency::US' )), '... loaded the Currency::US class with Cor');
 };
 
 subtest '... does the compiled classes work together properly' => sub {
+
+    require_ok('Currency::US');
 
     my $dollar = Currency::US->new( amount => 10 );
     ok($dollar->isa( 'Currency::US' ), '... the dollar is a Currency::US instance');
@@ -58,5 +58,7 @@ subtest '... does the compiled classes work together properly' => sub {
     ok(Currency::US->new( amount => 10 )->greater_than_or_equal_to( $dollar ), '... 10 is greater than or equal to 10');
 
 };
+
+unlink $_ foreach @pmc_files_to_delete;
 
 done_testing;

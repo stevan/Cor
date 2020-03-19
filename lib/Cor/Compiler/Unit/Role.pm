@@ -59,6 +59,7 @@ sub generate_source ($self) {
         push @src => '}';
     }
 
+    push @src => '1;';
     push @src => '}';
 
     return join "\n" => @src;

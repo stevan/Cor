@@ -8,12 +8,9 @@ use Cor::Parser;
 use Cor::Compiler;
 use Cor::Evaluator;
 
-sub load ($package_name) {
+sub build ($package_name) {
 
     my $package_path = (join '/' => split /\:\:/ => $package_name) . '.pm';
-
-    # do not reload if we have them
-    return (undef, undef) if exists $INC{$package_path};
 
     my $full_package_path;
 
@@ -34,21 +31,22 @@ sub load ($package_name) {
     die "Could not find [$package_path] in \@INC paths"
         if not defined $full_package_path;
 
-    $INC{$package_path} = $full_package_path;
-
     open( my $fh, "<", $full_package_path )
         or die "Could not open [$package_name] at [$full_package_path] because [$!]";
-
     my $original = join '' => <$fh>;
+    close $fh;
+
     my $asts     = Cor::Parser::parse( $original );
     my $compiled = Cor::Compiler::compile( $asts );
+    my $pmc_path = $full_package_path.'c';
 
-    Cor::Evaluator::evaluate( $compiled );
+    open( my $pmc, ">", $pmc_path )
+        or die "Could not open [$pmc_path] because [$!]";
+    print $pmc $compiled;
+    close $pmc
+        or die "Could not close [$pmc_path] because [$!]";;
 
-    return (
-        $compiled,
-        $asts
-    );
+    return $pmc_path;
 }
 
 1;

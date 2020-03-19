@@ -16,24 +16,17 @@ BEGIN {
     use_ok('Cor');
 }
 
-my %RESULTS;
+my @pmc_files_to_delete;
 
 subtest '... compiles all the classes together properly' => sub {
-
-    foreach my $pkg ( qw[ Collections::LinkedList Collections::LinkedList::Node ] ) {
-        @{ $RESULTS{ $pkg } }{qw[ src matches ]} = Cor::load( $pkg );
-    }
-
-    ok($RESULTS{'Collections::LinkedList'}->{src}, '... got source for Collections::LinkedList');
-    #warn $RESULTS{'Collections::LinkedList'}->{src};
-    isa_ok($RESULTS{'Collections::LinkedList'}->{matches}->[0], 'Cor::Parser::AST::Class');
-
-    ok($RESULTS{'Collections::LinkedList::Node'}->{src}, '... got source for Collections::LinkedList::Node');
-    #warn $RESULTS{'Collections::LinkedList::Node'}->{src};
-    isa_ok($RESULTS{'Collections::LinkedList::Node'}->{matches}->[0], 'Cor::Parser::AST::Class');
+    ok((push @pmc_files_to_delete => Cor::build( 'Collections::LinkedList' )),       '... loaded the Collections::LinkedList class with Cor');
+    ok((push @pmc_files_to_delete => Cor::build( 'Collections::LinkedList::Node' )), '... loaded the Collections::LinkedList::Node class with Cor');
 };
 
 subtest '... does the compiled classes work together properly' => sub {
+
+    require_ok('Collections::LinkedList');
+    require_ok('Collections::LinkedList::Node');
 
     my $ll = Collections::LinkedList->new();
 
@@ -68,5 +61,7 @@ subtest '... does the compiled classes work together properly' => sub {
 
     is($ll->sum, 49, '... things sum correctly');
 };
+
+unlink $_ foreach @pmc_files_to_delete;
 
 done_testing;

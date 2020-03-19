@@ -19,28 +19,30 @@ subtest '... verify the AST object' => sub {
     my $original = join '' => <DATA>;
     my $matches  = Cor::Parser::parse( $original );
 
-    my $ast = $matches->[0];
-    isa_ok($ast, 'Cor::Parser::AST::Role');
-    is($ast->name, 'Dumpable', '... the AST is for the Dumpable role');
-
-    my $ast = $matches->[1];
-    isa_ok($ast, 'Cor::Parser::AST::Class');
-    is($ast->name, 'Point', '... the AST is for the Point class');
-
-    my $ast = $matches->[2];
-    isa_ok($ast, 'Cor::Parser::AST::Class');
-    is($ast->name, 'Point3D', '... the AST is for the Point3D class');
+    {
+        my $ast = $matches->[0];
+        isa_ok($ast, 'Cor::Parser::AST::Role');
+        is($ast->name, 'Dumpable', '... the AST is for the Dumpable role');
+    }
+    {
+        my $ast = $matches->[1];
+        isa_ok($ast, 'Cor::Parser::AST::Class');
+        is($ast->name, 'Point', '... the AST is for the Point class');
+    }
+    {
+        my $ast = $matches->[2];
+        isa_ok($ast, 'Cor::Parser::AST::Class');
+        is($ast->name, 'Point3D', '... the AST is for the Point3D class');
+    }
 
     $GOT = Cor::Compiler::compile( $matches );
 
     #warn $GOT;
-
-    Cor::Evaluator::evaluate( $GOT );
 };
 
 subtest '... eval and test the compiled output', sub {
 
-    require_ok('Point3D');
+    Cor::Evaluator::evaluate( $GOT );
 
     my $p = Point3D->new( x => 10, y => 20, z => 5 );
     isa_ok($p, 'Point3D');

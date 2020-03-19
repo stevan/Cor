@@ -15,28 +15,20 @@ sub compile ($asts) {
             : Cor::Compiler::Unit::Role->new( ast => $_ )
     } $asts->@*;
 
+    my %unit_index = map {
+        ($_->name => undef)
+    } @units;
+
     my @compiled = map {
-        _compile_dependencies( $_->dependencies ),
+        # filter out any dependencies contained
+        # here in this compilation group ...
+        (map { 'use '.$_->name.';' }
+            grep not( exists $unit_index{ $_->name } ), $_->dependencies),
+        # generate the source ...
         $_->generate_source,
-        'BEGIN {',
-            '$INC{q['.(join '/' => split /\:\:/ => $_->name).'.pm]} = 1;',
-        '}',
     } @units;
 
     return join "\n" => @compiled;
-}
-
-sub _compile_dependencies ( @dependencies ) {
-    return unless @dependencies;
-
-    my @src;
-    push @src => 'BEGIN {';
-    push @src => 'use Cor;';
-    push @src => map {
-        'Cor::load(q['.$_->name.']);'
-    } @dependencies;
-    push @src => '}';
-    return @src;
 }
 
 1;

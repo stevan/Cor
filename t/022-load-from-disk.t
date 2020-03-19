@@ -16,25 +16,17 @@ BEGIN {
     use_ok('Cor');
 }
 
-my %RESULTS;
+my @pmc_files_to_delete;
 
 subtest '... compiles all the classes together properly' => sub {
-
-    foreach my $pkg ( qw[ Finance::BankAccount Finance::CheckingAccount ] ) {
-        @{ $RESULTS{ $pkg } }{qw[ src matches ]} = Cor::load( $pkg );
-    }
-
-    ok($RESULTS{'Finance::BankAccount'}->{src}, '... got source for BANK_ACCOUNT');
-    #warn $RESULTS{'Finance::BankAccount'}->{src};
-    isa_ok($RESULTS{'Finance::BankAccount'}->{matches}->[0], 'Cor::Parser::AST::Class');
-
-    ok($RESULTS{'Finance::CheckingAccount'}->{src}, '... got source for CHECKING_ACCOUNT');
-    #warn $RESULTS{'Finance::CheckingAccount'}->{src};
-    isa_ok($RESULTS{'Finance::CheckingAccount'}->{matches}->[0], 'Cor::Parser::AST::Class');
-
+    ok((push @pmc_files_to_delete => Cor::build( 'Finance::BankAccount' )),    '... loaded the Finance::BankAccount class with Cor');
+    ok((push @pmc_files_to_delete => Cor::build( 'Finance::CheckingAccount' )), '... loaded the Finance::CheckingAccount class with Cor');
 };
 
 subtest '... does the compiled classes work together properly' => sub {
+
+    require_ok('Finance::BankAccount');
+    require_ok('Finance::CheckingAccount');
 
     my $savings = Finance::BankAccount->new( balance => 250 );
     isa_ok($savings, 'Finance::BankAccount' );
@@ -68,5 +60,7 @@ subtest '... does the compiled classes work together properly' => sub {
     is($savings->balance, 200, '... got the savings balance we expected');
 
 };
+
+unlink $_ foreach @pmc_files_to_delete;
 
 done_testing;
