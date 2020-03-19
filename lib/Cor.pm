@@ -6,7 +6,6 @@ use experimental qw[ signatures postderef ];
 
 use Cor::Parser;
 use Cor::Compiler;
-use Cor::Evaluator;
 
 sub build ($package_name) {
 
