@@ -63,6 +63,8 @@ subtest '... eval and test the compiled output', sub {
 
     Cor::Evaluator::evaluate( $GOT );
 
+    require_ok('Point');
+
     my $p = Point->new( x => 10, y => 20 );
     isa_ok($p, 'Point');
 

@@ -19,26 +19,38 @@ subtest '... verify the AST object' => sub {
     my $original = join '' => <DATA>;
     my $matches  = Cor::Parser::parse( $original );
 
-    $GOT = Cor::Compiler::compile( $matches );
-
-    #warn $GOT;
+    my $ast = $matches->[0];
+    isa_ok($ast, 'Cor::Parser::AST::Role');
+    is($ast->name, 'Dumpable', '... the AST is for the Dumpable role');
 
     my $ast = $matches->[1];
     isa_ok($ast, 'Cor::Parser::AST::Class');
     is($ast->name, 'Point', '... the AST is for the Point class');
+
+    my $ast = $matches->[2];
+    isa_ok($ast, 'Cor::Parser::AST::Class');
+    is($ast->name, 'Point3D', '... the AST is for the Point3D class');
+
+    $GOT = Cor::Compiler::compile( $matches );
+
+    #warn $GOT;
+
+    Cor::Evaluator::evaluate( $GOT );
 };
 
 subtest '... eval and test the compiled output', sub {
 
-    Cor::Evaluator::evaluate( $GOT );
+    require_ok('Point3D');
 
-    my $p = Point->new( x => 10, y => 20 );
+    my $p = Point3D->new( x => 10, y => 20, z => 5 );
+    isa_ok($p, 'Point3D');
     isa_ok($p, 'Point');
 
     is($p->x, 10, '... got the right value for x');
     is($p->y, 20, '... got the right value for y');
+    is($p->z, 5,  '... got the right value for z');
 
-    is_deeply($p->dump, { x => 10, y => 20 }, '... got the right value from dump method');
+    is_deeply($p->dump, { x => 10, y => 20, z => 5 }, '... got the right value from dump method');
 };
 
 done_testing;
