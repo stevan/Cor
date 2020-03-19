@@ -34,7 +34,8 @@ sub build ($package_name) {
     open( my $fh, "<", $full_package_path )
         or die "Could not open [$package_name] at [$full_package_path] because [$!]";
     my $original = join '' => <$fh>;
-    close $fh;
+    close $fh
+        or die "Could not close [$full_package_path] because [$!]";
 
     my $asts     = Cor::Parser::parse( $original );
     my $compiled = Cor::Compiler::compile( $asts );
