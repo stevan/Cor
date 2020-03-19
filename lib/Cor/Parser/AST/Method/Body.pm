@@ -1,4 +1,5 @@
 package Cor::Parser::AST::Method::Body;
+# ABSTRACT: Cor AST for method body definitons
 
 use v5.24;
 use warnings;

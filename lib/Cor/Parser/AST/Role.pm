@@ -1,4 +1,5 @@
 package Cor::Parser::AST::Role;
+# ABSTRACT: Cor AST for role declarations
 
 use v5.24;
 use warnings;

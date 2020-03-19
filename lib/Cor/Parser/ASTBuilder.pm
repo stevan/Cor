@@ -1,4 +1,5 @@
 package Cor::Parser::ASTBuilder;
+# ABSTRACT: Cor AST builder
 
 use v5.24;
 use warnings;

@@ -1,4 +1,5 @@
 package Cor::Parser::AST::Base;
+# ABSTRACT: Cor AST base class
 
 use v5.24;
 use warnings;

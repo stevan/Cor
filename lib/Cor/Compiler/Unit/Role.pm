@@ -1,4 +1,5 @@
 package Cor::Compiler::Unit::Role;
+# ABSTRACT: compilation unit for roles
 
 use v5.24;
 use warnings;

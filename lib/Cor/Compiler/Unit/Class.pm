@@ -1,4 +1,5 @@
 package Cor::Compiler::Unit::Class;
+# ABSTRACT: compilation unit for classes
 
 use v5.24;
 use warnings;

@@ -1,4 +1,5 @@
 package Cor::Parser;
+# ABSTRACT: Parser for the Cor syntax
 
 use v5.24;
 use warnings;

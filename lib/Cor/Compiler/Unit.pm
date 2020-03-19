@@ -1,4 +1,5 @@
 package Cor::Compiler::Unit;
+# ABSTRACT: Role representing a compilation unit
 
 use v5.24;
 use warnings;

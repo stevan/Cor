@@ -1,4 +1,5 @@
 package Cor::Evaluator;
+# ABSTRACT: Simple evaluator
 
 use v5.24;
 use warnings;

@@ -1,4 +1,5 @@
 package Cor::Parser::AST::Reference;
+# ABSTRACT: Cor AST for referenced packages
 
 use v5.24;
 use warnings;

@@ -1,4 +1,5 @@
 package Cor::Parser::AST::Slot;
+# ABSTRACT: Cor AST for slot declarations
 
 use v5.24;
 use warnings;

@@ -1,4 +1,5 @@
 package Cor;
+# ABSTRACT: A core object system for Perl 5
 
 use v5.24;
 use warnings;

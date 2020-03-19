@@ -1,4 +1,5 @@
 package Cor::Parser::AST::Location;
+# ABSTRACT: Cor AST source locations
 
 use v5.24;
 use warnings;

@@ -1,4 +1,5 @@
 package Cor::Parser::AST::Method;
+# ABSTRACT: Cor AST for method declarations
 
 use v5.24;
 use warnings;

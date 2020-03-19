@@ -1,4 +1,5 @@
 package Cor::Parser::AST::Class;
+# ABSTRACT: Cor AST for class declarations
 
 use v5.24;
 use warnings;

@@ -1,4 +1,5 @@
 package Cor::Compiler;
+# ABSTRACT: Compiler for Cor object
 
 use v5.24;
 use warnings;
