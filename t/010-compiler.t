@@ -49,11 +49,6 @@ sub y :ro($_y);
 sub dump {
         return +{ x => $_[0]->{q[$_x]}, y => $_[0]->{q[$_y]} };
     }
-# finalize
-UNITCHECK {
-my $META = MOP::Util::get_meta(__PACKAGE__);
-MOP::Util::inherit_slots($META);
-}
 1;
 }';
 

@@ -28,10 +28,6 @@ sub preamble ($self) {
 sub generate_superclasses ($self) {
     my $meta = $self->{ast};
 
-    # we always want to make sure we inherit
-    # slots when they are available
-    push $self->{_UNITCHECK}->@* => 'MOP::Util::inherit_slots($META);';
-
     my @superclasses = map $_->name, $self->{ast}->superclasses->@*;
 
     # if there is no superclass ...
@@ -43,6 +39,22 @@ sub generate_superclasses ($self) {
     my @src;
     push @src => '# superclasses';
     push @src => 'our @ISA; BEGIN { @ISA = qw['.(join ' ' => @superclasses).'] }';
+    return @src;
+}
+
+sub generate_slots ($self) {
+    my $meta = $self->{ast};
+    my @src  = $self->next::method();
+
+    # inherit the slots at compile time ...
+    if ( my @superclasses = map $_->name, $self->{ast}->superclasses->@* ) {
+        my $close = pop @src;
+        push @src => map {
+            '    %'.$_.'::HAS,'
+        } @superclasses;
+        push @src => $close;
+    }
+
     return @src;
 }
 

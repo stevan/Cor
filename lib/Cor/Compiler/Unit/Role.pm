@@ -52,11 +52,10 @@ sub generate_source ($self) {
         push @src => $self->generate_methods;
     }
 
-    if ( scalar $self->{_UNITCHECK}->@* ) {
+    if ( $meta->has_roles ) {
         push @src => '# finalize';
-        push @src => 'UNITCHECK {';
-        push @src => 'my $META = MOP::Util::get_meta(__PACKAGE__);';
-        push @src => $self->{_UNITCHECK}->@*;
+        push @src => 'BEGIN {';
+        push @src => 'MOP::Util::compose_roles(MOP::Util::get_meta(__PACKAGE__));';
         push @src => '}';
     }
 
@@ -68,8 +67,6 @@ sub generate_source ($self) {
 
 sub generate_roles ($self) {
     my $meta = $self->{ast};
-
-    push $self->{_UNITCHECK}->@* => 'MOP::Util::compose_roles($META);';
 
     my @src;
     push @src => '# roles';
