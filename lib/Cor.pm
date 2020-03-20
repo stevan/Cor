@@ -10,12 +10,23 @@ use Cor::Compiler;
 
 sub build ($package_name) {
 
+    my $full_package_path = find_module_in_INC( $package_name )
+        or die "Could not find [$package_name] in \@INC paths";
+
+    my $original = read_source_file( $full_package_path );
+    my $asts     = Cor::Parser::parse( $original );
+    my $compiler = Cor::Compiler->new( asts => $asts );
+    my $compiled = $compiler->compile;
+
+    return write_pmc_file( $full_package_path, $compiled );
+}
+
+sub find_module_in_INC ($package_name) {
+    my @inc = @INC;
+
     my $package_path = (join '/' => split /\:\:/ => $package_name) . '.pm';
 
-    my $full_package_path;
-
-    my @inc = @INC;
-    my $inc;
+    my ($inc, $full_package_path);
     while ( $inc = shift @inc ) {
         next if ref $inc; # skip them for now ...
 
@@ -28,18 +39,19 @@ sub build ($package_name) {
         undef $full_package_path;
     }
 
-    die "Could not find [$package_path] in \@INC paths"
-        if not defined $full_package_path;
+    return $full_package_path;
+}
 
+sub read_source_file ($full_package_path) {
     open( my $fh, "<", $full_package_path )
-        or die "Could not open [$package_name] at [$full_package_path] because [$!]";
-    my $original = join '' => <$fh>;
+        or die "Could not open [$full_package_path] because [$!]";
+    my $source = join '' => <$fh>;
     close $fh
         or die "Could not close [$full_package_path] because [$!]";
+    return $source;
+}
 
-    my $asts     = Cor::Parser::parse( $original );
-    my $compiler = Cor::Compiler->new( asts => $asts );
-    my $compiled = $compiler->compile;
+sub write_pmc_file ($full_package_path, $compiled) {
     my $pmc_path = $full_package_path.'c';
 
     open( my $pmc, ">", $pmc_path )
@@ -49,6 +61,7 @@ sub build ($package_name) {
         or die "Could not close [$pmc_path] because [$!]";;
 
     return $pmc_path;
+
 }
 
 1;
