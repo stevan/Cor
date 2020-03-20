@@ -38,6 +38,8 @@ sub BUILD ($self, $params) {
     $self->{_dependencies} = \@dependencies;
 }
 
+sub list_dependencies ($self) { map $_->name, $self->{_dependencies}->@* }
+
 sub compile ($self) {
 
     my @compiled = map { 'use '.$_->name.';' } $self->{_dependencies}->@*;

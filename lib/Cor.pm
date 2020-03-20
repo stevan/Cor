@@ -8,7 +8,7 @@ use experimental qw[ signatures postderef ];
 use Cor::Parser;
 use Cor::Compiler;
 
-sub build ($package_name) {
+sub build ($package_name, %opts) {
 
     my $full_package_path = find_module_in_INC( $package_name )
         or die "Could not find [$package_name] in \@INC paths";
@@ -16,9 +16,20 @@ sub build ($package_name) {
     my $original = read_source_file( $full_package_path );
     my $asts     = Cor::Parser::parse( $original );
     my $compiler = Cor::Compiler->new( asts => $asts );
-    my $compiled = $compiler->compile;
 
-    return write_pmc_file( $full_package_path, $compiled );
+    my @built;
+
+    if ( $opts{recurse} ) {
+        my @dependencies = $compiler->list_dependencies;
+        foreach my $dep ( @dependencies ) {
+            push @built => build( $dep, recurse => 1 );
+        }
+    }
+
+    my $compiled = $compiler->compile;
+    push @built => write_pmc_file( $full_package_path, $compiled );
+
+    return @built;
 }
 
 sub find_module_in_INC ($package_name) {

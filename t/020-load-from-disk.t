@@ -19,10 +19,7 @@ BEGIN {
 my @pmc_files_to_delete;
 
 subtest '... compiles all the classes together properly' => sub {
-    ok((push @pmc_files_to_delete => Cor::build( 'Eq' )),           '... loaded the Eq class with Cor');
-    ok((push @pmc_files_to_delete => Cor::build( 'Printable' )),    '... loaded the Printable class with Cor');
-    ok((push @pmc_files_to_delete => Cor::build( 'Comparable' )),   '... loaded the Comparable class with Cor');
-    ok((push @pmc_files_to_delete => Cor::build( 'Currency::US' )), '... loaded the Currency::US class with Cor');
+    ok((push @pmc_files_to_delete => Cor::build( 'Currency::US', recurse => 1 )), '... loaded the Currency::US class with Cor');
 };
 
 subtest '... does the compiled classes work together properly' => sub {
@@ -59,6 +56,9 @@ subtest '... does the compiled classes work together properly' => sub {
 
 };
 
-unlink $_ foreach @pmc_files_to_delete;
+foreach (@pmc_files_to_delete) {
+    #diag "Deleting $_";
+    unlink $_;
+}
 
 done_testing;

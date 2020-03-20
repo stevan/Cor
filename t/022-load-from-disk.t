@@ -61,6 +61,9 @@ subtest '... does the compiled classes work together properly' => sub {
 
 };
 
-unlink $_ foreach @pmc_files_to_delete;
+foreach (@pmc_files_to_delete) {
+    #diag "Deleting $_";
+    unlink $_;
+}
 
 done_testing;

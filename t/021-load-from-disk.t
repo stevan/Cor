@@ -62,6 +62,9 @@ subtest '... does the compiled classes work together properly' => sub {
     is($ll->sum, 49, '... things sum correctly');
 };
 
-unlink $_ foreach @pmc_files_to_delete;
+foreach (@pmc_files_to_delete) {
+    #diag "Deleting $_";
+    unlink $_;
+}
 
 done_testing;
