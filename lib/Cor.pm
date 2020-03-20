@@ -38,7 +38,8 @@ sub build ($package_name) {
         or die "Could not close [$full_package_path] because [$!]";
 
     my $asts     = Cor::Parser::parse( $original );
-    my $compiled = Cor::Compiler::compile( $asts );
+    my $compiler = Cor::Compiler->new( asts => $asts );
+    my $compiled = $compiler->compile;
     my $pmc_path = $full_package_path.'c';
 
     open( my $pmc, ">", $pmc_path )

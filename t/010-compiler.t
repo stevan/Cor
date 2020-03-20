@@ -19,8 +19,9 @@ subtest '... verify the AST object' => sub {
 
     my $original = join '' => <DATA>;
     my $matches  = Cor::Parser::parse( $original );
+    my $compiler = Cor::Compiler->new( asts => $matches );
 
-    $GOT = Cor::Compiler::compile( $matches );
+    $GOT = $compiler->compile;
 
     my ($ast) = $matches->@*;
     isa_ok($ast, 'Cor::Parser::AST::Class');

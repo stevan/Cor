@@ -9,8 +9,6 @@ use slots (
     ast => sub {},
 );
 
-sub name ($self) { $self->{ast}->name }
-
 sub generate_source;
 
 sub dependencies;

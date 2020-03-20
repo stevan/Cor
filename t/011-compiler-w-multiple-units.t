@@ -36,7 +36,9 @@ subtest '... verify the AST object' => sub {
         is($ast->name, 'Point3D', '... the AST is for the Point3D class');
     }
 
-    $GOT = Cor::Compiler::compile( $matches );
+    my $compiler = Cor::Compiler->new( asts => $matches );
+
+    $GOT = $compiler->compile;
 
     #warn $GOT;
 };
