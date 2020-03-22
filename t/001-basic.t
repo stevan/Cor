@@ -40,7 +40,7 @@ is_deeply(
 
 # class definition
 is($point->start_location->char_at, 141, '... got the right start char number');
-is($point->end_location->char_at, 322, '... got the right end char number');
+is($point->end_location->char_at, 324, '... got the right end char number');
 
 # superclass declaration
 is($point->superclasses->[0]->start_location->char_at, 163, '... got the right start char number');
@@ -58,16 +58,16 @@ is($point->slots->[1]->end_location->char_at, 230, '... got the right end char n
 
 # method declarations
 is($point->methods->[0]->start_location->char_at, 237, '... got the right start char number');
-is($point->methods->[0]->end_location->char_at, 253, '... got the right end char number');
+is($point->methods->[0]->end_location->char_at, 254, '... got the right end char number');
 
-is($point->methods->[1]->start_location->char_at, 259, '... got the right start char number');
-is($point->methods->[1]->end_location->char_at, 275, '... got the right end char number');
+is($point->methods->[1]->start_location->char_at, 260, '... got the right start char number');
+is($point->methods->[1]->end_location->char_at, 277, '... got the right end char number');
 
-is($point->methods->[2]->start_location->char_at, 282, '... got the right start char number');
-is($point->methods->[2]->end_location->char_at, 321, '... got the right end char number');
+is($point->methods->[2]->start_location->char_at, 284, '... got the right start char number');
+is($point->methods->[2]->end_location->char_at, 323, '... got the right end char number');
 
-is($point->methods->[2]->body->start_location->char_at, 294, '... got the right start char number');
-is($point->methods->[2]->body->end_location->char_at, 321, '... got the right end char number');
+is($point->methods->[2]->body->start_location->char_at, 296, '... got the right start char number');
+is($point->methods->[2]->body->end_location->char_at, 323, '... got the right end char number');
 
 
 is_deeply(
@@ -84,12 +84,12 @@ is_deeply(
         'methods' => [
             {
                 'name'        => 'x',
-                'attributes'  => ':ro(_x)',
+                'attributes'  => ':ro($_x)',
                 'is_abstract' => 1,
             },
             {
                 'name'        => 'y',
-                'attributes'  => ':ro(_y)',
+                'attributes'  => ':ro($_y)',
                 'is_abstract' => 1,
             },
             {
@@ -108,26 +108,26 @@ is_deeply(
 );
 
 # class declaration
-is($point_3d->start_location->char_at, 325, '... got the right start char number');
-is($point_3d->end_location->char_at, 479, '... got the right end char number');
+is($point_3d->start_location->char_at, 327, '... got the right start char number');
+is($point_3d->end_location->char_at, 482, '... got the right end char number');
 
 # superclass declaration
-is($point_3d->superclasses->[0]->start_location->char_at, 349, '... got the right start char number');
-is($point_3d->superclasses->[0]->end_location->char_at, 354, '... got the right end char number');
+is($point_3d->superclasses->[0]->start_location->char_at, 351, '... got the right start char number');
+is($point_3d->superclasses->[0]->end_location->char_at, 356, '... got the right end char number');
 
 # slot declarations
-is($point_3d->slots->[0]->start_location->char_at, 362, '... got the right start char number');
-is($point_3d->slots->[0]->end_location->char_at, 373, '... got the right end char number');
+is($point_3d->slots->[0]->start_location->char_at, 364, '... got the right start char number');
+is($point_3d->slots->[0]->end_location->char_at, 375, '... got the right end char number');
 
 # method declarations
-is($point_3d->methods->[0]->start_location->char_at, 380, '... got the right start char number');
-is($point_3d->methods->[0]->end_location->char_at, 396, '... got the right end char number');
+is($point_3d->methods->[0]->start_location->char_at, 382, '... got the right start char number');
+is($point_3d->methods->[0]->end_location->char_at, 399, '... got the right end char number');
 
-is($point_3d->methods->[1]->start_location->char_at, 403, '... got the right start char number');
-is($point_3d->methods->[1]->end_location->char_at, 477, '... got the right end char number');
+is($point_3d->methods->[1]->start_location->char_at, 406, '... got the right start char number');
+is($point_3d->methods->[1]->end_location->char_at, 480, '... got the right end char number');
 
-is($point_3d->methods->[1]->body->start_location->char_at, 423, '... got the right start char number');
-is($point_3d->methods->[1]->body->end_location->char_at, 477, '... got the right end char number');
+is($point_3d->methods->[1]->body->start_location->char_at, 426, '... got the right start char number');
+is($point_3d->methods->[1]->body->end_location->char_at, 480, '... got the right end char number');
 
 is_deeply(
     $point_3d->dump,
@@ -140,7 +140,7 @@ is_deeply(
         'methods'      => [
             {
                 'name'        => 'z',
-                'attributes'  => ':ro(_z)',
+                'attributes'  => ':ro($_z)',
                 'is_abstract' => 1,
 
             },
@@ -179,8 +179,8 @@ class Point v0.01 isa UNIVERSAL::Object does Dumpable {
     has $_x = 0;
     has $_y = 0;
 
-    method x :ro(_x);
-    method y :ro(_y);
+    method x :ro($_x);
+    method y :ro($_y);
 
     method dump { +{ x => $_x, y => $_y } }
 }
@@ -189,7 +189,7 @@ class Point3D v0.01 isa Point {
 
     has $_z = 0;
 
-    method z :ro(_z);
+    method z :ro($_z);
 
     method dump ($self) {
         +{ $self->next::method->%*, z => $_z }
