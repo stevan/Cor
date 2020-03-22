@@ -59,10 +59,16 @@ is($point->slots->[1]->end_location->char_at, 230, '... got the right end char n
 # method declarations
 is($point->methods->[0]->start_location->char_at, 237, '... got the right start char number');
 is($point->methods->[0]->end_location->char_at, 253, '... got the right end char number');
+
 is($point->methods->[1]->start_location->char_at, 259, '... got the right start char number');
 is($point->methods->[1]->end_location->char_at, 275, '... got the right end char number');
+
 is($point->methods->[2]->start_location->char_at, 282, '... got the right start char number');
 is($point->methods->[2]->end_location->char_at, 321, '... got the right end char number');
+
+is($point->methods->[2]->body->start_location->char_at, 294, '... got the right start char number');
+is($point->methods->[2]->body->end_location->char_at, 321, '... got the right end char number');
+
 
 is_deeply(
     $point->dump,
@@ -116,8 +122,12 @@ is($point_3d->slots->[0]->end_location->char_at, 373, '... got the right end cha
 # method declarations
 is($point_3d->methods->[0]->start_location->char_at, 380, '... got the right start char number');
 is($point_3d->methods->[0]->end_location->char_at, 396, '... got the right end char number');
+
 is($point_3d->methods->[1]->start_location->char_at, 403, '... got the right start char number');
 is($point_3d->methods->[1]->end_location->char_at, 477, '... got the right end char number');
+
+is($point_3d->methods->[1]->body->start_location->char_at, 423, '... got the right start char number');
+is($point_3d->methods->[1]->body->end_location->char_at, 477, '... got the right end char number');
 
 is_deeply(
     $point_3d->dump,

@@ -6,7 +6,7 @@ use warnings;
 use experimental qw[ signatures postderef ];
 use decorators   qw[ :accessors ];
 
-use parent 'UNIVERSAL::Object';
+use parent 'Cor::Parser::AST::Base';
 
 use slots (
     slot_locations => sub { +{} },
@@ -15,11 +15,6 @@ use slots (
 
 sub slot_locations : ro;
 sub source         : ro;
-
-sub dump ($self) {
-    my %copy = %$self;
-    return \%copy;
-}
 
 1;
 

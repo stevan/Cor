@@ -248,15 +248,20 @@ BEGIN {
                     |
                     ((?&PerlMethodBlock)) (?{
 
-                        $_COR_CURRENT_METHOD->set_body(
-                            Cor::Parser::ASTBuilder::new_method_body_at(
-                                _parse_method_body(
-                                    $^N,
-                                    $_COR_CURRENT_META
-                                )
-                            )
+                        my $pos      = pos();
+                        my $body_src = $^N;
+
+                        my $body = Cor::Parser::ASTBuilder::new_method_body_at(
+                            _parse_method_body(
+                                $body_src,
+                                $_COR_CURRENT_META
+                            ),
+                            ($pos - length($body_src)),
                         );
 
+                        $_COR_CURRENT_METHOD->set_body( $body );
+
+                        Cor::Parser::ASTBuilder::set_end_location( $body, $pos );
                         Cor::Parser::ASTBuilder::set_end_location(
                             $_COR_CURRENT_METHOD,
                             pos(), # XXX - need to use use just pos here, not sure why

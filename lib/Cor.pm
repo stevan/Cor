@@ -54,11 +54,13 @@ sub find_module_in_INC ($package_name) {
 }
 
 sub read_source_file ($full_package_path) {
+
     open( my $fh, "<", $full_package_path )
         or die "Could not open [$full_package_path] because [$!]";
     my $source = join '' => <$fh>;
     close $fh
         or die "Could not close [$full_package_path] because [$!]";
+
     return $source;
 }
 
@@ -72,7 +74,6 @@ sub write_pmc_file ($full_package_path, $compiled) {
         or die "Could not close [$pmc_path] because [$!]";;
 
     return $pmc_path;
-
 }
 
 1;
