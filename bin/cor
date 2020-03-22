@@ -1,0 +1,20 @@
+#!perl
+
+use v5.24;
+use warnings;
+use experimental qw[ signatures postderef ];
+
+use Cor;
+
+main( @ARGV );
+
+sub main (@argv) {
+
+    my @packages = @argv;
+
+    foreach my $package ( @packages ) {
+        Cor::build( $package, recurse => 1 );
+    }
+
+    return 1;
+}
