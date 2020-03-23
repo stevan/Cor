@@ -97,7 +97,7 @@ sub generate_methods ($self) {
     push @src => map {
         'sub '
         . $_->name
-        . ($_->has_attributes ? ' ' . $_->attributes : '')
+        . ($_->has_attributes ? ' ' . (join ' ' => map { ':'.$_->name.'('.$_->args.')' } $_->attributes->@*) : '')
         . ($_->has_signature  ? ' ' . $_->signature  : '')
         . ($_->is_abstract
             ? ';'

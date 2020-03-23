@@ -188,7 +188,20 @@ BEGIN {
                     (?&PerlOWS)
                         (?:
                             (?>
-                                ((?&PerlAttributes)) (?{ $_COR_CURRENT_SLOT->set_attributes( $^N ) })
+                                ((?&PerlAttributes)) (?{
+                                    my $pos            = pos();
+                                    my $attributes_src = $^N;
+
+                                    my @attributes = Cor::Parser::ASTBuilder::new_attributes_at(
+                                        _parse_attributes( $attributes_src ),
+                                        $pos
+                                    );
+
+                                    #use Data::Dumper;
+                                    #warn Dumper \@attributes;
+
+                                    $_COR_CURRENT_SLOT->set_attributes( \@attributes )
+                                })
                             )
                             (?&PerlOWS)
                         )?+
@@ -239,7 +252,7 @@ BEGIN {
                             #use Data::Dumper;
                             #warn Dumper \@attributes;
 
-                            $_COR_CURRENT_METHOD->set_attributes( $attributes_src )
+                            $_COR_CURRENT_METHOD->set_attributes( \@attributes )
                         })
                     )
                     (?&PerlOWS)

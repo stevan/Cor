@@ -84,12 +84,22 @@ is_deeply(
         'methods' => [
             {
                 'name'        => 'x',
-                'attributes'  => ':ro($_x)',
+                'attributes'  => [
+                    {
+                        name => 'ro',
+                        args => '$_x',
+                    }
+                ],
                 'is_abstract' => 1,
             },
             {
                 'name'        => 'y',
-                'attributes'  => ':ro($_y)',
+                'attributes'  => [
+                    {
+                        name => 'ro',
+                        args => '$_y',
+                    }
+                ],
                 'is_abstract' => 1,
             },
             {
@@ -140,7 +150,12 @@ is_deeply(
         'methods'      => [
             {
                 'name'        => 'z',
-                'attributes'  => ':ro($_z)',
+                'attributes'  => [
+                    {
+                        name => 'ro',
+                        args => '$_z',
+                    }
+                ],
                 'is_abstract' => 1,
 
             },
