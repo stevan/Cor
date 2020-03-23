@@ -8,6 +8,8 @@ use experimental qw[ signatures postderef ];
 use Cor::Compiler::Unit::Role;
 use Cor::Compiler::Unit::Class;
 
+use Cor::Compiler::Traits;
+
 use parent 'UNIVERSAL::Object';
 
 use slots (
@@ -23,10 +25,13 @@ sub BUILD ($self, $params) {
     my @asts          = $self->{asts}->@*;
     my %package_index = map { $_->name => undef } @asts;
 
+    # combine user supplied traits with core ones ...
+    my %traits = ( $self->{traits}->%*, %Cor::Compiler::Traits::TRAITS );
+
     my @units = map {
         $_->isa('Cor::Parser::AST::Class')
-            ? Cor::Compiler::Unit::Class->new( ast => $_, traits => $self->{traits} )
-            :  Cor::Compiler::Unit::Role->new( ast => $_, traits => $self->{traits} )
+            ? Cor::Compiler::Unit::Class->new( ast => $_, traits => \%traits )
+            :  Cor::Compiler::Unit::Role->new( ast => $_, traits => \%traits )
     } @asts;
 
     my @dependencies = map {
