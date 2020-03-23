@@ -94,19 +94,36 @@ sub generate_methods ($self) {
 
     my @src;
     push @src => '# methods';
-    push @src => map {
-        'sub '
-        . $_->name
-        . ($_->has_attributes ? ' ' . (join ' ' => map { ':'.$_->name.'('.$_->args.')' } $_->attributes->@*) : '')
-        . ($_->has_signature  ? ' ' . $_->signature  : '')
-        . ($_->is_abstract
-            ? ';'
-            : ' ' . $self->_compile_method_body( $_->body ))
-    } $meta->methods->@*;
+
+    foreach my $method ( $meta->methods->@* ) {
+        push @src =>
+            'sub '
+            . $method->name
+            . ($method->has_attributes
+                ? ' ' . (
+                    join ' ' => map {
+                        ':'.$_->name.'('.$_->args.')'
+                    } $method->attributes->@*
+                )
+                : '')
+            . ($method->has_signature  ? ' ' . $method->signature  : '')
+            . ($method->is_abstract
+                ? ';'
+                : ' ' . $self->_compile_method_body( $method->body ));
+    }
+
     return @src;
 }
 
 # ...
+
+sub _apply_attribute_to_slot ( $self, $meta, $slot, $attribute ) {
+
+}
+
+sub _apply_attribute_to_method ( $self, $meta, $method, $attribute ) {
+
+}
 
 sub _compile_method_body ($self, $body) {
 
