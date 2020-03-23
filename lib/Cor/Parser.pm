@@ -226,7 +226,21 @@ BEGIN {
                 (?&PerlOWS)
                 (?:
                     (?>
-                        ((?&PerlAttributes)) (?{ $_COR_CURRENT_METHOD->set_attributes( $^N ) })
+                        ((?&PerlAttributes)) (?{
+
+                            my $pos            = pos();
+                            my $attributes_src = $^N;
+
+                            my @attributes = Cor::Parser::ASTBuilder::new_attributes_at(
+                                _parse_attributes( $attributes_src ),
+                                $pos
+                            );
+
+                            #use Data::Dumper;
+                            #warn Dumper \@attributes;
+
+                            $_COR_CURRENT_METHOD->set_attributes( $attributes_src )
+                        })
                     )
                     (?&PerlOWS)
                 )?+
@@ -325,6 +339,51 @@ sub _parse_method_body ($source, $meta) {
     }
 
     return ($source, \@matches);
+}
+
+sub _parse_attributes ($source) {
+
+    my @matches;
+
+    my ($match, $start, $end);
+    while ( $source =~
+        /
+        :
+        (?>(?&PerlOWS))
+        (?>((?&PerlIdentifier)) (?{
+            $match = { name => $^N };
+            $start = pos() - length($match->{name});
+        }))
+        (?:
+            (?= \( ) ((?&PPR_quotelike_body)) (?{
+                $match->{args} = $^N;
+                $end = pos();
+            })
+        )?+
+
+        $COR_RULES/gx
+    ) {
+
+        # TODO: improve error handling here - SL
+        if ( $PPR::ERROR ) {
+            warn $PPR::ERROR;
+        }
+
+        # clean off the whitespace & parens
+        $match->{args} =~ s/^\(\s*//;
+        $match->{args} =~ s/\s*\)$//;
+
+        push @matches => {
+            match => $match,
+            start => $start,
+            end   => $end,
+        };
+
+        ($match, $start, $end) = (undef, undef, undef);
+    }
+
+    return ($source, \@matches);
+
 }
 
 1;

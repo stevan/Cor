@@ -16,6 +16,7 @@ use Cor::Parser::AST::Method;
 use Cor::Parser::AST::Method::Body;
 
 use Cor::Parser::AST::Location;
+use Cor::Parser::AST::Attribute;
 
 sub new_location_at ($char_at) {
     Cor::Parser::AST::Location->new( char_at => $char_at )
@@ -33,6 +34,19 @@ sub new_method_body_at ( $source, $matches, $char_at ) {
         slot_locations => $matches,
         start_location => new_location_at( $char_at ),
     )
+}
+
+sub new_attributes_at ( $source, $attributes, $char_at ) {
+    # NOTE:
+    # ignore $source for now, we might want it later
+    map {
+        Cor::Parser::AST::Attribute->new(
+            name           => $_->{match}->{name},
+            args           => $_->{match}->{args},
+            start_location => new_location_at( $char_at + $_->{start} ),
+            end_location   => new_location_at( $char_at + $_->{end}   ),
+        )
+    } $attributes->@*
 }
 
 sub set_end_location ($ast, $char_at) {
