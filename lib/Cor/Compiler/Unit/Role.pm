@@ -42,17 +42,25 @@ sub generate_source ($self) {
 
     foreach my $slot ( $meta->slots->@* ) {
         if ( $slot->has_attributes ) {
+            my @attributes;
             foreach my $attribute ( $slot->attributes->@* ) {
-                $self->_apply_trait( $meta, $slot, $attribute );
+                if ( not $self->_apply_trait( $meta, $slot, $attribute ) ) {
+                    push @attributes => $attribute;
+                }
             }
+            $slot->set_attributes( \@attributes );
         }
     }
 
     foreach my $method ( $meta->methods->@* ) {
         if ( $method->has_attributes ) {
+            my @attributes;
             foreach my $attribute ( $method->attributes->@* ) {
-                $self->_apply_trait( $meta, $method, $attribute );
+                if ( not $self->_apply_trait( $meta, $method, $attribute ) ) {
+                    push @attributes => $attribute;
+                }
             }
+            $method->set_attributes( \@attributes );
         }
     }
 

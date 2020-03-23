@@ -11,7 +11,6 @@ our %TRAITS = (
         return unless $method->has_attributes;
 
         $method->set_is_abstract(0);
-        $method->set_attributes([ grep $_ ne $attribute, $method->attributes->@* ]);
         $method->set_body(
             Cor::Parser::ASTBuilder::new_method_body_at(
                 '{ $_[0]->{q['.$attribute->args.']} }',
@@ -19,6 +18,7 @@ our %TRAITS = (
                 -1
             )
         );
+        return 1;
     },
 );
 
