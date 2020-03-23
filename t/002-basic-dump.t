@@ -23,8 +23,6 @@ is_deeply(
     {
         name    => 'Dumpable',
         version => 'v0.01',
-        roles   => [],
-        slots   => [],
         methods => [ { name => 'dump', is_abstract => 1 } ],
     },
     '... the Dumpable role looks correct'
@@ -91,7 +89,6 @@ is_deeply(
         'name'         => 'Point3D',
         'version'      => 'v0.01',
         'superclasses' => [ { 'name' => 'Point' } ],
-        'roles'        => [],
         'slots'        => [
             {
                 'name'       => '$_z',

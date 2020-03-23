@@ -40,17 +40,23 @@ sub dump ($self) {
             delete $copy{ $k };
         }
         elsif ( ref $copy{ $k } eq 'ARRAY' ) {
-            # dump recursively
-            $copy{ $k } = [ map {
-                #warn "looking at @ $_ (\$copy{ $k }) \n";
-                if ( blessed $_ ) {
-                    #warn "dumping array item";
-                    $_->dump;
-                }
-                else {
-                    $_;
-                }
-            } $copy{ $k }->@* ];
+            if ( $copy{ $k }->@* ) {
+                # dump recursively
+                $copy{ $k } = [ map {
+                    #warn "looking at @ $_ (\$copy{ $k }) \n";
+                    if ( blessed $_ ) {
+                        #warn "dumping array item";
+                        $_->dump;
+                    }
+                    else {
+                        $_;
+                    }
+                } $copy{ $k }->@* ];
+            }
+            else {
+                # if the ARRAY is empty, don't copy it ...
+                delete $copy{ $k };
+            }
         }
         elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Parser::AST::Base') ) {
             # dump recursively
