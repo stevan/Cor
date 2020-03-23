@@ -370,9 +370,8 @@ sub _parse_attributes ($source) {
         (?:
             (?= \( ) ((?&PPR_quotelike_body)) (?{
                 $match->{args} = $^N;
-                $end = pos();
             })
-        )?+
+        )?+ (?{ $end = pos(); })
 
         $COR_RULES/gx
     ) {
@@ -382,9 +381,11 @@ sub _parse_attributes ($source) {
             warn $PPR::ERROR;
         }
 
-        # clean off the whitespace & parens
-        $match->{args} =~ s/^\(\s*//;
-        $match->{args} =~ s/\s*\)$//;
+        if ( $match->{args} ) {
+            # clean off the whitespace & parens
+            $match->{args} =~ s/^\(\s*//;
+            $match->{args} =~ s/\s*\)$//;
+        }
 
         push @matches => {
             match => $match,
