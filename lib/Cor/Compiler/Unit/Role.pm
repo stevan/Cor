@@ -21,7 +21,7 @@ sub preamble ($self) {
     return (
         'use v5.24;',
         'use warnings;',
-        'use experimental qw[ signatures postderef ];',
+        'use experimental qw[ signatures ];',
         'use decorators qw[ :accessors :constructor ];',
         'use MOP;',
     )

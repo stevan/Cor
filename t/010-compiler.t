@@ -49,7 +49,7 @@ subtest '... verify the AST object' => sub {
 my $EXPECTED = 'package Point 0.01 {
 use v5.24;
 use warnings;
-use experimental qw[ signatures postderef ];
+use experimental qw[ signatures ];
 use decorators qw[ :accessors :constructor ];
 use MOP;
 use UNIVERSAL::Object;
