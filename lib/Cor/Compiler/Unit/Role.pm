@@ -31,6 +31,33 @@ sub generate_source ($self) {
 
     my $meta = $self->{ast};
 
+    # apply the traits
+
+    # NOTE:
+    # this needs to happen before we do anything
+    # else, because this may result in a modification
+    # of the AST object, which then affects the
+    # generated source.
+    # - SL
+
+    foreach my $slot ( $meta->slots->@* ) {
+        if ( $slot->has_attributes ) {
+            foreach my $attribute ( $slot->attributes->@* ) {
+                $self->_apply_attribute_to_slot( $meta, $slot, $attribute );
+            }
+        }
+    }
+
+    foreach my $method ( $meta->methods->@* ) {
+        if ( $method->has_attributes ) {
+            foreach my $attribute ( $method->attributes->@* ) {
+                $self->_apply_attribute_to_method( $meta, $method, $attribute );
+            }
+        }
+    }
+
+    # ... generate source
+
     my @src;
 
     push @src => 'package '
