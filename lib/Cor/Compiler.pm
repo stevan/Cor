@@ -11,7 +11,8 @@ use Cor::Compiler::Unit::Class;
 use parent 'UNIVERSAL::Object';
 
 use slots (
-    asts => sub {},
+    asts   => sub {},
+    traits => sub { +{} },
     # ...
     _units        => sub {},
     _dependencies => sub {},
@@ -24,8 +25,8 @@ sub BUILD ($self, $params) {
 
     my @units = map {
         $_->isa('Cor::Parser::AST::Class')
-            ? Cor::Compiler::Unit::Class->new( ast => $_ )
-            : Cor::Compiler::Unit::Role->new( ast => $_ )
+            ? Cor::Compiler::Unit::Class->new( ast => $_, traits => $self->{traits} )
+            :  Cor::Compiler::Unit::Role->new( ast => $_, traits => $self->{traits} )
     } @asts;
 
     my @dependencies = map {

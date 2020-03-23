@@ -43,7 +43,7 @@ sub generate_source ($self) {
     foreach my $slot ( $meta->slots->@* ) {
         if ( $slot->has_attributes ) {
             foreach my $attribute ( $slot->attributes->@* ) {
-                $self->_apply_attribute_to_slot( $meta, $slot, $attribute );
+                $self->_apply_trait( $meta, $slot, $attribute );
             }
         }
     }
@@ -51,7 +51,7 @@ sub generate_source ($self) {
     foreach my $method ( $meta->methods->@* ) {
         if ( $method->has_attributes ) {
             foreach my $attribute ( $method->attributes->@* ) {
-                $self->_apply_attribute_to_method( $meta, $method, $attribute );
+                $self->_apply_trait( $meta, $method, $attribute );
             }
         }
     }
@@ -144,12 +144,10 @@ sub generate_methods ($self) {
 
 # ...
 
-sub _apply_attribute_to_slot ( $self, $meta, $slot, $attribute ) {
-
-}
-
-sub _apply_attribute_to_method ( $self, $meta, $method, $attribute ) {
-
+sub _apply_trait ( $self, $meta, $topic, $attribute ) {
+    if ( my $trait = $self->{traits}->{ $attribute->name } ) {
+        $trait->( $meta, $topic, $attribute );
+    }
 }
 
 sub _compile_method_body ($self, $body) {

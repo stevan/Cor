@@ -6,7 +6,8 @@ use warnings;
 use experimental qw[ signatures ];
 
 use slots (
-    ast => sub {},
+    ast    => sub {},
+    traits => sub {},
 );
 
 sub generate_source;

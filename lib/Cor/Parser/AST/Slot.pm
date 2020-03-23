@@ -11,7 +11,7 @@ use parent 'Cor::Parser::AST::Base';
 use slots (
     name       => sub {},
     type       => sub {},
-    attributes => sub {},
+    attributes => sub { [] },
     default    => sub {},
 );
 
@@ -27,7 +27,7 @@ sub set_default    : wo;
 
 sub has_name       : predicate;
 sub has_type       : predicate;
-sub has_attributes : predicate;
+sub has_attributes ($self) { !! $self->{attributes}->@* }
 sub has_default    : predicate;
 
 1;

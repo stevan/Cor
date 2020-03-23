@@ -2,7 +2,7 @@
 
 use v5.24;
 use warnings;
-use experimental qw[ postderef ];
+use experimental qw[ signatures postderef ];
 
 use Test::More;
 use Test::Differences;
@@ -19,7 +19,25 @@ subtest '... verify the AST object' => sub {
 
     my $original = join '' => <DATA>;
     my $matches  = Cor::Parser::parse( $original );
-    my $compiler = Cor::Compiler->new( asts => $matches );
+    my $compiler = Cor::Compiler->new(
+        asts   => $matches,
+        traits => {
+            'ro' => sub ( $meta, $method, $attribute ) {
+                return unless $method->isa('Cor::Parser::AST::Method');
+                return unless $method->has_attributes;
+
+                $method->set_is_abstract(0);
+                $method->set_attributes([ grep $_ ne $attribute, $method->attributes->@* ]);
+                $method->set_body(
+                    Cor::Parser::ASTBuilder::new_method_body_at(
+                        '{ $_[0]->{q['.$attribute->args.']} }',
+                        [],
+                        -1
+                    )
+                );
+            }
+        }
+    );
 
     $GOT = $compiler->compile;
 
@@ -44,8 +62,8 @@ our %HAS; BEGIN { %HAS = (
 ) }
 # methods
 sub BUILDARGS :strict(x => $_x, y => $_y);
-sub x :ro($_x);
-sub y :ro($_y);
+sub x { $_[0]->{q[$_x]} }
+sub y { $_[0]->{q[$_y]} }
 sub dump {
         return +{ x => $_[0]->{q[$_x]}, y => $_[0]->{q[$_y]} };
     }

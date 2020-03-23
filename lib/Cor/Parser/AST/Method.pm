@@ -10,7 +10,7 @@ use parent 'Cor::Parser::AST::Base';
 
 use slots (
     name        => sub {},
-    attributes  => sub {},
+    attributes  => sub { [] },
     signature   => sub {},
     body        => sub {},
     is_abstract => sub {},
@@ -29,7 +29,7 @@ sub set_body        : wo;
 sub set_is_abstract : wo;
 
 sub has_name        : predicate;
-sub has_attributes  : predicate;
+sub has_attributes  ($self) { !! $self->{attributes}->@* }
 sub has_signature   : predicate;
 sub has_body        : predicate;
 sub has_is_abstract : predicate;
