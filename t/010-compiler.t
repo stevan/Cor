@@ -44,8 +44,8 @@ our %HAS; BEGIN { %HAS = (
 ) }
 # methods
 sub BUILDARGS :strict(x => $_x, y => $_y);
-sub x { $_[0]->{q[$_x]} }
-sub y { $_[0]->{q[$_y]} }
+sub x ($) { $_[0]->{q[$_x]} }
+sub y ($) { $_[0]->{q[$_y]} }
 sub dump {
         return +{ x => $_[0]->{q[$_x]}, y => $_[0]->{q[$_y]} };
     }

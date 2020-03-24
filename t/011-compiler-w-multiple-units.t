@@ -69,28 +69,23 @@ role Dumpable {
 
 class Point does Dumpable {
 
-    has $_x = 0;
-    has $_y = 0;
+    has $_x :reader(x) = 0;
+    has $_y :reader(y) = 0;
 
     method BUILDARGS :strict(x => $_x, y => $_y);
-
-    method x :ro($_x);
-    method y :ro($_y);
 
     method dump { +{ x => $_x, y => $_y } }
 }
 
 class Point3D isa Point {
 
-    has $_z = 0;
+    has $_z :reader(z) = 0;
 
     method BUILDARGS :strict(
         x => super(x),
         y => super(y),
         z => $_z
     );
-
-    method z :ro($_z);
 
     method dump ($self) {
         +{ $self->next::method->%*, z => $_z }
