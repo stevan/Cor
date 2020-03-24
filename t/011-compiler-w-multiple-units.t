@@ -55,7 +55,27 @@ subtest '... eval and test the compiled output', sub {
     is($p->y, 20, '... got the right value for y');
     is($p->z, 5,  '... got the right value for z');
 
-    is_deeply($p->dump, { x => 10, y => 20, z => 5 }, '... got the right value from dump method');
+    ok($p->has_x, '... has a value for x');
+    ok($p->has_y, '... has a value for y');
+    ok($p->has_z,  '... has a value for z');
+
+    $p->set_x(undef);
+    $p->set_y(undef);
+    $p->set_z(undef);
+
+    ok(!$p->has_x, '... has a value for x');
+    ok(!$p->has_y, '... has a value for y');
+    ok(!$p->has_z,  '... has a value for z');
+
+    $p->set_x(100);
+    $p->set_y(200);
+    $p->set_z(50);
+
+    is($p->x, 100, '... got the right value for x');
+    is($p->y, 200, '... got the right value for y');
+    is($p->z, 50,  '... got the right value for z');
+
+    is_deeply($p->dump, { x => 100, y => 200, z => 50 }, '... got the right value from dump method');
 };
 
 done_testing;
@@ -69,8 +89,8 @@ role Dumpable {
 
 class Point does Dumpable {
 
-    has $_x :reader(x) = 0;
-    has $_y :reader(y) = 0;
+    has $_x :reader(x) :writer(set_x) :predicate(has_x) = 0;
+    has $_y :reader(y) :writer(set_y) :predicate(has_y) = 0;
 
     method BUILDARGS :strict(x => $_x, y => $_y);
 
@@ -86,6 +106,9 @@ class Point3D isa Point {
         y => super(y),
         z => $_z
     );
+
+    method set_z :writer($_z);
+    method has_z :predicate($_z);
 
     method dump ($self) {
         +{ $self->next::method->%*, z => $_z }
