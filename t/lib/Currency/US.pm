@@ -1,11 +1,9 @@
 
 class Currency::US does Comparable does Printable {
 
-    has $!amount = 0;
+    has $!amount : ro = 0;
 
-    method BUILDARGS :strict(amount => $!amount);
-
-    method amount : ro($!amount);
+    method BUILDARGS : strict(amount => $!amount);
 
     method compare ($self, $other) {
         $!amount <=> $other->amount;

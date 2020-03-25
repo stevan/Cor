@@ -1,10 +1,8 @@
 class Finance::BankAccount {
 
-    has $!balance = 0;
+    has $!balance : ro = 0;
 
-    method BUILDARGS :strict(balance => $!balance);
-
-    method balance :ro($!balance);
+    method BUILDARGS : strict( balance => $!balance );
 
     method deposit ($elf, $amount) { $!balance += $amount }
 

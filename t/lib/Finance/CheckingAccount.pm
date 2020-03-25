@@ -1,11 +1,9 @@
 
 class Finance::CheckingAccount isa Finance::BankAccount {
 
-    has $!overdraft_account;
+    has $!overdraft_account : ro;
 
-    method BUILDARGS :strict(overdraft_account => $!overdraft_account);
-
-    method overdraft_account :ro($!overdraft_account);
+    method BUILDARGS : strict( overdraft_account => $!overdraft_account );
 
     method withdraw ($self, $amount) {
 
