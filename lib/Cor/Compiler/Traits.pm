@@ -43,10 +43,8 @@ BEGIN {
 
             $method->set_signature('($)');
             $method->set_body(
-                Cor::Parser::ASTBuilder::new_method_body_at(
+                Cor::Parser::ASTBuilder::create_method_body(
                     '{ $_[0]->{q['.$slot_name.']} }',
-                    [],
-                    -1
                 )
             );
             return 1;
@@ -85,10 +83,8 @@ BEGIN {
 
             $method->set_signature('($, $)');
             $method->set_body(
-                Cor::Parser::ASTBuilder::new_method_body_at(
+                Cor::Parser::ASTBuilder::create_method_body(
                     '{ $_[0]->{q['.$slot_name.']} = $_[1] }',
-                    [],
-                    -1
                 )
             );
             return 1;
@@ -126,10 +122,8 @@ BEGIN {
             }
 
             $method->set_body(
-                Cor::Parser::ASTBuilder::new_method_body_at(
+                Cor::Parser::ASTBuilder::create_method_body(
                     '{ $_[0]->{q['.$slot_name.']} = $_[1] if @_ < 1; $_[0]->{q['.$slot_name.']}; }',
-                    [],
-                    -1
                 )
             );
             return 1;
@@ -173,10 +167,8 @@ BEGIN {
 
             $method->set_signature('($)');
             $method->set_body(
-                Cor::Parser::ASTBuilder::new_method_body_at(
+                Cor::Parser::ASTBuilder::create_method_body(
                     '{ defined $_[0]->{q['.$slot_name.']} }',
-                    [],
-                    -1
                 )
             );
             return 1;
