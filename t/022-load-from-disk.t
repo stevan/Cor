@@ -45,6 +45,8 @@ subtest '... does the compiled classes work together properly' => sub {
     isa_ok($checking, 'Finance::CheckingAccount');
     isa_ok($checking, 'Finance::BankAccount');
 
+    ok(!$checking->can('withdraw_from_overdraft'), '... we do not have a `withdraw_from_overdraft` method available');
+
     is($checking->balance, 0, '... got the checking balance we expected');
 
     $checking->deposit( 100 );

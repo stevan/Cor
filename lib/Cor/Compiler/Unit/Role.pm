@@ -127,24 +127,54 @@ sub generate_slots ($self) {
 sub generate_methods ($self) {
     my $meta = $self->{ast};
 
-    my @src;
-    push @src => '# methods';
-
+    my (@methods, @private_methods);
     foreach my $method ( $meta->methods->@* ) {
-        push @src =>
-            'sub '
-            . $method->name
-            . ($method->has_attributes
-                ? ' ' . (
-                    join ' ' => map {
-                        ':'.$_->name.'('.$_->args.')'
-                    } $method->attributes->@*
-                )
-                : '')
-            . ($method->has_signature  ? ' ' . $method->signature  : '')
-            . ($method->is_abstract
-                ? ';'
-                : ' ' . $self->_compile_method_body( $method->body ));
+        if ( $method->has_attributes && $method->has_attribute('private') ) {
+            push @private_methods => $method;
+        }
+        else {
+            push @methods => $method;
+        }
+    }
+
+    my %private_method_index = map { $_->name => undef } @private_methods;
+
+    #use Data::Dumper;
+    #warn Dumper \%private_method_index;
+
+    my @src;
+
+    if ( @private_methods ) {
+        push @src => '# private methods';
+
+        foreach my $method ( @private_methods ) {
+            push @src =>
+                'my $___' . $method->name . ' = sub '
+                . ($method->has_signature  ? ' ' . $method->signature  : '')
+                . $self->_compile_method_body( $method->body, \%private_method_index )
+                . ';';
+        }
+    }
+
+    if ( @methods ) {
+        push @src => '# methods';
+
+        foreach my $method ( @methods ) {
+            push @src =>
+                'sub '
+                . $method->name
+                . ($method->has_attributes
+                    ? ' ' . (
+                        join ' ' => map {
+                            ':'.$_->name.'('.$_->args.')'
+                        } $method->attributes->@*
+                    )
+                    : '')
+                . ($method->has_signature  ? ' ' . $method->signature  : '')
+                . ($method->is_abstract
+                    ? ';'
+                    : ' ' . $self->_compile_method_body( $method->body, \%private_method_index ));
+        }
     }
 
     return @src;
@@ -158,31 +188,59 @@ sub _apply_trait ( $self, $meta, $topic, $attribute ) {
     }
 }
 
-sub _compile_method_body ($self, $body) {
+sub _compile_method_body ($self, $body, $private_method_index) {
 
-    my $source  = $body->source;
-    my @matches = $body->slot_locations->@*;
-
-    my $source_length = length( $source );
-
+    my $source = $body->source;
     my $offset = 0;
-    foreach my $m ( @matches ) {
-        my $patch = '$_[0]->{q[' . $m->{match} . ']}';
 
-        #use Data::Dumper;
-        #warn Dumper [ $m, [
-        #    $source,
-        #    $source_length,
-        #    $m->{start} + $offset,
-        #    length( $m->{match} )
-        #    ] ];
+    if ( my @slot_matches = $body->slot_locations->@* ) {
 
-        substr(
-            $source,
-            $m->{start} + $offset,
-            length( $m->{match} ),
-        ) = $patch;
-        $offset += length( $patch ) - length( $m->{match} );
+        foreach my $m ( @slot_matches ) {
+            my $patch = '$_[0]->{q[' . $m->{match} . ']}';
+
+            #use Data::Dumper;
+            #warn Dumper [ $m, [
+            #    $source,
+            #    length( $source ),
+            #    $m->{start} + $offset,
+            #    length( $m->{match} )
+            #    ] ];
+
+            substr(
+                $source,
+                $m->{start} + $offset,
+                length( $m->{match} ),
+            ) = $patch;
+            $offset += length( $patch ) - length( $m->{match} );
+        }
+
+    }
+
+    if ( my @self_call_matches = $body->self_call_locations->@* ) {
+
+        foreach my $m ( @self_call_matches ) {
+
+            # only compile private methods ...
+            next unless exists $private_method_index->{ $m->{match} };
+
+            my $patch = '$___' . $m->{match};
+
+            #use Data::Dumper;
+            #warn Dumper [ $m, [
+            #    $source,
+            #    length( $source ),
+            #    $m->{start} + $offset,
+            #    length( $m->{match} )
+            #    ] ];
+
+            substr(
+                $source,
+                $m->{start} + $offset,
+                length( $m->{match} ),
+            ) = $patch;
+            $offset += length( $patch ) - length( $m->{match} );
+        }
+
     }
 
     return $source;

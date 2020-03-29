@@ -117,6 +117,9 @@ is_deeply(
     }',
                     slot_locations => [
                         { match => '$_z', start => 43 }
+                    ],
+                    self_call_locations => [
+                        { match => 'next::method', start => 20 }
                     ]
                 }
             }

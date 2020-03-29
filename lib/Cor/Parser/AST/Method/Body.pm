@@ -9,12 +9,14 @@ use decorators   qw[ :accessors ];
 use parent 'Cor::Parser::AST::Base';
 
 use slots (
-    slot_locations => sub { +[] },
-    source         => sub {},
+    slot_locations      => sub { +[] },
+    self_call_locations => sub { +[] },
+    source              => sub {},
 );
 
-sub slot_locations : ro;
-sub source         : ro;
+sub slot_locations      : ro;
+sub self_call_locations : ro;
+sub source              : ro;
 
 1;
 

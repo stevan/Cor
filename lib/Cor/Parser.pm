@@ -331,27 +331,61 @@ sub parse ($source) {
 
 sub _parse_method_body ($source, $meta) {
 
-    my @matches;
+    my (@slot_matches, @self_call_matches);
 
-    my ($match, $pos);
-    while ( $source =~ /((?&PerlVariableScalar)) (?{ $match = $^N; $pos = pos(); }) $COR_RULES/gx ) {
+    my ($slot_match, $slot_pos, $self_call_match, $self_call_pos);
 
-        next unless $meta->has_slot( $match );
+    while ( $source =~ /\$self\-\>((?&PerlQualifiedIdentifier)) (?{ $self_call_match = $^N; $self_call_pos = pos(); }) $COR_RULES/gx ) {
 
         # TODO: improve error handling here - SL
         if ( $PPR::ERROR ) {
             warn $PPR::ERROR;
         }
 
-        push @matches => {
-            match => "$match",
-            start => ($pos - length( $match ))
+        # NOTE:
+        # doing static analysis on this would not
+        # be as easy since there can be method
+        # calls from the superclass, so this would
+        # require some degree of class MRO traversal
+        # in order to determine if the method call
+        # is valid. For now we just catch the ones
+        # that we know we have as locally defined
+        # methods. So in this case we just capture
+        # all of them and let the compiler sort it
+        # out when generating the code.
+
+        push @self_call_matches => {
+            match => "$self_call_match",
+            start => ($self_call_pos - length( $self_call_match ))
         };
 
-        ($match, $pos) = (undef, undef);
+        ($self_call_match, $self_call_pos) = (undef, undef);
     }
 
-    return ($source, \@matches);
+    while ( $source =~ /((?&PerlVariableScalar)) (?{ $slot_match = $^N; $slot_pos = pos(); }) $COR_RULES/gx ) {
+
+        # TODO: improve error handling here - SL
+        if ( $PPR::ERROR ) {
+            warn $PPR::ERROR;
+        }
+
+
+        # TODO:
+        # this could be used to perform static
+        # anaylsis and explode a compile time
+        # error if the slot is not defined in
+        # the same class
+        next unless $meta->has_slot( $slot_match );
+
+        push @slot_matches => {
+            match => "$slot_match",
+            start => ($slot_pos - length( $slot_match ))
+        };
+
+        ($slot_match, $slot_pos) = (undef, undef);
+    }
+
+    return ($source, \@slot_matches, \@self_call_matches);
 }
 
 sub _parse_attributes ($source) {

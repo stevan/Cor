@@ -10,10 +10,14 @@ class Finance::CheckingAccount isa Finance::BankAccount {
         my $overdraft_amount = $amount - $self->balance;
 
         if ( $!overdraft_account && $overdraft_amount > 0 ) {
-            $!overdraft_account->withdraw( $overdraft_amount );
-            $self->deposit( $overdraft_amount );
+            $self->withdraw_from_overdraft( $overdraft_amount );
         }
 
         $self->next::method( $amount );
+    }
+
+    method withdraw_from_overdraft : private ($self, $amount) {
+        $!overdraft_account->withdraw( $amount );
+        $self->deposit( $amount );
     }
 }

@@ -67,7 +67,6 @@ is($point->methods->[2]->end_location->char_at, 323, '... got the right end char
 is($point->methods->[2]->body->start_location->char_at, 296, '... got the right start char number');
 is($point->methods->[2]->body->end_location->char_at, 323, '... got the right end char number');
 
-
 is_deeply(
     $point->dump,
     {
@@ -165,6 +164,9 @@ is_deeply(
     }',
                     slot_locations => [
                         { match => '$_z', start => 43 }
+                    ],
+                    self_call_locations => [
+                        { match => 'next::method', start => 20 }
                     ]
                 }
             }

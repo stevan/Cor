@@ -17,6 +17,8 @@ sub build ($package_name, %opts) {
     my $asts     = Cor::Parser::parse( $original );
     my $compiler = Cor::Compiler->new( asts => $asts );
 
+    #use Data::Dumper; warn Dumper $asts;
+
     my @built;
 
     if ( $opts{recurse} ) {

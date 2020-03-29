@@ -29,6 +29,8 @@ subtest '... verify the AST object' => sub {
         my $ast = $matches->[1];
         isa_ok($ast, 'Cor::Parser::AST::Class');
         is($ast->name, 'Point', '... the AST is for the Point class');
+
+        #warn Dumper $ast->dump;
     }
     {
         my $ast = $matches->[2];
@@ -50,6 +52,9 @@ subtest '... eval and test the compiled output', sub {
     my $p = Point3D->new( x => 10, y => 20, z => 5 );
     isa_ok($p, 'Point3D');
     isa_ok($p, 'Point');
+
+    ok(!$p->can('dump_x'), '... the object has no dump_x method');
+    ok(!$p->can('dump_y'), '... the object has no dump_y method');
 
     is($p->x, 10, '... got the right value for x');
     is($p->y, 20, '... got the right value for y');
@@ -94,7 +99,12 @@ class Point does Dumpable {
 
     method BUILDARGS :strict(x => $_x, y => $_y);
 
-    method dump { +{ x => $_x, y => $_y } }
+    method dump_x : private { 0+$_x }
+    method dump_y : private { 0+$_y }
+
+    method dump ($self) { +{ x => $self->dump_x(), y => $self->dump_y() } }
+
+    method to_JSON ($self) { $self->dump() }
 }
 
 class Point3D isa Point {
@@ -110,8 +120,10 @@ class Point3D isa Point {
     method set_z :writer($_z);
     method has_z :predicate($_z);
 
+    method dump_z : private { 0+$_z }
+
     method dump ($self) {
-        +{ $self->next::method->%*, z => $_z }
+        +{ $self->next::method->%*, z => $self->dump_z() }
     }
 
 }
