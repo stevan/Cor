@@ -5,6 +5,8 @@ use v5.24;
 use warnings;
 use experimental qw[ signatures ];
 
+use Cor::Parser::AST::Document;
+
 use Cor::Parser::AST::Role;
 use Cor::Parser::AST::Class;
 
@@ -17,6 +19,13 @@ use Cor::Parser::AST::Method::Body;
 
 use Cor::Parser::AST::Location;
 use Cor::Parser::AST::Attribute;
+
+sub new_document ( %args ) {
+    Cor::Parser::AST::Document->new(
+        %args,
+        start_location => new_location_at( 0 )
+    );
+}
 
 sub new_location_at ($char_at) {
     Cor::Parser::AST::Location->new( char_at => $char_at )

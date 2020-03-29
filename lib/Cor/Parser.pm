@@ -11,6 +11,7 @@ use List::Util;
 
 use Cor::Parser::ASTBuilder;
 
+our @_COR_USE_STATEMENTS;
 our $_COR_CURRENT_META;
 our $_COR_CURRENT_REFERENCE;
 our $_COR_CURRENT_SLOT;
@@ -115,6 +116,10 @@ BEGIN {
     }x;
 
     $COR_GRAMMAR = qr{
+
+        (?:
+            ((?&PerlUseStatement)) (?{ push @_COR_USE_STATEMENTS => $^N; })
+        )?+
 
         (
             # Is it a Role or a Class ....
@@ -312,6 +317,8 @@ sub parse ($source) {
 
     local $_COR_CURRENT_META = undef;
 
+    my $source_length = length($source);
+
     my @matches;
 
     while ( $source =~ /$COR_GRAMMAR/gx ) {
@@ -324,7 +331,18 @@ sub parse ($source) {
         push @matches => $_COR_CURRENT_META;
     }
 
-    return \@matches;
+    my $doc = Cor::Parser::ASTBuilder::new_document(
+        use_statements => [ @_COR_USE_STATEMENTS ],
+        asts           => [ @matches ],
+    );
+
+
+    Cor::Parser::ASTBuilder::set_end_location(
+        $doc,
+        $source_length,
+    );
+
+    return $doc;
 }
 
 # ...

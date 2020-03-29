@@ -14,9 +14,22 @@ BEGIN {
 
 my $src = join '' => <DATA>;
 
-my $matches = Cor::Parser::parse( $src );
+my $doc = Cor::Parser::parse( $src );
 
-my ($dumpable, $point, $point_3d) = $matches->@*;
+#warn Dumper $doc;
+
+is_deeply(
+    $doc->use_statements,
+    [
+        'use v5.24;',
+        'use Scalar::Utils;',
+        'use List::Utils;',
+        'use Other::Module;',
+    ],
+    '... got the expected use statements'
+);
+
+my ($dumpable, $point, $point_3d) = $doc->asts->@*;
 
 # role definition
 is($dumpable->start_location->char_at, 68, '... got the right start char number');
@@ -179,9 +192,10 @@ done_testing;
 
 __DATA__
 
-package Something {
-    # ignore stuff that is not relevant ...
-}
+use v5.24;
+use Scalar::Utils;
+use List::Utils;
+use Other::Module;
 
 role Dumpable v0.01 {
     # can include comments ...

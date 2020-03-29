@@ -18,27 +18,27 @@ my $GOT;
 subtest '... verify the AST object' => sub {
 
     my $original = join '' => <DATA>;
-    my $matches  = Cor::Parser::parse( $original );
+    my $doc      = Cor::Parser::parse( $original );
 
     {
-        my $ast = $matches->[0];
+        my $ast = $doc->asts->[0];
         isa_ok($ast, 'Cor::Parser::AST::Role');
         is($ast->name, 'Dumpable', '... the AST is for the Dumpable role');
     }
     {
-        my $ast = $matches->[1];
+        my $ast = $doc->asts->[1];
         isa_ok($ast, 'Cor::Parser::AST::Class');
         is($ast->name, 'Point', '... the AST is for the Point class');
 
         #warn Dumper $ast->dump;
     }
     {
-        my $ast = $matches->[2];
+        my $ast = $doc->asts->[2];
         isa_ok($ast, 'Cor::Parser::AST::Class');
         is($ast->name, 'Point3D', '... the AST is for the Point3D class');
     }
 
-    my $compiler = Cor::Compiler->new( asts => $matches );
+    my $compiler = Cor::Compiler->new( asts => $doc->asts );
 
     $GOT = $compiler->compile;
 

@@ -14,8 +14,8 @@ sub build ($package_name, %opts) {
         or die "Could not find [$package_name] in \@INC paths";
 
     my $original = read_source_file( $full_package_path );
-    my $asts     = Cor::Parser::parse( $original );
-    my $compiler = Cor::Compiler->new( asts => $asts );
+    my $doc      = Cor::Parser::parse( $original );
+    my $compiler = Cor::Compiler->new( asts => $doc->asts );
 
     #use Data::Dumper; warn Dumper $asts;
 

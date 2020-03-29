@@ -18,12 +18,12 @@ my $GOT;
 subtest '... verify the AST object' => sub {
 
     my $original = join '' => <DATA>;
-    my $matches  = Cor::Parser::parse( $original );
-    my $compiler = Cor::Compiler->new( asts => $matches );
+    my $doc      = Cor::Parser::parse( $original );
+    my $compiler = Cor::Compiler->new( asts => $doc->asts );
 
     $GOT = $compiler->compile;
 
-    my ($ast) = $matches->@*;
+    my ($ast) = $doc->asts->@*;
     isa_ok($ast, 'Cor::Parser::AST::Class');
     is($ast->name, 'Point', '... the AST is for the Point class');
 };
