@@ -9,7 +9,7 @@ use decorators   qw[ :accessors ];
 use parent 'Cor::Parser::AST::Base';
 
 use slots (
-    slot_locations => sub { +{} },
+    slot_locations => sub { +[] },
     source         => sub {},
 );
 
