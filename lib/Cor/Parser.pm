@@ -335,6 +335,11 @@ sub _parse_method_body ($source, $meta) {
 
     my ($slot_match, $slot_pos, $self_call_match, $self_call_pos);
 
+    # FIXME:
+    # this is not ideal, it assumes that $self
+    # is available, and this may not always be
+    # the case, so I think we need to make some
+    # kind of other arragements.
     while ( $source =~ /\$self\-\>((?&PerlQualifiedIdentifier)) (?{ $self_call_match = $^N; $self_call_pos = pos(); }) $COR_RULES/gx ) {
 
         # TODO: improve error handling here - SL

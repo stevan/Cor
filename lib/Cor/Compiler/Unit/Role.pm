@@ -196,6 +196,13 @@ sub _compile_method_body ($self, $body, $private_method_index) {
     if ( my @slot_matches = $body->slot_locations->@* ) {
 
         foreach my $m ( @slot_matches ) {
+            # FIXME:
+            # this is not ideal, it assumes that @_
+            # is available, and in newer versions of
+            # perl, this may not always be the case
+            # so I think we need to make some kind
+            # of other arrangements.
+            # - SL
             my $patch = '$_[0]->{q[' . $m->{match} . ']}';
 
             #use Data::Dumper;
