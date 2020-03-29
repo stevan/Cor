@@ -15,7 +15,7 @@ sub build ($package_name, %opts) {
 
     my $original = read_source_file( $full_package_path );
     my $doc      = Cor::Parser::parse( $original );
-    my $compiler = Cor::Compiler->new( asts => $doc->asts );
+    my $compiler = Cor::Compiler->new( doc => $doc );
 
     #use Data::Dumper; warn Dumper $asts;
 

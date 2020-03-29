@@ -13,7 +13,7 @@ use Cor::Compiler::Traits;
 use parent 'UNIVERSAL::Object';
 
 use slots (
-    asts   => sub {},
+    doc    => sub {},
     traits => sub { +{} },
     # ...
     _units        => sub {},
@@ -22,7 +22,7 @@ use slots (
 
 sub BUILD ($self, $params) {
 
-    my @asts          = $self->{asts}->@*;
+    my @asts          = $self->{doc}->asts->@*;
     my %package_index = map { $_->name => undef } @asts;
 
     # combine user supplied traits with core ones ...
@@ -48,8 +48,10 @@ sub list_dependencies ($self) { map $_->name, $self->{_dependencies}->@* }
 
 sub compile ($self) {
 
-    my @compiled = map { 'use '.$_->name.';' } $self->{_dependencies}->@*;
+    my @compiled;
 
+    push @compiled => $self->{doc}->use_statements->@*;
+    push @compiled => map { 'use '.$_->name.';' } $self->{_dependencies}->@*;
     push @compiled => map $_->generate_source, $self->{_units}->@*;
 
     return join "\n" => @compiled;

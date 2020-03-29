@@ -19,7 +19,7 @@ subtest '... verify the AST object' => sub {
 
     my $original = join '' => <DATA>;
     my $doc      = Cor::Parser::parse( $original );
-    my $compiler = Cor::Compiler->new( asts => $doc->asts );
+    my $compiler = Cor::Compiler->new( doc => $doc );
 
     $GOT = $compiler->compile;
 
@@ -28,7 +28,8 @@ subtest '... verify the AST object' => sub {
     is($ast->name, 'Point', '... the AST is for the Point class');
 };
 
-my $EXPECTED = 'package Point 0.01 {
+my $EXPECTED = 'use Scalar::Util;
+package Point 0.01 {
 use v5.24;
 use warnings;
 use experimental qw[ signatures ];
@@ -70,6 +71,8 @@ subtest '... eval and test the compiled output', sub {
 done_testing;
 
 __DATA__
+
+use Scalar::Util;
 
 class Point v0.01 {
 
