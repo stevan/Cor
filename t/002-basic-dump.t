@@ -145,13 +145,13 @@ __DATA__
 
 use v5.24;
 use Scalar::Utils;
-use List::Utils;
-use Other::Module;
 
 role Dumpable v0.01 {
     # can include comments ...
     method dump;
 }
+
+use List::Utils;
 
 class Point v0.01 isa UNIVERSAL::Object does Dumpable {
 
@@ -163,6 +163,8 @@ class Point v0.01 isa UNIVERSAL::Object does Dumpable {
 
     method dump { +{ x => $_x, y => $_y } }
 }
+
+use Other::Module;
 
 class Point3D v0.01 isa Point {
 
