@@ -307,13 +307,11 @@ BEGIN {
                         |
                         (?&PerlMethodDeclaration)
                         |
+                        (?&PerlVariableDeclaration) (?{ die 'my/state/our variables are not allowed inside class/role declarations' })
+                        |
                         (?&PerlSubroutineDeclaration) (?{ die 'Subroutines are not allowed inside class/role declarations' })
                         |
                         (?&PerlUseStatement) (?{ die 'use statements are not allowed inside class/role declarations' })
-                        |
-                        (?&PerlPackageDeclaration) (?{ die 'Pacakages are not allowed inside class/role declarations' })
-                        |
-                        (?&PerlVariableDeclaration) (?{ die 'my/state/our variables are not allowed inside class/role declarations' })
                     )
                     (?&PerlOWS)
                 )*+)
