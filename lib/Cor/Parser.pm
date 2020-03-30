@@ -67,6 +67,129 @@ BEGIN {
                 \{  (?>(?&PerlStatementSequence))  \}
             )
 
+            (?<PerlSlotDeclaration>
+                (has) (?{
+                        $_COR_CURRENT_META->add_slot(
+                            $_COR_CURRENT_SLOT = Cor::Parser::ASTBuilder::new_slot_at( pos() - length($^N) )
+                        );
+                    })
+                (?&PerlNWS)
+                    (
+                        ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_SLOT->set_type( $^N ) })
+                        (?&PerlNWS)
+                    )?
+                    ((?&PerlSlotIdentifier)) (?{ $_COR_CURRENT_SLOT->set_name( $^N ) })
+                (?&PerlOWS)
+                    (?:
+                        (?>
+                            ((?&PerlAttributes)) (?{
+                                my $pos            = pos();
+                                my $attributes_src = $^N;
+
+                                my @attributes = Cor::Parser::ASTBuilder::new_attributes_at(
+                                    _parse_attributes( $attributes_src ),
+                                    $pos
+                                );
+
+                                #use Data::Dumper;
+                                #warn Dumper \@attributes;
+
+                                $_COR_CURRENT_SLOT->set_attributes( \@attributes )
+                            })
+                        )
+                        (?&PerlOWS)
+                    )?+
+                (?>
+                    (;) (?{
+                        Cor::Parser::ASTBuilder::set_end_location(
+                            $_COR_CURRENT_SLOT,
+                            pos() - length($^N),
+                        );
+                    })
+                    |
+                    (
+                        (?&PerlAssignmentOperator)
+                        (?&PerlOWS)
+                        ((?&PerlSlotDefault)) (?{ $_COR_CURRENT_SLOT->set_default( $^N ) })
+                        (;) (?{
+                            Cor::Parser::ASTBuilder::set_end_location(
+                                $_COR_CURRENT_SLOT,
+                                pos() - length($^N),
+                            );
+                        })
+                    )
+                )
+            )
+
+            (?<PerlMethodDeclaration>
+                (method) (?{
+                    $_COR_CURRENT_META->add_method(
+                        $_COR_CURRENT_METHOD = Cor::Parser::ASTBuilder::new_method_at( pos() - length($^N) )
+                    );
+                })
+                (?&PerlOWS)
+                ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_METHOD->set_name( $^N ); })
+                (?&PerlOWS)
+                (?:
+                    (?>
+                        ((?&PerlAttributes)) (?{
+
+                            my $pos            = pos();
+                            my $attributes_src = $^N;
+
+                            my @attributes = Cor::Parser::ASTBuilder::new_attributes_at(
+                                _parse_attributes( $attributes_src ),
+                                $pos
+                            );
+
+                            #use Data::Dumper;
+                            #warn Dumper \@attributes;
+
+                            $_COR_CURRENT_METHOD->set_attributes( \@attributes )
+                        })
+                    )
+                    (?&PerlOWS)
+                )?+
+                (?:
+                    (?>
+                        ((?&PerlParenthesesList)) (?{ $_COR_CURRENT_METHOD->set_signature( $^N ) })
+                    )
+                    (?&PerlOWS)
+                )?+
+                (?>
+                    (\;) (?{
+                        $_COR_CURRENT_METHOD->set_is_abstract( 1 );
+
+                        Cor::Parser::ASTBuilder::set_end_location(
+                            $_COR_CURRENT_METHOD,
+                            pos() - length($^N),
+                        );
+                    })
+                    |
+                    ((?&PerlMethodBlock)) (?{
+
+                        my $pos      = pos();
+                        my $body_src = $^N;
+
+                        my $body = Cor::Parser::ASTBuilder::new_method_body_at(
+                            _parse_method_body(
+                                $body_src,
+                                $_COR_CURRENT_META
+                            ),
+                            ($pos - length($body_src)),
+                        );
+
+                        $_COR_CURRENT_METHOD->set_body( $body );
+
+                        Cor::Parser::ASTBuilder::set_end_location( $body, $pos );
+                        Cor::Parser::ASTBuilder::set_end_location(
+                            $_COR_CURRENT_METHOD,
+                            pos(), # XXX - need to use use just pos here, not sure why
+                        );
+                    })
+                )
+            )
+
             # REDEFINE
 
             (?<PerlVariableScalar>
@@ -179,129 +302,22 @@ BEGIN {
         ( \{
             (?&PerlOWS)
                 ((?:
-                    (has) (?{
-                        $_COR_CURRENT_META->add_slot(
-                            $_COR_CURRENT_SLOT = Cor::Parser::ASTBuilder::new_slot_at( pos() - length($^N) )
-                        );
-                    })
-                    (?&PerlNWS)
-                        (
-                            ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_SLOT->set_type( $^N ) })
-                            (?&PerlNWS)
-                        )?
-                        ((?&PerlSlotIdentifier)) (?{ $_COR_CURRENT_SLOT->set_name( $^N ) })
-                    (?&PerlOWS)
-                        (?:
-                            (?>
-                                ((?&PerlAttributes)) (?{
-                                    my $pos            = pos();
-                                    my $attributes_src = $^N;
-
-                                    my @attributes = Cor::Parser::ASTBuilder::new_attributes_at(
-                                        _parse_attributes( $attributes_src ),
-                                        $pos
-                                    );
-
-                                    #use Data::Dumper;
-                                    #warn Dumper \@attributes;
-
-                                    $_COR_CURRENT_SLOT->set_attributes( \@attributes )
-                                })
-                            )
-                            (?&PerlOWS)
-                        )?+
                     (?>
-                        (;) (?{
-                            Cor::Parser::ASTBuilder::set_end_location(
-                                $_COR_CURRENT_SLOT,
-                                pos() - length($^N),
-                            );
-                        })
+                        (?&PerlSlotDeclaration)
                         |
-                        (
-                            (?&PerlAssignmentOperator)
-                            (?&PerlOWS)
-                            ((?&PerlSlotDefault)) (?{ $_COR_CURRENT_SLOT->set_default( $^N ) })
-                            (;) (?{
-                                Cor::Parser::ASTBuilder::set_end_location(
-                                    $_COR_CURRENT_SLOT,
-                                    pos() - length($^N),
-                                );
-                            })
-                        )
+                        (?&PerlMethodDeclaration)
+                        |
+                        (?&PerlSubroutineDeclaration) (?{ die 'Subroutines are not allowed inside class/role declarations' })
+                        |
+                        (?&PerlUseStatement) (?{ die 'use statements are not allowed inside class/role declarations' })
+                        |
+                        (?&PerlPackageDeclaration) (?{ die 'Pacakages are not allowed inside class/role declarations' })
+                        |
+                        (?&PerlVariableDeclaration) (?{ die 'my/state/our variables are not allowed inside class/role declarations' })
                     )
                     (?&PerlOWS)
                 )*+)
             (?&PerlOWS)
-            ((?:
-                (method) (?{
-                    $_COR_CURRENT_META->add_method(
-                        $_COR_CURRENT_METHOD = Cor::Parser::ASTBuilder::new_method_at( pos() - length($^N) )
-                    );
-                })
-                (?&PerlOWS)
-                ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_METHOD->set_name( $^N ); })
-                (?&PerlOWS)
-                (?:
-                    (?>
-                        ((?&PerlAttributes)) (?{
-
-                            my $pos            = pos();
-                            my $attributes_src = $^N;
-
-                            my @attributes = Cor::Parser::ASTBuilder::new_attributes_at(
-                                _parse_attributes( $attributes_src ),
-                                $pos
-                            );
-
-                            #use Data::Dumper;
-                            #warn Dumper \@attributes;
-
-                            $_COR_CURRENT_METHOD->set_attributes( \@attributes )
-                        })
-                    )
-                    (?&PerlOWS)
-                )?+
-                (?:
-                    (?>
-                        ((?&PerlParenthesesList)) (?{ $_COR_CURRENT_METHOD->set_signature( $^N ) })
-                    )
-                    (?&PerlOWS)
-                )?+
-                (?>
-                    (\;) (?{
-                        $_COR_CURRENT_METHOD->set_is_abstract( 1 );
-
-                        Cor::Parser::ASTBuilder::set_end_location(
-                            $_COR_CURRENT_METHOD,
-                            pos() - length($^N),
-                        );
-                    })
-                    |
-                    ((?&PerlMethodBlock)) (?{
-
-                        my $pos      = pos();
-                        my $body_src = $^N;
-
-                        my $body = Cor::Parser::ASTBuilder::new_method_body_at(
-                            _parse_method_body(
-                                $body_src,
-                                $_COR_CURRENT_META
-                            ),
-                            ($pos - length($body_src)),
-                        );
-
-                        $_COR_CURRENT_METHOD->set_body( $body );
-
-                        Cor::Parser::ASTBuilder::set_end_location( $body, $pos );
-                        Cor::Parser::ASTBuilder::set_end_location(
-                            $_COR_CURRENT_METHOD,
-                            pos(), # XXX - need to use use just pos here, not sure why
-                        );
-                    })
-                )
-                (?&PerlOWS)
-            )*+)
         (\}) (?{
             Cor::Parser::ASTBuilder::set_end_location(
                 $_COR_CURRENT_META,
