@@ -24,6 +24,7 @@ sub preamble ($self) {
         'use experimental qw[ signatures ];',
         'use decorators qw[ :accessors :constructor ];',
         'use MOP;',
+        'use roles ();', # for roles::DOES ...
     )
 }
 
