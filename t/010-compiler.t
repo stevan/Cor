@@ -33,8 +33,9 @@ package Point 0.01 {
 use v5.24;
 use warnings;
 use experimental qw[ signatures ];
-use decorators qw[ :accessors :constructor ];
+use decorators qw[ :constructor ];
 use MOP;
+use roles ();
 use UNIVERSAL::Object;
 # superclasses
 our @ISA; BEGIN { @ISA = qw[UNIVERSAL::Object] }

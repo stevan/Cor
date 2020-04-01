@@ -22,7 +22,7 @@ sub preamble ($self) {
         'use v5.24;',
         'use warnings;',
         'use experimental qw[ signatures ];',
-        'use decorators qw[ :accessors :constructor ];',
+        'use decorators qw[ :constructor ];',
         'use MOP;',
         'use roles ();', # for roles::DOES ...
     )
