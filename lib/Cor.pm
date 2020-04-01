@@ -8,6 +8,8 @@ use experimental qw[ signatures postderef ];
 use Cor::Parser;
 use Cor::Compiler;
 
+use constant DEBUG => $ENV{COR_DEBUG} // 0;
+
 sub build ($package_name, %opts) {
 
     my $full_package_path = find_module_in_INC( $package_name )
