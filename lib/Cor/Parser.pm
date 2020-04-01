@@ -329,7 +329,13 @@ BEGIN {
 
 sub parse ($source) {
 
-    local $_COR_CURRENT_META = undef;
+    # localize all the globals ...
+
+    local @_COR_USE_STATEMENTS;
+    local $_COR_CURRENT_META;
+    local $_COR_CURRENT_REFERENCE;
+    local $_COR_CURRENT_SLOT;
+    local $_COR_CURRENT_METHOD;
 
     my $source_length = length($source);
 
