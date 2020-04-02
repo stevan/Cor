@@ -94,13 +94,11 @@ role Dumpable {
 
 class Point does Dumpable {
 
-    has $_x :reader(x) :writer(set_x) :predicate(has_x) = 0;
-    has $_y :reader(y) :writer(set_y) :predicate(has_y) = 0;
+    has $x :reader :writer(set_x) :predicate = 0;
+    has $y :reader :writer(set_y) :predicate = 0;
 
-    method BUILDARGS :strict(x => $_x, y => $_y);
-
-    method dump_x : private { 0+$_x }
-    method dump_y : private { 0+$_y }
+    method dump_x : private { 0+$x }
+    method dump_y : private { 0+$y }
 
     method dump ($self) { +{ x => $self->dump_x(), y => $self->dump_y() } }
 
@@ -109,18 +107,12 @@ class Point does Dumpable {
 
 class Point3D isa Point {
 
-    has $_z :reader(z) = 0;
+    has $z :reader = 0;
 
-    method BUILDARGS :strict(
-        x => super(x),
-        y => super(y),
-        z => $_z
-    );
+    method set_z :writer($z);
+    method has_z :predicate($z);
 
-    method set_z :writer($_z);
-    method has_z :predicate($_z);
-
-    method dump_z : private { 0+$_z }
+    method dump_z : private { 0+$z }
 
     method dump ($self) {
         +{ $self->next::method->%*, z => $self->dump_z() }

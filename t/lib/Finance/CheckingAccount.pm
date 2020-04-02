@@ -3,8 +3,6 @@ class Finance::CheckingAccount isa Finance::BankAccount {
 
     has $!overdraft_account : ro;
 
-    method BUILDARGS : strict( overdraft_account => $!overdraft_account );
-
     method withdraw ($self, $amount) {
 
         my $overdraft_amount = $amount - $self->balance;

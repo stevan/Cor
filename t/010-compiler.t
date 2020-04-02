@@ -33,23 +33,28 @@ package Point 0.01 {
 use v5.24;
 use warnings;
 use experimental qw[ signatures ];
-use decorators qw[ :constructor ];
 use MOP;
 use roles ();
 use UNIVERSAL::Object;
 # superclasses
 our @ISA; BEGIN { @ISA = qw[UNIVERSAL::Object] }
+# constructor
+sub BUILDARGS ($class, %args) {
+my %proto;
+$proto{q[$x]} = $args{q[x]} if exists $args{q[x]};
+$proto{q[$y]} = $args{q[y]} if exists $args{q[y]};
+return \%proto;
+}
 # slots
 our %HAS; BEGIN { %HAS = (
-    q[$_x] => sub { 0 },
-    q[$_y] => sub { 0 },
+    q[$x] => sub { 0 },
+    q[$y] => sub { 0 },
 ) }
 # methods
-sub BUILDARGS :strict(x => $_x, y => $_y);
-sub x ($) { $_[0]->{q[$_x]} }
-sub y ($) { $_[0]->{q[$_y]} }
+sub x ($) { $_[0]->{q[$x]} }
+sub y ($) { $_[0]->{q[$y]} }
 sub dump {
-        return +{ x => $_[0]->{q[$_x]}, y => $_[0]->{q[$_y]} };
+        return +{ x => $_[0]->{q[$x]}, y => $_[0]->{q[$y]} };
     }
 1;
 }';
@@ -77,16 +82,14 @@ use Scalar::Util;
 
 class Point v0.01 {
 
-    has $_x = 0;
-    has $_y = 0;
+    has $x = 0;
+    has $y = 0;
 
-    method BUILDARGS :strict(x => $_x, y => $_y);
-
-    method x :ro($_x);
-    method y :ro($_y);
+    method x :ro($x);
+    method y :ro($y);
 
     method dump {
-        return +{ x => $_x, y => $_y };
+        return +{ x => $x, y => $y };
     }
 }
 

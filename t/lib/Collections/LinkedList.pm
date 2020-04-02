@@ -1,8 +1,8 @@
 class Collections::LinkedList {
 
-    has $!head  : ro;
-    has $!tail  : ro;
-    has $!count : ro = 0;
+    has $!head  : private : ro;
+    has $!tail  : private : ro;
+    has $!count : private : ro = 0;
 
     method append ($self, $node) {
         unless($!tail) {

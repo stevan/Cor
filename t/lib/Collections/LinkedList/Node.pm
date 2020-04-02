@@ -1,11 +1,9 @@
 
 class Collections::LinkedList::Node {
 
-    has $!previous;
-    has $!next;
+    has $!previous : private;
+    has $!next     : private;
     has $!value;
-
-    method BUILDARGS : strict(value => $!value);
 
     method get_previous : ro($!previous);
     method set_previous : wo($!previous);
