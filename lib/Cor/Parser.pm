@@ -103,7 +103,6 @@ BEGIN {
                             $_COR_CURRENT_SLOT,
                             pos() - length($^N),
                         );
-                        $_COR_CURRENT_META->add_slot( $_COR_CURRENT_SLOT );
                     })
                     |
                     (
@@ -115,10 +114,10 @@ BEGIN {
                                 $_COR_CURRENT_SLOT,
                                 pos() - length($^N),
                             );
-                            $_COR_CURRENT_META->add_slot( $_COR_CURRENT_SLOT );
                         })
                     )
                 )
+                ) (?{ $_COR_CURRENT_META->add_slot( $_COR_CURRENT_SLOT ); })
             )
 
             (?<PerlMethodDeclaration>
@@ -162,7 +161,6 @@ BEGIN {
                             $_COR_CURRENT_METHOD,
                             pos() - length($^N),
                         );
-                        $_COR_CURRENT_META->add_method( $_COR_CURRENT_METHOD );
                     })
                     |
                     ((?&PerlMethodBlock)) (?{
@@ -185,9 +183,9 @@ BEGIN {
                             $_COR_CURRENT_METHOD,
                             pos(), # XXX - need to use use just pos here, not sure why
                         );
-                        $_COR_CURRENT_META->add_method( $_COR_CURRENT_METHOD );
                     })
                 )
+                ) (?{ $_COR_CURRENT_META->add_method( $_COR_CURRENT_METHOD ); })
             )
 
             # REDEFINE
