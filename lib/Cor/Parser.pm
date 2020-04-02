@@ -31,8 +31,6 @@ BEGIN {
                     (\$\.(?&PerlIdentifier))
                     |
                     (\$(?&PerlIdentifier))
-                    |
-                    (?&PerlIdentifier)
                 )
             )
 
