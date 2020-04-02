@@ -6,6 +6,8 @@ use warnings;
 use experimental qw[ signatures postderef ];
 use decorators   qw[ :accessors ];
 
+use List::Util;
+
 use parent 'UNIVERSAL::Object';
 use roles  'Cor::Parser::AST::Role::HasLocation';
 
@@ -52,6 +54,10 @@ sub has_methods ($self) { !! $self->{methods}->@* }
 sub has_role   ($self, $name) { !! scalar grep $_->name eq $name, $self->{roles}->@*   }
 sub has_slot   ($self, $name) { !! scalar grep $_->name eq $name, $self->{slots}->@*   }
 sub has_method ($self, $name) { !! scalar grep $_->name eq $name, $self->{methods}->@* }
+
+sub get_role   ($self, $name) { List::Util::first { $_->name eq $name } $self->{roles}->@*   }
+sub get_slot   ($self, $name) { List::Util::first { $_->name eq $name } $self->{slots}->@*   }
+sub get_method ($self, $name) { List::Util::first { $_->name eq $name } $self->{methods}->@* }
 
 1;
 
