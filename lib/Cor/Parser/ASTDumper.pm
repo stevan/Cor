@@ -8,7 +8,7 @@ use experimental qw[ signatures ];
 use roles        ();
 use Scalar::Util ();
 
-sub dump_ast ($ast) {
+sub dump_AST ($ast) {
 
     my %copy = %$ast; # fuck encapsulation
 
@@ -32,7 +32,7 @@ sub dump_ast ($ast) {
                     #warn "looking at @ $_ (\$copy{ $k }) \n";
                     if ( Scalar::Util::blessed( $_ ) ) {
                         #warn "dumping array item";
-                        dump_ast( $_ );
+                        dump_AST( $_ );
                     }
                     else {
                         $_;
@@ -46,7 +46,7 @@ sub dump_ast ($ast) {
         }
         elsif ( Scalar::Util::blessed( $copy{ $k } ) && $copy{ $k }->roles::DOES('Cor::Parser::AST::Role::HasLocation') ) {
             # dump recursively
-            $copy{ $k } = dump_ast( $copy{ $k } );
+            $copy{ $k } = dump_AST( $copy{ $k } );
         }
     }
     return \%copy;

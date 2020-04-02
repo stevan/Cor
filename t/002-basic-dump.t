@@ -31,7 +31,7 @@ is_deeply(
 my ($dumpable, $point, $point_3d) = $doc->asts->@*;
 
 is_deeply(
-    Cor::Parser::ASTDumper::dump_ast( $dumpable ),
+    Cor::Parser::ASTDumper::dump_AST( $dumpable ),
     {
         name    => 'Dumpable',
         version => 'v0.01',
@@ -41,7 +41,7 @@ is_deeply(
 );
 
 is_deeply(
-    Cor::Parser::ASTDumper::dump_ast( $point ),
+    Cor::Parser::ASTDumper::dump_AST( $point ),
     {
         'name'         => 'Point',
         'version'      => 'v0.01',
@@ -96,7 +96,7 @@ is_deeply(
 );
 
 is_deeply(
-    Cor::Parser::ASTDumper::dump_ast( $point_3d ),
+    Cor::Parser::ASTDumper::dump_AST( $point_3d ),
     {
         'name'         => 'Point3D',
         'version'      => 'v0.01',
