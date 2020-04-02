@@ -10,6 +10,7 @@ use Data::Dumper;
 BEGIN {
     use_ok('Cor');
     use_ok('Cor::Parser');
+    use_ok('Cor::Parser::ASTDumper');
 }
 
 my $src = join '' => <DATA>;
@@ -40,7 +41,7 @@ is($dumpable->methods->[0]->start_location->char_at, 125, '... got the right sta
 is($dumpable->methods->[0]->end_location->char_at, 136, '... got the right end char number');
 
 is_deeply(
-    $dumpable->dump,
+    Cor::Parser::ASTDumper::dump_ast( $dumpable ),
     {
         name    => 'Dumpable',
         version => 'v0.01',
@@ -81,7 +82,7 @@ is($point->methods->[2]->body->start_location->char_at, 296, '... got the right 
 is($point->methods->[2]->body->end_location->char_at, 323, '... got the right end char number');
 
 is_deeply(
-    $point->dump,
+    Cor::Parser::ASTDumper::dump_ast( $point ),
     {
         'name'         => 'Point',
         'version'      => 'v0.01',
@@ -150,7 +151,7 @@ is($point_3d->methods->[1]->body->start_location->char_at, 426, '... got the rig
 is($point_3d->methods->[1]->body->end_location->char_at, 480, '... got the right end char number');
 
 is_deeply(
-    $point_3d->dump,
+    Cor::Parser::ASTDumper::dump_ast( $point_3d ),
     {
         'name'         => 'Point3D',
         'version'      => 'v0.01',

@@ -6,8 +6,9 @@ use warnings;
 use experimental qw[ signatures postderef ];
 use decorators   qw[ :accessors ];
 
-use parent 'Cor::Parser::AST::Base';
-use  roles 'Cor::Parser::AST::Role::HasAttributes';
+use parent 'UNIVERSAL::Object';
+use roles  'Cor::Parser::AST::Role::HasLocation',
+           'Cor::Parser::AST::Role::HasAttributes';
 
 use slots (
     name       => sub {},

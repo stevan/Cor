@@ -1,31 +1,17 @@
-package Cor::Parser::AST::Base;
-# ABSTRACT: Cor AST base class
+package Cor::Parser::ASTDumper;
+# ABSTRACT: Cor AST dumper
 
 use v5.24;
 use warnings;
-use experimental qw[ signatures postderef ];
-use decorators   qw[ :accessors ];
+use experimental qw[ signatures ];
 
-use Scalar::Util 'blessed';
+use roles        ();
+use Scalar::Util ();
 
-use parent 'UNIVERSAL::Object';
+sub dump_ast ($ast) {
 
-use slots (
-    start_location => sub {},
-    end_location   => sub {},
-);
+    my %copy = %$ast; # fuck encapsulation
 
-sub start_location     : ro;
-sub end_location       : ro;
-
-sub set_start_location : wo;
-sub set_end_location   : wo;
-
-sub has_start_location : predicate;
-sub has_end_location   : predicate;
-
-sub dump ($self) {
-    my %copy = %$self;
     foreach my $k ( keys %copy ) {
         # warn "looking at $k ( ", ($copy{ $k } // 'undef'), " ) \n";
         if ( not defined $copy{ $k } ) {
@@ -36,7 +22,7 @@ sub dump ($self) {
             #    warn "WTF this ($k) should be deleted!!\n";
             #}
         }
-        elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Parser::AST::Location') ) {
+        elsif ( Scalar::Util::blessed( $copy{ $k } ) && ! $copy{ $k }->roles::DOES('Cor::Parser::AST::Role::HasLocation') ) {
             delete $copy{ $k };
         }
         elsif ( ref $copy{ $k } eq 'ARRAY' ) {
@@ -44,9 +30,9 @@ sub dump ($self) {
                 # dump recursively
                 $copy{ $k } = [ map {
                     #warn "looking at @ $_ (\$copy{ $k }) \n";
-                    if ( blessed $_ ) {
+                    if ( Scalar::Util::blessed( $_ ) ) {
                         #warn "dumping array item";
-                        $_->dump;
+                        dump_ast( $_ );
                     }
                     else {
                         $_;
@@ -58,13 +44,14 @@ sub dump ($self) {
                 delete $copy{ $k };
             }
         }
-        elsif ( blessed $copy{ $k } && $copy{ $k }->isa('Cor::Parser::AST::Base') ) {
+        elsif ( Scalar::Util::blessed( $copy{ $k } ) && $copy{ $k }->roles::DOES('Cor::Parser::AST::Role::HasLocation') ) {
             # dump recursively
-            $copy{ $k } = $copy{ $k }->dump;
+            $copy{ $k } = dump_ast( $copy{ $k } );
         }
     }
     return \%copy;
 }
+
 
 1;
 

@@ -10,6 +10,7 @@ use Data::Dumper;
 BEGIN {
     use_ok('Cor');
     use_ok('Cor::Parser');
+    use_ok('Cor::Parser::ASTDumper');
 }
 
 my $src = join '' => <DATA>;
@@ -30,7 +31,7 @@ is_deeply(
 my ($dumpable, $point, $point_3d) = $doc->asts->@*;
 
 is_deeply(
-    $dumpable->dump,
+    Cor::Parser::ASTDumper::dump_ast( $dumpable ),
     {
         name    => 'Dumpable',
         version => 'v0.01',
@@ -40,7 +41,7 @@ is_deeply(
 );
 
 is_deeply(
-    $point->dump,
+    Cor::Parser::ASTDumper::dump_ast( $point ),
     {
         'name'         => 'Point',
         'version'      => 'v0.01',
@@ -95,7 +96,7 @@ is_deeply(
 );
 
 is_deeply(
-    $point_3d->dump,
+    Cor::Parser::ASTDumper::dump_ast( $point_3d ),
     {
         'name'         => 'Point3D',
         'version'      => 'v0.01',
