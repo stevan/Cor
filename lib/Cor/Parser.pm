@@ -24,6 +24,10 @@ BEGIN {
     $COR_RULES = qr{
         (?(DEFINE)
 
+        # ---------------------------------------
+        # SLOTS
+        # ---------------------------------------
+
             (?<PerlSlotIdentifier>
                 (?>
                     (\$\!(?&PerlIdentifier))
@@ -34,6 +38,12 @@ BEGIN {
                 )
             )
 
+            # NOTE:
+            # this list might not be complete, it
+            # may be missing something valid, or
+            # it may be including something we do
+            # not want, but it suffices for now.
+            # - SL
             (?<PerlSlotDefault>
                 (?>
                 # heavy lifters ...
@@ -49,20 +59,6 @@ BEGIN {
                     |   (?&PerlString)
                     |   (?&PerlNumber)
                 )
-            )
-
-            # NOTE:
-            # define this here, not sure if we will use it
-            # but good to have it defined differently i think
-            # because I think we should restrict the contents
-            # of methods to be "strict" by default, and even
-            # maybe to not allow certain constructs. This will
-            # require recursing down the rulesets, so defining
-            # our own PerlMethodStatementSequence to replace
-            # the below "PerlStatementSequence" for instance.
-            # - SL
-            (?<PerlMethodBlock>
-                \{  (?>(?&PerlStatementSequence))  \}
             )
 
             (?<PerlSlotDeclaration>
@@ -121,6 +117,24 @@ BEGIN {
                         die 'unable to parse slot default for `'.$_COR_CURRENT_SLOT->name.'` in class `'.$_COR_CURRENT_META->name.'`';
                     })
                 ) (?{ $_COR_CURRENT_META->add_slot( $_COR_CURRENT_SLOT ); })
+            )
+
+        # ---------------------------------------
+        # METHODS
+        # ---------------------------------------
+
+            # NOTE:
+            # define this here, not sure if we will use it
+            # but good to have it defined differently i think
+            # because I think we should restrict the contents
+            # of methods to be "strict" by default, and even
+            # maybe to not allow certain constructs. This will
+            # require recursing down the rulesets, so defining
+            # our own PerlMethodStatementSequence to replace
+            # the below "PerlStatementSequence" for instance.
+            # - SL
+            (?<PerlMethodBlock>
+                \{  (?>(?&PerlStatementSequence))  \}
             )
 
             (?<PerlMethodDeclaration>
@@ -196,7 +210,9 @@ BEGIN {
                 ) (?{ $_COR_CURRENT_META->add_method( $_COR_CURRENT_METHOD ); })
             )
 
-            # REDEFINE
+        # ---------------------------------------
+        # REDEFINED FROM PPR
+        # ---------------------------------------
 
             (?<PerlVariableScalar>
                     \$\$
