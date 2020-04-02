@@ -116,7 +116,12 @@ BEGIN {
                             );
                         })
                     )
-                )
+                    |
+                    # TODO:
+                    # make this track location information as well
+                    (?{
+                        die 'unable to parse slot default for `'.$_COR_CURRENT_SLOT->name.'` in class `'.$_COR_CURRENT_META->name.'`';
+                    })
                 ) (?{ $_COR_CURRENT_META->add_slot( $_COR_CURRENT_SLOT ); })
             )
 
@@ -184,7 +189,12 @@ BEGIN {
                             pos(), # XXX - need to use use just pos here, not sure why
                         );
                     })
-                )
+                    |
+                    # TODO:
+                    # make this track location information as well
+                    (?{
+                        die 'unable to parse method body for `'.$_COR_CURRENT_METHOD->name.'` in class `'.$_COR_CURRENT_META->name.'`';
+                    })
                 ) (?{ $_COR_CURRENT_META->add_method( $_COR_CURRENT_METHOD ); })
             )
 
@@ -305,6 +315,8 @@ BEGIN {
                         |
                         (?&PerlMethodDeclaration)
                         |
+                        # TODO:
+                        # make these track location information as well
                         (?&PerlVariableDeclaration) (?{ die 'my/state/our variables are not allowed inside class/role declarations' })
                         |
                         (?&PerlSubroutineDeclaration) (?{ die 'Subroutines are not allowed inside class/role declarations' })
