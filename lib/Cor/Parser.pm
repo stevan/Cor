@@ -355,7 +355,7 @@ sub parse ($source) {
 
         # TODO: improve error handling here - SL
         if ( $PPR::ERROR ) {
-            warn $PPR::ERROR;
+            warn $PPR::ERROR->diagnostics;
         }
 
         push @matches => $_COR_CURRENT_META;
@@ -392,7 +392,7 @@ sub _parse_method_body ($source, $meta) {
 
         # TODO: improve error handling here - SL
         if ( $PPR::ERROR ) {
-            warn $PPR::ERROR;
+            warn $PPR::ERROR->diagnostics;
         }
 
         # NOTE:
@@ -419,7 +419,7 @@ sub _parse_method_body ($source, $meta) {
 
         # TODO: improve error handling here - SL
         if ( $PPR::ERROR ) {
-            warn $PPR::ERROR;
+            warn $PPR::ERROR->diagnostics;
         }
 
 
@@ -465,7 +465,7 @@ sub _parse_attributes ($source) {
 
         # TODO: improve error handling here - SL
         if ( $PPR::ERROR ) {
-            warn $PPR::ERROR;
+            warn $PPR::ERROR->diagnostics;
         }
 
         if ( $match->{args} ) {
