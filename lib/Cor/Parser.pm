@@ -69,9 +69,7 @@ BEGIN {
 
             (?<PerlSlotDeclaration>
                 (has) (?{
-                        $_COR_CURRENT_META->add_slot(
-                            $_COR_CURRENT_SLOT = Cor::Parser::ASTBuilder::new_slot_at( pos() - length($^N) )
-                        );
+                        $_COR_CURRENT_SLOT = Cor::Parser::ASTBuilder::new_slot_at( pos() - length($^N) )
                     })
                 (?&PerlNWS)
                     (
@@ -105,6 +103,7 @@ BEGIN {
                             $_COR_CURRENT_SLOT,
                             pos() - length($^N),
                         );
+                        $_COR_CURRENT_META->add_slot( $_COR_CURRENT_SLOT );
                     })
                     |
                     (
@@ -116,6 +115,7 @@ BEGIN {
                                 $_COR_CURRENT_SLOT,
                                 pos() - length($^N),
                             );
+                            $_COR_CURRENT_META->add_slot( $_COR_CURRENT_SLOT );
                         })
                     )
                 )
@@ -123,9 +123,7 @@ BEGIN {
 
             (?<PerlMethodDeclaration>
                 (method) (?{
-                    $_COR_CURRENT_META->add_method(
-                        $_COR_CURRENT_METHOD = Cor::Parser::ASTBuilder::new_method_at( pos() - length($^N) )
-                    );
+                    $_COR_CURRENT_METHOD = Cor::Parser::ASTBuilder::new_method_at( pos() - length($^N) )
                 })
                 (?&PerlOWS)
                 ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_METHOD->set_name( $^N ); })
@@ -164,6 +162,7 @@ BEGIN {
                             $_COR_CURRENT_METHOD,
                             pos() - length($^N),
                         );
+                        $_COR_CURRENT_META->add_method( $_COR_CURRENT_METHOD );
                     })
                     |
                     ((?&PerlMethodBlock)) (?{
@@ -186,6 +185,7 @@ BEGIN {
                             $_COR_CURRENT_METHOD,
                             pos(), # XXX - need to use use just pos here, not sure why
                         );
+                        $_COR_CURRENT_META->add_method( $_COR_CURRENT_METHOD );
                     })
                 )
             )
