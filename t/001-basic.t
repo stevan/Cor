@@ -62,6 +62,9 @@ is($point->superclasses->[0]->end_location->char_at, 180, '... got the right end
 is($point->roles->[0]->start_location->char_at, 186, '... got the right start char number');
 is($point->roles->[0]->end_location->char_at, 194, '... got the right end char number');
 
+is($point->slots->[0]->identifier, '_x', '... got the right identifier for the slot');
+is($point->slots->[1]->identifier, '_y', '... got the right identifier for the slot');
+
 # slot declarations
 is($point->slots->[0]->start_location->char_at, 202, '... got the right start char number');
 is($point->slots->[0]->end_location->char_at, 213, '... got the right end char number');
@@ -135,6 +138,8 @@ is($point_3d->end_location->char_at, 482, '... got the right end char number');
 # superclass declaration
 is($point_3d->superclasses->[0]->start_location->char_at, 351, '... got the right start char number');
 is($point_3d->superclasses->[0]->end_location->char_at, 356, '... got the right end char number');
+
+is($point_3d->slots->[0]->identifier, '_z', '... got the right identifier for the slot');
 
 # slot declarations
 is($point_3d->slots->[0]->start_location->char_at, 364, '... got the right start char number');

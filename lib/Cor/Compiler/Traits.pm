@@ -26,9 +26,7 @@ BEGIN {
                 # give it a name
                 my $name = $attribute->has_args
                     ? $attribute->args
-                    : $item->name;
-                # make sure to strip off sigil (and the twigil if needed)
-                $name =~ s/^\$(!|.)?//;
+                    : $item->identifier;
                 $method->set_name( $name );
 
                 # now set the slot name ...
@@ -66,9 +64,7 @@ BEGIN {
                 # give it a name
                 my $name = $attribute->has_args
                     ? $attribute->args
-                    : $item->name;
-                # make sure to strip off sigil (and the twigil if needed)
-                $name =~ s/^\$(!|.)?//;
+                    : $item->identifier;
                 $method->set_name( $name );
 
                 # now set the slot name ...
@@ -106,9 +102,7 @@ BEGIN {
                 # give it a name
                 my $name = $attribute->has_args
                     ? $attribute->args
-                    : $item->name;
-                # make sure to strip off sigil (and the twigil if needed)
-                $name =~ s/^\$(!|.)?//;
+                    : $item->identifier;
                 $method->set_name( $name );
 
                 # now set the slot name ...
@@ -148,9 +142,7 @@ BEGIN {
                     $name = $attribute->args;
                 }
                 else {
-                    $name = $item->name;
-                    # make sure to strip off sigil (and the twigil if needed)
-                    $name =~ s/^\$(!|.)?//;
+                    $name = $item->identifier;
                     $name = 'has_' . $name;
                 }
                 $method->set_name( $name );

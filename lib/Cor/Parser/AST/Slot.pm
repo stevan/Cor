@@ -16,6 +16,10 @@ use slots (
     default    => sub {},
 );
 
+sub identifier ($self) {
+    $self->{name} =~ s/^\$[.!]?//r;
+}
+
 sub name       : ro;
 sub type       : ro;
 sub default    : ro;
