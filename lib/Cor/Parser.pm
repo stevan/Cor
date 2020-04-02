@@ -331,6 +331,13 @@ BEGIN {
             );
         })))
 
+        # TODO:
+        # - capture complete POD document
+        #     - must start with =pod and end with =cut
+        #     - store it in package global for latter use
+        # - prohibit __END__ tokens (maybe?)
+        # - prohibit __DATA__ segements
+
         $COR_RULES
     }x;
 }
