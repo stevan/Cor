@@ -34,7 +34,7 @@ my ($dumpable, $point, $point_3d) = $doc->asts->@*;
 
 # role definition
 is($dumpable->start_location->char_at, 68, '... got the right start char number');
-is($dumpable->end_location->char_at, 138, '... got the right end char number');
+is($dumpable->end_location->char_at, 139, '... got the right end char number');
 
 # method definition
 is($dumpable->methods->[0]->start_location->char_at, 125, '... got the right start char number');
@@ -52,7 +52,7 @@ is_deeply(
 
 # class definition
 is($point->start_location->char_at, 141, '... got the right start char number');
-is($point->end_location->char_at, 324, '... got the right end char number');
+is($point->end_location->char_at, 325, '... got the right end char number');
 
 # superclass declaration
 is($point->superclasses->[0]->start_location->char_at, 163, '... got the right start char number');
@@ -133,7 +133,7 @@ is_deeply(
 
 # class declaration
 is($point_3d->start_location->char_at, 327, '... got the right start char number');
-is($point_3d->end_location->char_at, 482, '... got the right end char number');
+is($point_3d->end_location->char_at, 483, '... got the right end char number');
 
 # superclass declaration
 is($point_3d->superclasses->[0]->start_location->char_at, 351, '... got the right start char number');

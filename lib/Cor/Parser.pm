@@ -214,6 +214,130 @@ BEGIN {
         # REDEFINED FROM PPR
         # ---------------------------------------
 
+            (?<PerlClassRoleBlock> # TODO: come up with a better name
+                \{
+                    (
+                    (?&PerlOWS)
+                        ((?:
+                            (?>
+                                (?&PerlSlotDeclaration)
+                                |
+                                (?&PerlMethodDeclaration)
+                                |
+                                # TODO:
+                                # make these track location information as well
+                                (?&PerlVariableDeclaration) (?{ die 'my/state/our variables are not allowed inside class/role declarations' })
+                                |
+                                (?&PerlSubroutineDeclaration) (?{ die 'Subroutines are not allowed inside class/role declarations' })
+                                |
+                                (?&PerlUseStatement) (?{ die 'use statements are not allowed inside class/role declarations' })
+                            )
+                            (?&PerlOWS)
+                        )*+)
+                    (?&PerlOWS)
+                    )
+                \}
+            )
+
+            (?<PerlClassRoleIdentifier>
+                ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_META->set_name( $^N ); })
+                (?:
+                    (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_META->set_version( $^N ); })
+                )?+
+            )
+
+            (?<PerlSubclassing>
+                (?: isa  (?&PerlNWS)
+                    ((?&PerlQualifiedIdentifier)) (?{
+                        $_COR_CURRENT_META->add_superclass(
+                            $_COR_CURRENT_REFERENCE = Cor::Parser::ASTBuilder::new_reference_at( pos() - length($^N) )
+                        );
+                        $_COR_CURRENT_REFERENCE->set_name( $^N ); })
+                    (?:
+                        (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
+                    )?+
+                    (?{
+                        Cor::Parser::ASTBuilder::set_end_location(
+                            $_COR_CURRENT_REFERENCE,
+                            pos(), # XXX - need to use use just pos here, not sure why
+                        );
+                    })
+                    (?&PerlOWS)
+                )*+
+            )
+
+            (?<PerlRoleConsumption>
+                (?: does (?&PerlNWS)
+                    ((?&PerlQualifiedIdentifier)) (?{
+                        $_COR_CURRENT_META->add_role(
+                            $_COR_CURRENT_REFERENCE = Cor::Parser::ASTBuilder::new_reference_at( pos() - length($^N) )
+                        );
+                        $_COR_CURRENT_REFERENCE->set_name( $^N );
+                    })
+                    (?:
+                        (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
+                    )?+
+                    (?{
+                        Cor::Parser::ASTBuilder::set_end_location(
+                            $_COR_CURRENT_REFERENCE,
+                            pos(), # XXX - need to use use just pos here, not sure why
+                        );
+                    })
+                    (?&PerlOWS)
+                )*+
+            )
+
+            (?<PerlClass>
+                (
+                    (class) (?{
+                        $_COR_CURRENT_META = Cor::Parser::ASTBuilder::new_class_at(
+                            pos() - length($^N)
+                        );
+                    })
+                    (?&PerlNWS)
+                    (?&PerlClassRoleIdentifier)
+                    (?&PerlOWS)
+                    (?&PerlSubclassing)
+                    (?&PerlRoleConsumption)
+                    (
+                        (?&PerlClassRoleBlock) (?{
+                            Cor::Parser::ASTBuilder::set_end_location(
+                                $_COR_CURRENT_META,
+                                pos()
+                            );
+                        })
+                    )
+                )
+            )
+
+            (?<PerlRole>
+                (
+                    (role) (?{
+                        $_COR_CURRENT_META = Cor::Parser::ASTBuilder::new_role_at(
+                            pos() - length($^N)
+                        );
+                    })
+                    (?&PerlNWS)
+                    (?&PerlClassRoleIdentifier)
+                    (?&PerlOWS)
+                    (?&PerlRoleConsumption)
+                    (
+                        (?&PerlClassRoleBlock) (?{
+                            Cor::Parser::ASTBuilder::set_end_location(
+                                $_COR_CURRENT_META,
+                                pos()
+                            );
+                        })
+                    )
+                )
+            )
+
+
+
+        # ---------------------------------------
+        # REDEFINED FROM PPR
+        # ---------------------------------------
+
             (?<PerlVariableScalar>
                     \$\$
                     (?! [\$\{\w] )
@@ -266,86 +390,7 @@ BEGIN {
             ((?&PerlUseStatement)) (?{ push @_COR_USE_STATEMENTS => $^N; })
         )?+
 
-        (
-            # Is it a Role or a Class ....
-            (?>
-                (role)  (?{
-                    $_COR_CURRENT_META = Cor::Parser::ASTBuilder::new_role_at( pos() - length($^N) )
-                })
-                |
-                (class) (?{
-                    $_COR_CURRENT_META = Cor::Parser::ASTBuilder::new_class_at( pos() - length($^N) )
-                })
-            )
-            (?&PerlNWS)
-            # capture the name of the Role/Class
-                ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_META->set_name( $^N ); })
-                (?:
-                    (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_META->set_version( $^N ); })
-                )?+
-            (?&PerlOWS)
-                # if it is a class we can collect superclasses
-                (?: isa  (?&PerlNWS)
-                    ((?&PerlQualifiedIdentifier)) (?{
-                        $_COR_CURRENT_META->add_superclass(
-                            $_COR_CURRENT_REFERENCE = Cor::Parser::ASTBuilder::new_reference_at( pos() - length($^N) )
-                        );
-                        $_COR_CURRENT_REFERENCE->set_name( $^N ); })
-                    (?:
-                        (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
-                    )?+
-                    (?{
-                        Cor::Parser::ASTBuilder::set_end_location(
-                            $_COR_CURRENT_REFERENCE,
-                            pos(), # XXX - need to use use just pos here, not sure why
-                        );
-                    })
-                    (?&PerlOWS)
-                )*+
-                # if it is a class/role we can collect consumed roles
-                (?: does (?&PerlNWS)
-                    ((?&PerlQualifiedIdentifier)) (?{
-                        $_COR_CURRENT_META->add_role(
-                            $_COR_CURRENT_REFERENCE = Cor::Parser::ASTBuilder::new_reference_at( pos() - length($^N) )
-                        );
-                        $_COR_CURRENT_REFERENCE->set_name( $^N );
-                    })
-                    (?:
-                        (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
-                    )?+
-                    (?{
-                        Cor::Parser::ASTBuilder::set_end_location(
-                            $_COR_CURRENT_REFERENCE,
-                            pos(), # XXX - need to use use just pos here, not sure why
-                        );
-                    })
-                    (?&PerlOWS)
-                )*+
-        ( \{
-            (?&PerlOWS)
-                ((?:
-                    (?>
-                        (?&PerlSlotDeclaration)
-                        |
-                        (?&PerlMethodDeclaration)
-                        |
-                        # TODO:
-                        # make these track location information as well
-                        (?&PerlVariableDeclaration) (?{ die 'my/state/our variables are not allowed inside class/role declarations' })
-                        |
-                        (?&PerlSubroutineDeclaration) (?{ die 'Subroutines are not allowed inside class/role declarations' })
-                        |
-                        (?&PerlUseStatement) (?{ die 'use statements are not allowed inside class/role declarations' })
-                    )
-                    (?&PerlOWS)
-                )*+)
-            (?&PerlOWS)
-        (\}) (?{
-            Cor::Parser::ASTBuilder::set_end_location(
-                $_COR_CURRENT_META,
-                pos() - length($^N),
-            );
-        })))
+        (?> (?&PerlRole) | (?&PerlClass) )
 
         # TODO:
         # - capture complete POD document
