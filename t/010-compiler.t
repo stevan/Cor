@@ -19,6 +19,9 @@ subtest '... verify the AST object' => sub {
 
     my $original = join '' => <DATA>;
     my $doc      = Cor::Parser::parse( $original );
+
+    #warn Dumper $doc;
+
     my $compiler = Cor::Compiler->new( doc => $doc );
 
     $GOT = $compiler->compile;
@@ -51,8 +54,8 @@ our %HAS; BEGIN { %HAS = (
     q[$y] => sub { 0 },
 ) }
 # methods
-sub x ($) { $_[0]->{q[$x]} }
-sub y ($) { $_[0]->{q[$y]} }
+sub x { $_[0]->{q[$x]} }
+sub y { $_[0]->{q[$y]} }
 sub dump {
         return +{ x => $_[0]->{q[$x]}, y => $_[0]->{q[$y]} };
     }

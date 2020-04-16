@@ -16,6 +16,7 @@ use Cor::Parser::AST::Slot;
 use Cor::Parser::AST::Method;
 
 use Cor::Parser::AST::Method::Body;
+use Cor::Parser::AST::Method::Signature;
 
 use Cor::Parser::AST::Location;
 use Cor::Parser::AST::Attribute;
@@ -61,6 +62,14 @@ sub new_attributes_at ( $source, $attributes, $char_at ) {
             end_location   => new_location_at( $char_at + $_->{end}   ),
         )
     } $attributes->@*
+}
+
+sub new_signature_at ( $source, $arguments, $char_at ) {
+    Cor::Parser::AST::Method::Signature->new(
+        arguments      => $arguments,
+        start_location => new_location_at( $char_at ),
+        end_location   => new_location_at( $char_at + length( $source ) ),
+    );
 }
 
 sub set_end_location ($ast, $char_at) {

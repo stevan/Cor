@@ -122,7 +122,7 @@ is_deeply(
             },
             {
                 'name'      => 'dump',
-                'signature' => '($self)',
+                'signature' => { arguments => [ '$self' ] },
                 'body'      => {
                     source => '{
         +{ $self->next::method->%*, z => $_z }

@@ -150,7 +150,7 @@ sub generate_methods ($self) {
         foreach my $method ( @private_methods ) {
             push @src =>
                 'my $___' . $method->name . ' = sub '
-                . ($method->has_signature  ? ' ' . $method->signature  : '')
+                . ($method->has_signature  ? ' (' . (join ', ' => $method->signature->arguments->@*) . ')' : '')
                 . $self->_compile_method_body( $method->body, \%private_method_index )
                 . ';';
         }
@@ -170,7 +170,7 @@ sub generate_methods ($self) {
                         } $method->attributes->@*
                     )
                     : '')
-                . ($method->has_signature  ? ' ' . $method->signature  : '')
+                . ($method->has_signature  ? ' (' . (join ', ' => $method->signature->arguments->@*) . ')' : '')
                 . ($method->is_abstract
                     ? ';'
                     : ' ' . $self->_compile_method_body( $method->body, \%private_method_index ));

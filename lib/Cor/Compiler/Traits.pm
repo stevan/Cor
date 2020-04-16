@@ -39,7 +39,6 @@ BEGIN {
                 die "WTF! $item";
             }
 
-            $method->set_signature('($)');
             $method->set_body(
                 Cor::Parser::ASTBuilder::create_method_body(
                     '{ $_[0]->{q['.$slot_name.']} }',
@@ -77,7 +76,6 @@ BEGIN {
                 die "WTF! $item";
             }
 
-            $method->set_signature('($, $)');
             $method->set_body(
                 Cor::Parser::ASTBuilder::create_method_body(
                     '{ $_[0]->{q['.$slot_name.']} = $_[1] }',
@@ -157,7 +155,6 @@ BEGIN {
                 die "WTF! $item";
             }
 
-            $method->set_signature('($)');
             $method->set_body(
                 Cor::Parser::ASTBuilder::create_method_body(
                     '{ defined $_[0]->{q['.$slot_name.']} }',

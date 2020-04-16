@@ -166,7 +166,21 @@ BEGIN {
                 )?+
                 (?:
                     (?>
-                        ((?&PerlParenthesesList)) (?{ $_COR_CURRENT_METHOD->set_signature( $^N ) })
+                        ((?&PerlParenthesesList)) (?{
+
+                            my $pos           = pos();
+                            my $signature_src = $^N;
+
+                            my $signature = Cor::Parser::ASTBuilder::new_signature_at(
+                                _parse_signature( $signature_src ),
+                                $pos
+                            );
+
+                            #use Data::Dumper;
+                            #warn Dumper $signature;
+
+                            $_COR_CURRENT_METHOD->set_signature( $signature );
+                        })
                     )
                     (?&PerlOWS)
                 )?+
@@ -506,6 +520,24 @@ sub _parse_method_body ($source, $meta) {
     }
 
     return ($source, \@slot_matches, \@self_call_matches);
+}
+
+sub _parse_signature ($source) {
+
+    my @matches;
+
+    my $match;
+    while ( $source =~ /((?&PerlVariable)) (?{ $match = $^N }) $COR_RULES/gx ) {
+
+        # TODO: improve error handling here - SL
+        if ( $PPR::ERROR ) {
+            warn $PPR::ERROR->diagnostics;
+        }
+
+        push @matches => $match;
+    }
+
+    return ($source, \@matches);
 }
 
 sub _parse_attributes ($source) {
