@@ -1,8 +1,8 @@
 class Collections::LinkedList {
 
-    has $!head  : private;
-    has $!tail  : private;
-    has $!count : private = 0;
+    has $!head;
+    has $!tail;
+    has $!count = 0;
 
     method head  : ro($!head);
     method tail  : ro($!tail);

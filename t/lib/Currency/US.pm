@@ -1,13 +1,13 @@
 
 class Currency::US does Comparable, Printable {
 
-    has $!amount : ro = 0;
+    has $.amount : ro = 0;
 
     method compare ($other) {
-        $!amount <=> $other->amount;
+        $.amount <=> $other->amount;
     }
 
     method to_string {
-        sprintf '$%0.2f USD' => $!amount;
+        sprintf '$%0.2f USD' => $.amount;
     }
 }

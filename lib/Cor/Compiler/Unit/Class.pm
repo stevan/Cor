@@ -50,7 +50,11 @@ sub generate_constructor ($self) {
         my $slot_name = $map{$param};
         my $slot      = $meta->get_slot( $slot_name );
 
-        if ( $slot->has_attributes && $slot->has_attribute('private') ) {
+        if (
+            ($slot->has_attributes && $slot->has_attribute('private'))
+                ||
+            ($slot->name =~ /^\$\!/)
+        ) {
             push @src => 'die \'Illegal Arg: `'.$param.'` is a private slot\' if exists $args{q['.$param.']};';
         }
         else {
