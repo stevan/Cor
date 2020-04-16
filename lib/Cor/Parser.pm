@@ -246,43 +246,44 @@ BEGIN {
                 )?+
             )
 
+            (?<PerlClassRoleReference>
+                ((?&PerlQualifiedIdentifier)) (?{
+                    $_COR_CURRENT_REFERENCE = Cor::Parser::ASTBuilder::new_reference_at( pos() - length($^N) );
+                    $_COR_CURRENT_REFERENCE->set_name( $^N );
+                })
+                (?:
+                    (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
+                )?+
+                (?{
+                    Cor::Parser::ASTBuilder::set_end_location(
+                        $_COR_CURRENT_REFERENCE,
+                        pos(), # XXX - need to use use just pos here, not sure why
+                    );
+                })
+            )
+
             (?<PerlSubclassing>
-                (?: isa  (?&PerlNWS)
-                    ((?&PerlQualifiedIdentifier)) (?{
-                        $_COR_CURRENT_META->add_superclass(
-                            $_COR_CURRENT_REFERENCE = Cor::Parser::ASTBuilder::new_reference_at( pos() - length($^N) )
-                        );
-                        $_COR_CURRENT_REFERENCE->set_name( $^N ); })
+                (?:
+                    isa
+                    (?&PerlNWS)
+                    (?&PerlClassRoleReference) (?{ $_COR_CURRENT_META->add_superclass( $_COR_CURRENT_REFERENCE ) })
                     (?:
-                        (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
-                    )?+
-                    (?{
-                        Cor::Parser::ASTBuilder::set_end_location(
-                            $_COR_CURRENT_REFERENCE,
-                            pos(), # XXX - need to use use just pos here, not sure why
-                        );
-                    })
+                        (?>\, (?&PerlOWS))
+                        (?&PerlClassRoleReference) (?{ $_COR_CURRENT_META->add_superclass( $_COR_CURRENT_REFERENCE ) })
+                    )*+
                     (?&PerlOWS)
                 )*+
             )
 
             (?<PerlRoleConsumption>
-                (?: does (?&PerlNWS)
-                    ((?&PerlQualifiedIdentifier)) (?{
-                        $_COR_CURRENT_META->add_role(
-                            $_COR_CURRENT_REFERENCE = Cor::Parser::ASTBuilder::new_reference_at( pos() - length($^N) )
-                        );
-                        $_COR_CURRENT_REFERENCE->set_name( $^N );
-                    })
+                (?:
+                    does
+                    (?&PerlNWS)
+                    (?&PerlClassRoleReference) (?{ $_COR_CURRENT_META->add_role( $_COR_CURRENT_REFERENCE ) })
                     (?:
-                        (?>(?&PerlNWS)) ((?&PerlVersionNumber)) (?{ $_COR_CURRENT_REFERENCE->set_version( $^N ); })
-                    )?+
-                    (?{
-                        Cor::Parser::ASTBuilder::set_end_location(
-                            $_COR_CURRENT_REFERENCE,
-                            pos(), # XXX - need to use use just pos here, not sure why
-                        );
-                    })
+                        (?>\, (?&PerlOWS))
+                        (?&PerlClassRoleReference) (?{ $_COR_CURRENT_META->add_role( $_COR_CURRENT_REFERENCE ) })
+                    )*+
                     (?&PerlOWS)
                 )*+
             )

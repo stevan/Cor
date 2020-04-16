@@ -1,5 +1,5 @@
 
-class Currency::US does Comparable does Printable {
+class Currency::US does Comparable, Printable {
 
     has $!amount : ro = 0;
 
