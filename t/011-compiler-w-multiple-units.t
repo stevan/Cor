@@ -100,9 +100,9 @@ class Point does Dumpable {
     method dump_x : private { 0+$x }
     method dump_y : private { 0+$y }
 
-    method dump ($self) { +{ x => $self->dump_x(), y => $self->dump_y() } }
+    method dump { +{ x => $self->dump_x(), y => $self->dump_y() } }
 
-    method to_JSON ($self) { $self->dump() }
+    method to_JSON { $self->dump() }
 }
 
 class Point3D isa Point {
@@ -114,7 +114,7 @@ class Point3D isa Point {
 
     method dump_z : private { 0+$z }
 
-    method dump ($self) {
+    method dump {
         +{ $self->next::method->%*, z => $self->dump_z() }
     }
 

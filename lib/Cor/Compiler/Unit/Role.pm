@@ -149,9 +149,9 @@ sub generate_methods ($self) {
 
         foreach my $method ( @private_methods ) {
             push @src =>
-                'my $___' . $method->name . ' = sub '
-                . ($method->has_signature  ? ' (' . (join ', ' => $method->signature->arguments->@*) . ')' : '')
-                . $self->_compile_method_body( $method->body, \%private_method_index )
+                'my $___' . $method->name . ' = sub'
+                . $self->_compile_method_signature( $method )
+                . ' ' . $self->_compile_method_body( $method->body, \%private_method_index )
                 . ';';
         }
     }
@@ -170,7 +170,7 @@ sub generate_methods ($self) {
                         } $method->attributes->@*
                     )
                     : '')
-                . ($method->has_signature  ? ' (' . (join ', ' => $method->signature->arguments->@*) . ')' : '')
+                . $self->_compile_method_signature( $method )
                 . ($method->is_abstract
                     ? ';'
                     : ' ' . $self->_compile_method_body( $method->body, \%private_method_index ));
@@ -188,6 +188,28 @@ sub _apply_trait ( $self, $meta, $topic, $attribute ) {
     }
 }
 
+sub _compile_method_signature ($self, $method) {
+
+    return '' if $method->is_abstract;
+
+    my @args;
+
+    if ( $method->has_signature ) {
+        @args = $method->signature->arguments->@*;
+    }
+
+    if ( scalar @args == 0 ) {
+        unshift @args => '$self';
+    }
+
+    if ($args[0] ne '$self') {
+        unshift @args => '$self';
+    }
+
+    return ' (' . (join ', ' => @args) . ')';
+
+}
+
 sub _compile_method_body ($self, $body, $private_method_index) {
 
     my $source = $body->source;
@@ -203,7 +225,7 @@ sub _compile_method_body ($self, $body, $private_method_index) {
             # so I think we need to make some kind
             # of other arrangements.
             # - SL
-            my $patch = '$_[0]->{q[' . $m->{match} . ']}';
+            my $patch = '$self->{q[' . $m->{match} . ']}';
 
             #use Data::Dumper;
             #warn Dumper [ $m, [

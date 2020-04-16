@@ -39,9 +39,12 @@ BEGIN {
                 die "WTF! $item";
             }
 
+            $method->set_signature(
+                Cor::Parser::ASTBuilder::create_method_signature( [ '$self' ] )
+            );
             $method->set_body(
                 Cor::Parser::ASTBuilder::create_method_body(
-                    '{ $_[0]->{q['.$slot_name.']} }',
+                    '{ $self->{q['.$slot_name.']} }',
                 )
             );
             return 1;
@@ -76,9 +79,12 @@ BEGIN {
                 die "WTF! $item";
             }
 
+            $method->set_signature(
+                Cor::Parser::ASTBuilder::create_method_signature( [ '$self', '$arg' ] )
+            );
             $method->set_body(
                 Cor::Parser::ASTBuilder::create_method_body(
-                    '{ $_[0]->{q['.$slot_name.']} = $_[1] }',
+                    '{ $self->{q['.$slot_name.']} = $arg }',
                 )
             );
             return 1;
@@ -113,9 +119,12 @@ BEGIN {
                 die "WTF! $item";
             }
 
+            $method->set_signature(
+                Cor::Parser::ASTBuilder::create_method_signature( [ '$self', '@args' ] )
+            );
             $method->set_body(
                 Cor::Parser::ASTBuilder::create_method_body(
-                    '{ $_[0]->{q['.$slot_name.']} = $_[1] if @_ < 1; $_[0]->{q['.$slot_name.']}; }',
+                    '{ $self->{q['.$slot_name.']} = $args[0] if @args; $self->{q['.$slot_name.']}; }',
                 )
             );
             return 1;
@@ -155,9 +164,12 @@ BEGIN {
                 die "WTF! $item";
             }
 
+            $method->set_signature(
+                Cor::Parser::ASTBuilder::create_method_signature( [ '$self' ] )
+            );
             $method->set_body(
                 Cor::Parser::ASTBuilder::create_method_body(
-                    '{ defined $_[0]->{q['.$slot_name.']} }',
+                    '{ defined $self->{q['.$slot_name.']} }',
                 )
             );
             return 1;

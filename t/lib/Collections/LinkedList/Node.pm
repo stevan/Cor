@@ -14,7 +14,7 @@ class Collections::LinkedList::Node {
     method get_value    : ro($!value);
     method set_value    : wo($!value);
 
-    method detach ($self) {
+    method detach {
         ($!previous, $!next) = (undef) x 2;
         $self;
     }

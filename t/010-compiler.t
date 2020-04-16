@@ -54,10 +54,10 @@ our %HAS; BEGIN { %HAS = (
     q[$y] => sub { 0 },
 ) }
 # methods
-sub x { $_[0]->{q[$x]} }
-sub y { $_[0]->{q[$y]} }
-sub dump {
-        return +{ x => $_[0]->{q[$x]}, y => $_[0]->{q[$y]} };
+sub x ($self) { $self->{q[$x]} }
+sub y ($self) { $self->{q[$y]} }
+sub dump ($self) {
+        return +{ x => $self->{q[$x]}, y => $self->{q[$y]} };
     }
 1;
 }';

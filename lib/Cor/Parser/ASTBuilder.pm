@@ -51,6 +51,10 @@ sub create_method_body ( $source ) {
     Cor::Parser::AST::Method::Body->new( source => $source )
 }
 
+sub create_method_signature ( $arguments ) {
+    Cor::Parser::AST::Method::Signature->new( arguments => $arguments );
+}
+
 sub new_attributes_at ( $source, $attributes, $char_at ) {
     # NOTE:
     # ignore $source for now, we might want it later

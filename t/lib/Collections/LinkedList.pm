@@ -8,7 +8,7 @@ class Collections::LinkedList {
     method tail  : ro($!tail);
     method count : ro($!count);
 
-    method append ($self, $node) {
+    method append ($node) {
         unless($!tail) {
             $!tail = $node;
             $!head = $node;
@@ -21,7 +21,7 @@ class Collections::LinkedList {
         $!count++;
     }
 
-    method insert ($self, $index, $node) {
+    method insert ($index, $node) {
         die "Index ($index) out of bounds"
             if $index < 0 or $index > $!count - 1;
 
@@ -34,7 +34,7 @@ class Collections::LinkedList {
         $!count++;
     }
 
-    method remove ($self, $index) {
+    method remove ($index) {
         die "Index ($index) out of bounds"
             if $index < 0 or $index > $!count - 1;
 
@@ -46,7 +46,7 @@ class Collections::LinkedList {
         $tmp->detach();
     }
 
-    method prepend ($self, $node) {
+    method prepend ($node) {
         unless($!head) {
             $!tail = $node;
             $!head = $node;
@@ -59,7 +59,7 @@ class Collections::LinkedList {
         $!count++;
     }
 
-    method sum ($self) {
+    method sum {
         my $sum = 0;
         my $tmp = $!head;
         do { $sum += $tmp->get_value } while($tmp = $tmp->get_next);

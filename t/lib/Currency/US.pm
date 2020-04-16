@@ -3,7 +3,7 @@ class Currency::US does Comparable, Printable {
 
     has $!amount : ro = 0;
 
-    method compare ($self, $other) {
+    method compare ($other) {
         $!amount <=> $other->amount;
     }
 
