@@ -1,5 +1,7 @@
 
-class Finance::CheckingAccount isa Finance::BankAccount {
+module Finance;
+
+class CheckingAccount isa BankAccount {
 
     has $.overdraft_account : ro;
 

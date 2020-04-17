@@ -1,4 +1,6 @@
-class Collections::LinkedList {
+module Collections;
+
+class LinkedList {
 
     has $!head;
     has $!tail;

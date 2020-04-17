@@ -1,5 +1,7 @@
 
-class Currency::US does Comparable, Printable {
+module Currency;
+
+class USD does Comparable, Printable {
 
     has $.amount : ro = 0;
 

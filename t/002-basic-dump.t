@@ -45,6 +45,7 @@ is_deeply(
     {
         'name'         => 'Point',
         'version'      => 'v0.01',
+        'module'       => { 'name' => 'Geometry' },
         'superclasses' => [ { 'name' => 'UNIVERSAL::Object' } ],
         'roles'        => [ { 'name' => 'Dumpable' } ],
         'slots'        => [
@@ -100,6 +101,7 @@ is_deeply(
     {
         'name'         => 'Point3D',
         'version'      => 'v0.01',
+        'module'       => { 'name' => 'Geometry' },
         'superclasses' => [ { 'name' => 'Point' } ],
         'slots'        => [
             {
@@ -151,6 +153,8 @@ role Dumpable v0.01 {
     # can include comments ...
     method dump;
 }
+
+module Geometry;
 
 use List::Utils;
 

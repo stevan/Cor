@@ -12,6 +12,7 @@ use List::Util;
 use Cor::Parser::ASTBuilder;
 
 our @_COR_USE_STATEMENTS;
+our $_COR_CURRENT_MODULE;
 our $_COR_CURRENT_META;
 our $_COR_CURRENT_REFERENCE;
 our $_COR_CURRENT_SLOT;
@@ -273,6 +274,10 @@ BEGIN {
                         $_COR_CURRENT_REFERENCE,
                         pos(), # XXX - need to use use just pos here, not sure why
                     );
+
+                    if ( $_COR_CURRENT_MODULE ) {
+                        $_COR_CURRENT_REFERENCE->set_module( $_COR_CURRENT_MODULE );
+                    }
                 })
             )
 
@@ -320,6 +325,10 @@ BEGIN {
                                 $_COR_CURRENT_META,
                                 pos()
                             );
+                            if ( $_COR_CURRENT_MODULE ) {
+                                $_COR_CURRENT_META->set_module( $_COR_CURRENT_MODULE );
+                                $_COR_CURRENT_MODULE->associate_class( $_COR_CURRENT_META );
+                            }
                         })
                     )
                 )
@@ -342,6 +351,10 @@ BEGIN {
                                 $_COR_CURRENT_META,
                                 pos()
                             );
+                            if ( $_COR_CURRENT_MODULE ) {
+                                $_COR_CURRENT_META->set_module( $_COR_CURRENT_MODULE );
+                                $_COR_CURRENT_MODULE->associate_role( $_COR_CURRENT_META );
+                            }
                         })
                     )
                 )
@@ -405,6 +418,21 @@ BEGIN {
             ((?&PerlUseStatement)) (?{ push @_COR_USE_STATEMENTS => $^N; })
         )?+
 
+        (?:
+            (?>
+                module
+                (?&PerlNWS)
+                ((?&PerlQualifiedIdentifier)) (?{
+                    my $module_name = $^N;
+                    $_COR_CURRENT_MODULE = Cor::Parser::ASTBuilder::new_module_at(
+                        pos() - length($module_name)
+                    );
+                    $_COR_CURRENT_MODULE->set_name( $module_name );
+                })
+                \;
+            )
+        )?
+
         (?> (?&PerlRole) | (?&PerlClass) )
 
         # TODO:
@@ -423,6 +451,7 @@ sub parse ($source) {
     # localize all the globals ...
 
     local @_COR_USE_STATEMENTS;
+    local $_COR_CURRENT_MODULE;
     local $_COR_CURRENT_META;
     local $_COR_CURRENT_REFERENCE;
     local $_COR_CURRENT_SLOT;

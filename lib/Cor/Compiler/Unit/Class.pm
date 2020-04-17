@@ -66,10 +66,23 @@ sub generate_constructor ($self) {
     return @src;
 }
 
+sub generate_superclass_reference_name ($self, $reference) {
+
+    my $name;
+    if ( $reference->has_module && $reference->module->has_associated_class( $reference->name ) ) {
+        $name = $reference->module->name . '::' . $reference->name;
+    }
+    else {
+        $name = $reference->name;
+    }
+
+    return $name;
+}
+
 sub generate_superclasses ($self) {
     my $meta = $self->{ast};
 
-    my @superclasses = map $_->name, $self->{ast}->superclasses->@*;
+    my @superclasses = map $self->generate_superclass_reference_name( $_ ), $self->{ast}->superclasses->@*;
 
     # if there is no superclass ...
     if ( scalar @superclasses == 0 ) {
@@ -88,7 +101,7 @@ sub generate_slots ($self) {
     my @src  = $self->next::method();
 
     # inherit the slots at compile time ...
-    if ( my @superclasses = map $_->name, $self->{ast}->superclasses->@* ) {
+    if ( my @superclasses = map $self->generate_superclass_reference_name( $_ ), $self->{ast}->superclasses->@* ) {
         my $close = pop @src;
         push @src => map {
             '    %'.$_.'::HAS,'

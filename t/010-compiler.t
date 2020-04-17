@@ -32,7 +32,7 @@ subtest '... verify the AST object' => sub {
 };
 
 my $EXPECTED = 'use Scalar::Util;
-package Point 0.01 {
+package Geometry::Point 0.01 {
 use v5.24;
 use warnings;
 use experimental qw[ signatures ];
@@ -68,8 +68,8 @@ subtest '... eval and test the compiled output', sub {
 
     Cor::Evaluator::evaluate( $GOT );
 
-    my $p = Point->new( x => 10, y => 20 );
-    isa_ok($p, 'Point');
+    my $p = Geometry::Point->new( x => 10, y => 20 );
+    isa_ok($p, 'Geometry::Point');
 
     is($p->x, 10, '... got the right value for x');
     is($p->y, 20, '... got the right value for y');
@@ -82,6 +82,8 @@ done_testing;
 __DATA__
 
 use Scalar::Util;
+
+module Geometry;
 
 class Point v0.01 {
 

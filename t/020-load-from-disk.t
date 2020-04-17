@@ -19,15 +19,15 @@ BEGIN {
 my @pmc_files_to_delete;
 
 subtest '... compiles all the classes together properly' => sub {
-    ok((push @pmc_files_to_delete => Cor::build( 'Currency::US', recurse => 1 )), '... loaded the Currency::US class with Cor');
+    ok((push @pmc_files_to_delete => Cor::build( 'Currency::USD', recurse => 1 )), '... loaded the Currency::US class with Cor');
 };
 
 subtest '... does the compiled classes work together properly' => sub {
 
-    require_ok('Currency::US');
+    require_ok('Currency::USD');
 
-    my $dollar = Currency::US->new( amount => 10 );
-    ok($dollar->isa( 'Currency::US' ), '... the dollar is a Currency::US instance');
+    my $dollar = Currency::USD->new( amount => 10 );
+    ok($dollar->isa( 'Currency::USD' ), '... the dollar is a Currency::US instance');
     ok($dollar->roles::DOES( 'Eq' ), '... the dollar does the Eq role');
     ok($dollar->roles::DOES( 'Comparable' ), '... the dollar does the Comparable role');
     ok($dollar->roles::DOES( 'Printable' ), '... the dollar does the Printable role');
@@ -48,11 +48,11 @@ subtest '... does the compiled classes work together properly' => sub {
     ok($dollar->equal_to( $dollar ), '... we are equal to ourselves');
     ok(!$dollar->not_equal_to( $dollar ), '... we are not not equal to ourselves');
 
-    ok(Currency::US->new( amount => 20 )->greater_than( $dollar ), '... 20 is greater than 10');
-    ok(!Currency::US->new( amount => 2 )->greater_than( $dollar ), '... 2 is not greater than 10');
+    ok(Currency::USD->new( amount => 20 )->greater_than( $dollar ), '... 20 is greater than 10');
+    ok(!Currency::USD->new( amount => 2 )->greater_than( $dollar ), '... 2 is not greater than 10');
 
-    ok(!Currency::US->new( amount => 10 )->greater_than( $dollar ), '... 10 is not greater than 10');
-    ok(Currency::US->new( amount => 10 )->greater_than_or_equal_to( $dollar ), '... 10 is greater than or equal to 10');
+    ok(!Currency::USD->new( amount => 10 )->greater_than( $dollar ), '... 10 is not greater than 10');
+    ok(Currency::USD->new( amount => 10 )->greater_than_or_equal_to( $dollar ), '... 10 is greater than or equal to 10');
 
 };
 

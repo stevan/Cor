@@ -1,4 +1,6 @@
-class Finance::BankAccount {
+module Finance;
+
+class BankAccount {
 
     has $.balance : ro = 0;
 

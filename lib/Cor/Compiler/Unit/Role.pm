@@ -69,7 +69,7 @@ sub generate_source ($self) {
     my @src;
 
     push @src => 'package '
-                . $meta->name
+                . $self->generate_package_name
                 . ($meta->has_version ? ' ' . ($meta->version =~ s/^v//r) : '')
                 . ' {';
 
@@ -100,13 +100,40 @@ sub generate_source ($self) {
     return join "\n" => @src;
 }
 
+sub generate_package_name ($self) {
+    my $meta = $self->{ast};
+
+    my $name;
+    if ( $meta->has_module ) {
+        $name = $meta->module->name . '::' . $meta->name;
+    }
+    else {
+        $name = $meta->name;
+    }
+
+    return $name;
+}
+
+sub generate_role_reference_name ($self, $reference) {
+
+    my $name;
+    if ( $reference->has_module && $reference->module->has_associated_role( $reference->name ) ) {
+        $name = $reference->module->name . '::' . $reference->name;
+    }
+    else {
+        $name = $reference->name;
+    }
+
+    return $name;
+}
+
 sub generate_roles ($self) {
     my $meta = $self->{ast};
 
     my @src;
     push @src => '# roles';
     push @src => 'our @DOES; BEGIN { @DOES = qw['
-        .(join ' ' => map $_->name, $meta->roles->@*)
+        .(join ' ' => map $self->generate_role_reference_name( $_ ), $meta->roles->@*)
     .'] }';
     return @src;
 }

@@ -1,5 +1,6 @@
+module Collections;
 
-class Collections::LinkedList::Node {
+class LinkedList::Node {
 
     has $.value;
 

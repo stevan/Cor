@@ -7,6 +7,8 @@ use experimental qw[ signatures ];
 
 use Cor::Parser::AST::Document;
 
+use Cor::Parser::AST::Module;
+
 use Cor::Parser::AST::Role;
 use Cor::Parser::AST::Class;
 
@@ -32,6 +34,7 @@ sub new_location_at ($char_at) {
     Cor::Parser::AST::Location->new( char_at => $char_at )
 }
 
+sub new_module_at    {    Cor::Parser::AST::Module->new( start_location => new_location_at( @_ ) ) }
 sub new_role_at      {      Cor::Parser::AST::Role->new( start_location => new_location_at( @_ ) ) }
 sub new_class_at     {     Cor::Parser::AST::Class->new( start_location => new_location_at( @_ ) ) }
 sub new_reference_at { Cor::Parser::AST::Reference->new( start_location => new_location_at( @_ ) ) }

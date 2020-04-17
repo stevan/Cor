@@ -49,9 +49,9 @@ subtest '... eval and test the compiled output', sub {
 
     Cor::Evaluator::evaluate( $GOT );
 
-    my $p = Point3D->new( x => 10, y => 20, z => 5 );
-    isa_ok($p, 'Point3D');
-    isa_ok($p, 'Point');
+    my $p = Geometry::Point3D->new( x => 10, y => 20, z => 5 );
+    isa_ok($p, 'Geometry::Point3D');
+    isa_ok($p, 'Geometry::Point');
 
     ok(!$p->can('dump_x'), '... the object has no dump_x method');
     ok(!$p->can('dump_y'), '... the object has no dump_y method');
@@ -91,6 +91,8 @@ role Dumpable {
     # can include comments ...
     method dump;
 }
+
+module Geometry;
 
 class Point does Dumpable {
 

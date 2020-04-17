@@ -1,5 +1,7 @@
 
-class Data::BinaryTree {
+module Data;
+
+class BinaryTree {
 
     has $.node   : rw;
     has $.parent : ro : predicate;

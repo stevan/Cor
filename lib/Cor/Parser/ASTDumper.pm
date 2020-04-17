@@ -14,7 +14,10 @@ sub dump_AST ($ast) {
 
     foreach my $k ( keys %copy ) {
         # warn "looking at $k ( ", ($copy{ $k } // 'undef'), " ) \n";
-        if ( not defined $copy{ $k } ) {
+        if ( $k =~ /^_/ ) { # allow for private fields to be defined ...
+            delete $copy{ $k };
+        }
+        elsif ( not defined $copy{ $k } ) {
             # prune the output of
             # irrelvant output
             delete $copy{ $k };

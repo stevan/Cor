@@ -12,16 +12,21 @@ use roles  'Cor::Parser::AST::Role::HasLocation';
 use slots (
     name    => sub {},
     version => sub {},
+    # internal
+    _module  => sub {},
 );
 
 sub name    : ro;
 sub version : ro;
+sub module  : ro(_);
 
 sub set_name    : wo;
 sub set_version : wo;
+sub set_module  : wo(_);
 
 sub has_name    : predicate;
 sub has_version : predicate;
+sub has_module  : predicate(_);
 
 1;
 
