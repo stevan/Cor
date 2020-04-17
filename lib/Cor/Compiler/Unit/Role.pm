@@ -75,8 +75,13 @@ sub generate_source ($self) {
 
     push @src => $self->preamble;
 
+
     if ( $meta->has_roles ) {
         push @src => $self->generate_roles;
+    }
+
+    if ( $meta->has_constants ) {
+        push @src => $self->generate_constants;
     }
 
     if ( $meta->has_slots ) {
@@ -125,6 +130,17 @@ sub generate_role_reference_name ($self, $reference) {
     }
 
     return $name;
+}
+
+sub generate_constants ($self) {
+    my $meta = $self->{ast};
+
+    my @src;
+    push @src => '# constants';
+    push @src => map {
+        ('use constant ' . $_->name . ' => (' . $_->value . ');')
+    } $meta->constants->@*;
+    return @src;
 }
 
 sub generate_roles ($self) {

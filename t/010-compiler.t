@@ -48,6 +48,8 @@ $proto{q[$x]} = $args{q[x]} if exists $args{q[x]};
 $proto{q[$y]} = $args{q[y]} if exists $args{q[y]};
 return \%proto;
 }
+# constants
+use constant DEBUG => ($ENV{DEBUG} // 0);
 # slots
 our %HAS; BEGIN { %HAS = (
     q[$x] => sub { 0 },
@@ -86,6 +88,8 @@ use Scalar::Util;
 module Geometry;
 
 class Point v0.01 {
+
+    const DEBUG = $ENV{DEBUG} // 0;
 
     has $x = 0;
     has $y = 0;

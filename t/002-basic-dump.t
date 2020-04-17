@@ -49,6 +49,7 @@ eq_or_diff(
         'module'       => { 'name' => 'Geometry' },
         'superclasses' => [ { 'name' => 'UNIVERSAL::Object' } ],
         'roles'        => [ { 'name' => 'Dumpable' } ],
+        'constants'    => [ { name => 'DEBUG', value => '$ENV{POINT_DEBUG} // 0' } ],
         'slots'        => [
             {
                 'name'       => '$_x',
@@ -163,6 +164,8 @@ module Geometry;
 use List::Utils;
 
 class Point v0.01 isa UNIVERSAL::Object does Dumpable {
+
+    const DEBUG = $ENV{POINT_DEBUG} // 0;
 
     has $_x :optional = 0;
     has $_y :optional = 0;

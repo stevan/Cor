@@ -15,6 +15,7 @@ our @_COR_USE_STATEMENTS;
 our $_COR_CURRENT_MODULE;
 our $_COR_CURRENT_META;
 our $_COR_CURRENT_REFERENCE;
+our $_COR_CURRENT_CONST;
 our $_COR_CURRENT_SLOT;
 our $_COR_CURRENT_METHOD;
 
@@ -239,6 +240,33 @@ BEGIN {
                                 |
                                 (?&PerlMethodDeclaration)
                                 |
+                                (
+                                    (const) (?{
+                                        $_COR_CURRENT_CONST = Cor::Parser::ASTBuilder::new_constant_at(
+                                            pos() - length($^N)
+                                        );
+                                    })
+                                    (?&PerlNWS)
+                                    ((?&PerlQualifiedIdentifier)) (?{
+                                        $_COR_CURRENT_CONST->set_name( $^N );
+                                    })
+                                    (?&PerlOWS)
+                                    (\=)
+                                    (?&PerlOWS)
+                                    ((?&PerlExpression)) (?{
+                                        $_COR_CURRENT_CONST->set_value( $^N );
+                                    })
+                                    (?&PerlOWS)
+                                    (\;) (?{
+                                        Cor::Parser::ASTBuilder::set_end_location(
+                                            $_COR_CURRENT_CONST,
+                                            pos() - length($^N),
+                                        );
+
+                                        $_COR_CURRENT_META->add_constant( $_COR_CURRENT_CONST );
+                                    })
+                                )
+                                |
                                 # TODO:
                                 # make these track location information as well
                                 (?&PerlVariableDeclaration) (?{ die 'my/state/our variables are not allowed inside class/role declarations' })
@@ -452,6 +480,7 @@ sub parse ($source) {
     local $_COR_CURRENT_MODULE;
     local $_COR_CURRENT_META;
     local $_COR_CURRENT_REFERENCE;
+    local $_COR_CURRENT_CONST;
     local $_COR_CURRENT_SLOT;
     local $_COR_CURRENT_METHOD;
 

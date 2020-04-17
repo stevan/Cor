@@ -14,6 +14,7 @@ use Cor::Parser::AST::Class;
 
 use Cor::Parser::AST::Reference;
 
+use Cor::Parser::AST::Constant;
 use Cor::Parser::AST::Slot;
 use Cor::Parser::AST::Method;
 
@@ -38,6 +39,7 @@ sub new_module_at    {    Cor::Parser::AST::Module->new( start_location => new_l
 sub new_role_at      {      Cor::Parser::AST::Role->new( start_location => new_location_at( @_ ) ) }
 sub new_class_at     {     Cor::Parser::AST::Class->new( start_location => new_location_at( @_ ) ) }
 sub new_reference_at { Cor::Parser::AST::Reference->new( start_location => new_location_at( @_ ) ) }
+sub new_constant_at  {  Cor::Parser::AST::Constant->new( start_location => new_location_at( @_ ) ) }
 sub new_slot_at      {      Cor::Parser::AST::Slot->new( start_location => new_location_at( @_ ) ) }
 sub new_method_at    {    Cor::Parser::AST::Method->new( start_location => new_location_at( @_ ) ) }
 
