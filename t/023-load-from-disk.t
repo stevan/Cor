@@ -19,7 +19,7 @@ BEGIN {
 my @pmc_files_to_delete;
 
 subtest '... compiles all the classes together properly' => sub {
-    ok((push @pmc_files_to_delete => Cor::build( 'Data::BinaryTree' )), '... loaded the Data::BinaryTree class with Cor');
+    ok((push @pmc_files_to_delete => Cor::build_module( 'Data' )), '... loaded the Data module with Cor');
 };
 
 subtest '... does the compiled classes work together properly' => sub {

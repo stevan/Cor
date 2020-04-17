@@ -19,8 +19,7 @@ BEGIN {
 my @pmc_files_to_delete;
 
 subtest '... compiles all the classes together properly' => sub {
-    ok((push @pmc_files_to_delete => Cor::build( 'Collections::LinkedList' )),       '... loaded the Collections::LinkedList class with Cor');
-    ok((push @pmc_files_to_delete => Cor::build( 'Collections::LinkedList::Node' )), '... loaded the Collections::LinkedList::Node class with Cor');
+    ok((push @pmc_files_to_delete => Cor::build_module( 'Collections' )), '... loaded the Collections module with Cor');
 };
 
 subtest '... does the compiled classes work together properly' => sub {

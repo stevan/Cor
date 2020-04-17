@@ -19,8 +19,7 @@ BEGIN {
 my @pmc_files_to_delete;
 
 subtest '... compiles all the classes together properly' => sub {
-    ok((push @pmc_files_to_delete => Cor::build( 'Finance::BankAccount' )),    '... loaded the Finance::BankAccount class with Cor');
-    ok((push @pmc_files_to_delete => Cor::build( 'Finance::CheckingAccount' )), '... loaded the Finance::CheckingAccount class with Cor');
+    ok((push @pmc_files_to_delete => Cor::build_module( 'Finance' )), '... loaded the Finance module with Cor');
 };
 
 subtest '... does the compiled classes work together properly' => sub {

@@ -327,7 +327,6 @@ BEGIN {
                             );
                             if ( $_COR_CURRENT_MODULE ) {
                                 $_COR_CURRENT_META->set_module( $_COR_CURRENT_MODULE );
-                                $_COR_CURRENT_MODULE->associate_class( $_COR_CURRENT_META );
                             }
                         })
                     )
@@ -353,7 +352,6 @@ BEGIN {
                             );
                             if ( $_COR_CURRENT_MODULE ) {
                                 $_COR_CURRENT_META->set_module( $_COR_CURRENT_MODULE );
-                                $_COR_CURRENT_MODULE->associate_role( $_COR_CURRENT_META );
                             }
                         })
                     )

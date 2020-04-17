@@ -13,8 +13,9 @@ use Cor::Compiler::Traits;
 use parent 'UNIVERSAL::Object';
 
 use slots (
-    doc    => sub {},
-    traits => sub { +{} },
+    doc        => sub {},
+    traits     => sub { +{} },
+    module_map => sub { +{} },
     # ...
     _units        => sub {},
     _dependencies => sub {},
@@ -30,15 +31,25 @@ sub BUILD ($self, $params) {
 
     my @units = map {
         $_->isa('Cor::Parser::AST::Class')
-            ? Cor::Compiler::Unit::Class->new( ast => $_, traits => \%traits )
-            :  Cor::Compiler::Unit::Role->new( ast => $_, traits => \%traits )
+            ? Cor::Compiler::Unit::Class->new( ast => $_, traits => \%traits, module_map => $self->{module_map} )
+            :  Cor::Compiler::Unit::Role->new( ast => $_, traits => \%traits, module_map => $self->{module_map} )
     } @asts;
 
     my @dependencies = map {
+        # transform the dependency name
+        # based on the module mapping
+        $_->set_name( $self->{module_map}->{ $_->name } )
+            if exists $self->{module_map}->{ $_->name };
+        # return the item
+        $_;
+    } map {
         # filter out any dependencies contained
         # here in this compilation group ...
         (grep not( exists $package_index{ $_->name } ), $_->dependencies)
     } @units;
+
+    #use Data::Dumper;
+    #warn Dumper \@dependencies;
 
     $self->{_units}        = \@units;
     $self->{_dependencies} = \@dependencies;

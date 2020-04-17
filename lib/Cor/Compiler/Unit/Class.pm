@@ -67,7 +67,7 @@ sub generate_constructor ($self) {
 sub generate_superclass_reference_name ($self, $reference) {
 
     my $name;
-    if ( $reference->has_module && $reference->module->has_associated_class( $reference->name ) ) {
+    if ( $reference->has_module && exists $self->{module_map}->{ $reference->name } ) {
         $name = $reference->module->name . '::' . $reference->name;
     }
     else {
