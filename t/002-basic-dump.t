@@ -5,6 +5,7 @@ use warnings;
 use experimental qw[ postderef ];
 
 use Test::More;
+use Test::Differences;
 use Data::Dumper;
 
 BEGIN {
@@ -17,7 +18,7 @@ my $src = join '' => <DATA>;
 
 my $doc = Cor::Parser::parse( $src );
 
-is_deeply(
+eq_or_diff(
     $doc->use_statements,
     [
         'use v5.24;',
@@ -30,7 +31,7 @@ is_deeply(
 
 my ($dumpable, $point, $point_3d) = $doc->asts->@*;
 
-is_deeply(
+eq_or_diff(
     Cor::Parser::ASTDumper::dump_AST( $dumpable ),
     {
         name    => 'Dumpable',
@@ -40,7 +41,7 @@ is_deeply(
     '... the Dumpable role looks correct'
 );
 
-is_deeply(
+eq_or_diff(
     Cor::Parser::ASTDumper::dump_AST( $point ),
     {
         'name'         => 'Point',
@@ -96,7 +97,7 @@ is_deeply(
     '... Point class looks correct'
 );
 
-is_deeply(
+eq_or_diff(
     Cor::Parser::ASTDumper::dump_AST( $point_3d ),
     {
         'name'         => 'Point3D',
@@ -134,7 +135,10 @@ is_deeply(
                     ],
                     self_call_locations => [
                         { match => 'next::method', start => 20 }
-                    ]
+                    ],
+                    class_usage_locations => [
+                        { match => 'next::method', start => 20 }
+                    ],
                 }
             }
         ],

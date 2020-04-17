@@ -41,12 +41,13 @@ sub new_reference_at { Cor::Parser::AST::Reference->new( start_location => new_l
 sub new_slot_at      {      Cor::Parser::AST::Slot->new( start_location => new_location_at( @_ ) ) }
 sub new_method_at    {    Cor::Parser::AST::Method->new( start_location => new_location_at( @_ ) ) }
 
-sub new_method_body_at ( $source, $slot_matches, $self_call_matches, $char_at ) {
+sub new_method_body_at ( $source, $slot_matches, $self_call_matches, $class_usage_matches, $char_at ) {
     Cor::Parser::AST::Method::Body->new(
-        source              => $source,
-        slot_locations      => $slot_matches,
-        self_call_locations => $self_call_matches,
-        start_location      => new_location_at( $char_at ),
+        source                => $source,
+        slot_locations        => $slot_matches,
+        self_call_locations   => $self_call_matches,
+        class_usage_locations => $class_usage_matches,
+        start_location        => new_location_at( $char_at ),
     )
 }
 

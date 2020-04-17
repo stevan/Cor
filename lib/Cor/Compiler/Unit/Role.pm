@@ -299,6 +299,24 @@ sub _compile_method_body ($self, $body, $private_method_index) {
 
     }
 
+    if ( my @class_usage_matches = $body->class_usage_locations->@* ) {
+
+        foreach my $m ( @class_usage_matches ) {
+
+            next unless exists $self->{module_map}->{ $m->{match} };
+
+            my $patch = $self->{module_map}->{ $m->{match} };
+
+            substr(
+                $source,
+                $m->{start} + $offset,
+                length( $m->{match} ),
+            ) = $patch;
+            $offset += length( $patch ) - length( $m->{match} );
+        }
+
+    }
+
     return $source;
 
 }

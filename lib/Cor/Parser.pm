@@ -487,9 +487,44 @@ sub parse ($source) {
 
 sub _parse_method_body ($source, $meta) {
 
-    my (@slot_matches, @self_call_matches);
+    # find all the class usage
 
-    my ($slot_match, $slot_pos, $self_call_match, $self_call_pos);
+    my (@class_usage, $class_usage_match, $class_usage_pos);
+
+    # FIXME:
+    # this is not ideal, it basically looks for things that
+    # perform method calls, if it finds a scalar, then it
+    # ignores it, but if it finds a bareword then it will
+    # assume that it is some kind of class reference.
+    # This can be improved a LOT!
+    while ( $source =~ /
+            (?>
+                (?&PerlVariableScalar)
+                |
+                ((?&PerlQualifiedIdentifier)) (?{ $class_usage_match = $^N; $class_usage_pos = pos(); })
+            )
+            (?&PerlOWS)
+            (?> \-\>)
+            $COR_RULES/gx ) {
+
+        # TODO: improve error handling here - SL
+        if ( $PPR::ERROR ) {
+            warn $PPR::ERROR->diagnostics;
+        }
+
+        next unless $class_usage_match;
+
+        push @class_usage => {
+            match => "$class_usage_match",
+            start => ($class_usage_pos - length( $class_usage_match ))
+        };
+
+        ($class_usage_match, $class_usage_pos) = (undef, undef);
+    }
+
+    # find all the method calls on $self
+
+    my (@self_call_matches, $self_call_match, $self_call_pos);
 
     # FIXME:
     # this is not ideal, it assumes that $self
@@ -523,6 +558,10 @@ sub _parse_method_body ($source, $meta) {
         ($self_call_match, $self_call_pos) = (undef, undef);
     }
 
+    # find all slot accesses
+
+    my (@slot_matches, $slot_match, $slot_pos);
+
     while ( $source =~ /((?&PerlVariableScalar)) (?{ $slot_match = $^N; $slot_pos = pos(); }) $COR_RULES/gx ) {
 
         # TODO: improve error handling here - SL
@@ -546,7 +585,7 @@ sub _parse_method_body ($source, $meta) {
         ($slot_match, $slot_pos) = (undef, undef);
     }
 
-    return ($source, \@slot_matches, \@self_call_matches);
+    return ($source, \@slot_matches, \@self_call_matches, \@class_usage);
 }
 
 sub _parse_signature ($source) {

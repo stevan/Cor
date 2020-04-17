@@ -9,6 +9,6 @@ class BinaryTree {
     has $!left  : predicate;
     has $!right : predicate;
 
-    method left  { $!left  //= ref($self)->new( parent => $self ) }
-    method right { $!right //= ref($self)->new( parent => $self ) }
+    method left  { $!left  //= BinaryTree->new( parent => $self ) }
+    method right { $!right //= BinaryTree->new( parent => $self ) }
 }

@@ -5,6 +5,7 @@ use warnings;
 use experimental qw[ postderef ];
 
 use Test::More;
+use Test::Differences;
 use Data::Dumper;
 
 BEGIN {
@@ -19,7 +20,7 @@ my $doc = Cor::Parser::parse( $src );
 
 #warn Dumper $doc;
 
-is_deeply(
+eq_or_diff(
     $doc->use_statements,
     [
         'use v5.24;',
@@ -40,7 +41,7 @@ is($dumpable->end_location->char_at, 139, '... got the right end char number');
 is($dumpable->methods->[0]->start_location->char_at, 125, '... got the right start char number');
 is($dumpable->methods->[0]->end_location->char_at, 136, '... got the right end char number');
 
-is_deeply(
+eq_or_diff(
     Cor::Parser::ASTDumper::dump_AST( $dumpable ),
     {
         name    => 'Dumpable',
@@ -84,7 +85,7 @@ is($point->methods->[2]->end_location->char_at, 323, '... got the right end char
 is($point->methods->[2]->body->start_location->char_at, 296, '... got the right start char number');
 is($point->methods->[2]->body->end_location->char_at, 323, '... got the right end char number');
 
-is_deeply(
+eq_or_diff(
     Cor::Parser::ASTDumper::dump_AST( $point ),
     {
         'name'         => 'Point',
@@ -155,7 +156,7 @@ is($point_3d->methods->[1]->end_location->char_at, 480, '... got the right end c
 is($point_3d->methods->[1]->body->start_location->char_at, 426, '... got the right start char number');
 is($point_3d->methods->[1]->body->end_location->char_at, 480, '... got the right end char number');
 
-is_deeply(
+eq_or_diff(
     Cor::Parser::ASTDumper::dump_AST( $point_3d ),
     {
         'name'         => 'Point3D',
@@ -186,7 +187,10 @@ is_deeply(
                     ],
                     self_call_locations => [
                         { match => 'next::method', start => 20 }
-                    ]
+                    ],
+                    class_usage_locations => [
+                        { match => 'next::method', start => 20 }
+                    ],
                 }
             }
         ],

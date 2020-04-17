@@ -10,14 +10,16 @@ use parent 'UNIVERSAL::Object';
 use roles  'Cor::Parser::AST::Role::HasLocation';
 
 use slots (
-    slot_locations      => sub { +[] },
-    self_call_locations => sub { +[] },
-    source              => sub {},
+    slot_locations        => sub { +[] },
+    self_call_locations   => sub { +[] },
+    class_usage_locations => sub { +[] },
+    source                => sub {},
 );
 
-sub slot_locations      : ro;
-sub self_call_locations : ro;
-sub source              : ro;
+sub slot_locations        : ro;
+sub self_call_locations   : ro;
+sub class_usage_locations : ro;
+sub source                : ro;
 
 1;
 
