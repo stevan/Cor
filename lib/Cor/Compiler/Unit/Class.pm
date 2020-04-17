@@ -28,8 +28,7 @@ sub preamble ($self) {
 
 sub generate_constructor ($self) {
     my $meta = $self->{ast};
-    my $ctor = $meta->constructor;
-    my %map  = $ctor->parameter_mappings->%*;
+    my %map  = map { $_->identifier => $_ } $meta->slots->@*;
 
     my @src;
     push @src => '# constructor';
@@ -47,8 +46,7 @@ sub generate_constructor ($self) {
 
     foreach my $param ( sort keys %map ) {
 
-        my $slot_name = $map{$param};
-        my $slot      = $meta->get_slot( $slot_name );
+        my $slot = $map{$param};
 
         if (
             ($slot->has_attributes && $slot->has_attribute('private'))
@@ -58,7 +56,7 @@ sub generate_constructor ($self) {
             push @src => 'die \'Illegal Arg: `'.$param.'` is a private slot\' if exists $args{q['.$param.']};';
         }
         else {
-            push @src => '$proto{q['.$slot_name.']} = $args{q['.$param.']} if exists $args{q['.$param.']};'
+            push @src => '$proto{q['.$slot->name.']} = $args{q['.$param.']} if exists $args{q['.$param.']};'
         }
     }
     push @src => 'return \%proto;';
