@@ -21,7 +21,7 @@ sub build_module ($module, %opts) {
 
     my ($module_root, $module_dir) = find_module_path_in_INC( $module );
 
-    warn "Building [$module]($module_dir) in ($module_root)\n" if DEBUG;
+    warn "Building module [$module]($module_dir) in ($module_root)\n" if DEBUG;
 
        $module_root = File::Spec->catfile( $module_root ); # clean this to be like module_path
     my $module_path = File::Spec->catfile( $module_root, $module_dir );

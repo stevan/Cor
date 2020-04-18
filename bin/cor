@@ -10,10 +10,18 @@ main( @ARGV );
 
 sub main (@argv) {
 
-    my @packages = @argv;
+    return unless @argv;
 
-    foreach my $package ( @packages ) {
-        Cor::build( $package, recurse => 1 );
+    if ( $argv[0] eq '--module' ) {
+        my $module = $argv[1];
+        Cor::build_module( $module, recurse => 1 );
+    }
+    else {
+        my @packages = @argv;
+
+        foreach my $package ( @packages ) {
+            Cor::build( $package, recurse => 1 );
+        }
     }
 
     return 1;
