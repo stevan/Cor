@@ -227,7 +227,59 @@ BEGIN {
             )
 
         # ---------------------------------------
-        # REDEFINED FROM PPR
+        # CONSTANTS
+        # ---------------------------------------
+
+            (?<PerlConstantDeclaration>
+                (
+                    (const) (?{
+                        $_COR_CURRENT_CONST = Cor::Parser::ASTBuilder::new_constant_at(
+                            pos() - length($^N)
+                        );
+                    })
+                    (?&PerlNWS)
+                    ((?&PerlQualifiedIdentifier)) (?{
+                        $_COR_CURRENT_CONST->set_name( $^N );
+                    })
+                    (?&PerlOWS)
+                    (\=)
+                    (?&PerlOWS)
+                    ((?&PerlExpression)) (?{
+                        $_COR_CURRENT_CONST->set_value( $^N );
+                    })
+                    (?&PerlOWS)
+                    (\;) (?{
+                        Cor::Parser::ASTBuilder::set_end_location(
+                            $_COR_CURRENT_CONST,
+                            pos() - length($^N),
+                        );
+
+                        $_COR_CURRENT_META->add_constant( $_COR_CURRENT_CONST );
+                    })
+                )
+            )
+
+
+            (?<PerlModuleDeclaration>
+                (
+                    (?>
+                        module
+                        (?&PerlNWS)
+                        ((?&PerlQualifiedIdentifier)) (?{
+                            my $module_name = $^N;
+                            $_COR_CURRENT_MODULE = Cor::Parser::ASTBuilder::new_module_at(
+                                pos() - length($module_name)
+                            );
+                            $_COR_CURRENT_MODULE->set_name( $module_name );
+                        })
+                        \;
+                    )
+                )
+            )
+
+
+        # ---------------------------------------
+        # CLASS/ROLE
         # ---------------------------------------
 
             (?<PerlClassRoleBlock> # TODO: come up with a better name
@@ -240,32 +292,7 @@ BEGIN {
                                 |
                                 (?&PerlMethodDeclaration)
                                 |
-                                (
-                                    (const) (?{
-                                        $_COR_CURRENT_CONST = Cor::Parser::ASTBuilder::new_constant_at(
-                                            pos() - length($^N)
-                                        );
-                                    })
-                                    (?&PerlNWS)
-                                    ((?&PerlQualifiedIdentifier)) (?{
-                                        $_COR_CURRENT_CONST->set_name( $^N );
-                                    })
-                                    (?&PerlOWS)
-                                    (\=)
-                                    (?&PerlOWS)
-                                    ((?&PerlExpression)) (?{
-                                        $_COR_CURRENT_CONST->set_value( $^N );
-                                    })
-                                    (?&PerlOWS)
-                                    (\;) (?{
-                                        Cor::Parser::ASTBuilder::set_end_location(
-                                            $_COR_CURRENT_CONST,
-                                            pos() - length($^N),
-                                        );
-
-                                        $_COR_CURRENT_META->add_constant( $_COR_CURRENT_CONST );
-                                    })
-                                )
+                                (?&PerlConstantDeclaration)
                                 |
                                 # TODO:
                                 # make these track location information as well
@@ -387,7 +414,6 @@ BEGIN {
             )
 
 
-
         # ---------------------------------------
         # REDEFINED FROM PPR
         # ---------------------------------------
@@ -444,20 +470,7 @@ BEGIN {
             ((?&PerlUseStatement)) (?{ push @_COR_USE_STATEMENTS => $^N; })
         )?+
 
-        (?:
-            (?>
-                module
-                (?&PerlNWS)
-                ((?&PerlQualifiedIdentifier)) (?{
-                    my $module_name = $^N;
-                    $_COR_CURRENT_MODULE = Cor::Parser::ASTBuilder::new_module_at(
-                        pos() - length($module_name)
-                    );
-                    $_COR_CURRENT_MODULE->set_name( $module_name );
-                })
-                \;
-            )
-        )?
+        (?: (?&PerlModuleDeclaration) )?
 
         (?> (?&PerlRole) | (?&PerlClass) )
 
