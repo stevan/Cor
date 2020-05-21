@@ -69,7 +69,13 @@ BEGIN {
                     })
                 (?&PerlNWS)
                     (
-                        ((?&PerlQualifiedIdentifier)) (?{ $_COR_CURRENT_SLOT->set_type( $^N ) })
+                        ((?&PerlQualifiedIdentifier)) (?{
+                            my $pos  = pos();
+                            my $name = $^N;
+                            $_COR_CURRENT_SLOT->set_type(
+                                Cor::Parser::ASTBuilder::new_type_reference( $name, $name, $pos )
+                            );
+                        })
                         (?&PerlNWS)
                     )?
                     ((?&PerlSlotIdentifier)) (?{ $_COR_CURRENT_SLOT->set_name( $^N ) })

@@ -13,6 +13,7 @@ use Cor::Parser::AST::Role;
 use Cor::Parser::AST::Class;
 
 use Cor::Parser::AST::Reference;
+use Cor::Parser::AST::TypeReference;
 
 use Cor::Parser::AST::Constant;
 use Cor::Parser::AST::Slot;
@@ -80,6 +81,14 @@ sub new_signature_at ( $source, $arguments, $char_at ) {
         start_location => new_location_at( $char_at ),
         end_location   => new_location_at( $char_at + length( $source ) ),
     );
+}
+
+sub new_type_reference ( $source, $name, $char_at ) {
+    Cor::Parser::AST::TypeReference->new(
+        name           => $name,
+        start_location => new_location_at( $char_at ),
+        end_location   => new_location_at( $char_at + length( $source ) ),
+    )
 }
 
 sub set_end_location ($ast, $char_at) {

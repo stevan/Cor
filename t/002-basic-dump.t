@@ -55,11 +55,13 @@ eq_or_diff(
                 'name'       => '$_x',
                 'attributes' => [ { name => 'optional' } ],
                 'default'    => '0',
+                'type'       => { name => 'Int' },
             },
             {
                 'name'       => '$_y',
                 'attributes' => [ { name => 'optional' } ],
                 'default'    => '0',
+                'type'       => { name => 'Int' },
             },
         ],
         'methods' => [
@@ -110,6 +112,7 @@ eq_or_diff(
                 'name'       => '$_z',
                 'attributes' => [ { name => 'optional' } ],
                 'default'    => '0',
+                'type'       => { name => 'Int' },
             },
         ],
         'methods'      => [
@@ -167,8 +170,8 @@ class Point v0.01 isa UNIVERSAL::Object does Dumpable {
 
     const DEBUG = $ENV{POINT_DEBUG} // 0;
 
-    has $_x :optional = 0;
-    has $_y :optional = 0;
+    has Int $_x :optional = 0;
+    has Int $_y :optional = 0;
 
     method x :ro($_x);
     method y :ro($_y);
@@ -180,7 +183,7 @@ use Other::Module;
 
 class Point3D v0.01 isa Point {
 
-    has $_z :optional = 0;
+    has Int $_z :optional = 0;
 
     method z :ro($_z);
 
