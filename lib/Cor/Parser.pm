@@ -63,13 +63,21 @@ BEGIN {
                 )
             )
 
+            (?<PerlSlotTypeName>
+                (?>
+                    ((?&PerlIdentifier)(?&PerlOWS)\[(?&PerlOWS)(?&PerlSlotTypeName)(?&PerlOWS)\])
+                    |
+                    (?&PerlIdentifier)
+                )
+            )
+
             (?<PerlSlotDeclaration>
                 (has) (?{
                         $_COR_CURRENT_SLOT = Cor::Parser::ASTBuilder::new_slot_at( pos() - length($^N) )
                     })
                 (?&PerlNWS)
                     (
-                        ((?&PerlQualifiedIdentifier)) (?{
+                        ((?&PerlSlotTypeName)) (?{
                             my $pos  = pos();
                             my $name = $^N;
                             $_COR_CURRENT_SLOT->set_type(
@@ -418,7 +426,6 @@ BEGIN {
                     )
                 )
             )
-
 
         # ---------------------------------------
         # REDEFINED FROM PPR

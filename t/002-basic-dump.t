@@ -29,7 +29,7 @@ eq_or_diff(
     '... got the expected use statements'
 );
 
-my ($dumpable, $point, $point_3d) = $doc->asts->@*;
+my ($dumpable, $plane, $point, $point_3d) = $doc->asts->@*;
 
 eq_or_diff(
     Cor::Parser::ASTDumper::dump_AST( $dumpable ),
@@ -39,6 +39,23 @@ eq_or_diff(
         methods => [ { name => 'dump', is_abstract => 1 } ],
     },
     '... the Dumpable role looks correct'
+);
+
+eq_or_diff(
+    Cor::Parser::ASTDumper::dump_AST( $plane ),
+    {
+        'name'         => 'Plane',
+        'version'      => 'v0.01',
+        'module'       => { 'name' => 'Geometry' },
+        'superclasses' => [ { 'name' => 'UNIVERSAL::Object' } ],
+        'slots'        => [
+            {
+                'name'       => '$_space',
+                'type'       => { name => 'ArrayRef[ ArrayRef[Point] ]' },
+            },
+        ]
+    },
+    '... Plane class looks correct'
 );
 
 eq_or_diff(
@@ -165,6 +182,12 @@ role Dumpable v0.01 {
 module Geometry;
 
 use List::Utils;
+
+class Plane v0.01 isa UNIVERSAL::Object {
+
+    has ArrayRef[ ArrayRef[Point] ] $_space;
+
+}
 
 class Point v0.01 isa UNIVERSAL::Object does Dumpable {
 
