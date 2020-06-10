@@ -28,6 +28,13 @@ sub preamble ($self) {
 
 sub generate_constructor ($self) {
     my $meta = $self->{ast};
+
+    # no slots and no supers
+    # means we have no need for
+    # a BUILDARGS to be generated
+    return if not( $meta->has_slots )
+        &&    not( $meta->has_superclasses );
+
     my %map  = map { $_->identifier => $_ } $meta->slots->@*;
 
     my @src;
